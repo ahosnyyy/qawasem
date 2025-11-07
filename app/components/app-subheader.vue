@@ -48,20 +48,12 @@ const items = computed<NavigationMenuItem[]>(() => [
 
     <!-- Subheader content -->
     <UHeader
-      class="absolute top-20 left-0 right-0 z-40 border-0 !bg-transparent h-50 backdrop-blur-none"
+      class="absolute top-20 left-0 right-0 z-40 border-0 bg-transparent! h-50 backdrop-blur-none"
       :toggle="false"
-      :ui="{ 
-        root: '!bg-transparent', 
-        container: '!bg-transparent', 
-        left: '!bg-transparent',
-        right: '!bg-transparent',
-        toggle: 'hidden', 
-        overlay: 'hidden', 
-        content: 'hidden' 
-      }"
+      :ui="{ toggle: 'hidden', overlay: 'hidden', content: 'hidden' }"
     >
       <template #left>
-        <div class="flex items-center gap-4 md:gap-14 !bg-transparent">
+        <div class="flex items-center gap-4 md:gap-14 bg-transparent">
           <img
             src="/logo.svg"
             alt="Logo"
