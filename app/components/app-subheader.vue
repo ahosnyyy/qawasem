@@ -48,25 +48,35 @@ const items = computed<NavigationMenuItem[]>(() => [
 
     <!-- Subheader content -->
     <UHeader
-      class="absolute top-20 left-0 right-0 z-40 border-0 bg-transparent h-50 backdrop-blur-none"
+      class="absolute top-20 left-0 right-0 z-40 border-0 !bg-transparent h-50 backdrop-blur-none"
+      :toggle="false"
+      :ui="{ 
+        root: '!bg-transparent', 
+        container: '!bg-transparent', 
+        left: '!bg-transparent',
+        right: '!bg-transparent',
+        toggle: 'hidden', 
+        overlay: 'hidden', 
+        content: 'hidden' 
+      }"
     >
       <template #left>
-        <div class="flex items-center gap-14">
+        <div class="flex items-center gap-4 md:gap-14 !bg-transparent">
           <img
             src="/logo.svg"
             alt="Logo"
-            class="h-44 w-auto mt-6"
+            class="h-32 md:h-44 w-auto mt-6"
           >
 
           <nav
-            class="flex items-center gap-8"
+            class="flex items-center gap-4 md:gap-8"
             :dir="isRTL ? 'rtl' : 'ltr'"
           >
             <NuxtLink
               v-for="item in items"
               :key="String(item.to)"
               :to="item.to"
-              class="text-base font-normal transition-colors hover:opacity-80 relative pb-1"
+              class="text-sm md:text-base font-normal transition-colors hover:opacity-80 relative pb-1"
               :class="[
                 item.active ? 'font-medium underline underline-offset-2' : '',
                 isRTL ? 'font-[\'IBM_Plex_Sans_Arabic\']' : 'font-[\'Inter\']',
