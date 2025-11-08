@@ -51,7 +51,7 @@ const goToSlide = (index: number) => {
 
 <template>
   <div class="relative w-full overflow-visible z-[92]">
-    <div class="w-full pl-36">
+    <div class="w-full pl-6 md:pl-36">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
         <div
@@ -61,7 +61,7 @@ const goToSlide = (index: number) => {
           class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
         >
           <!-- Left Content -->
-          <div class="relative flex flex-col justify-center gap-2 space-y-2 order-2 lg:order-2 mr-12 z-[96]">
+          <div class="relative flex flex-col justify-center gap-2 space-y-2 order-1 md:order-2 mr-12 z-[96]">
             <!-- Counter and Previous Arrow on same row -->
             <div class="flex items-center justify-between">
               <!-- Previous Arrow -->
@@ -143,7 +143,7 @@ const goToSlide = (index: number) => {
           </div>
 
           <!-- Right Image -->
-          <div class="flex items-end justify-center lg:justify-start order-1 lg:order-1 min-w-full -mt-20 overflow-visible relative z-[95]">
+          <div class="flex items-end justify-center lg:justify-start order-2 md:order-1 min-w-full -mt-20 overflow-visible relative z-[95]">
             <img
               :src="slide.image"
               :alt="slide.title"

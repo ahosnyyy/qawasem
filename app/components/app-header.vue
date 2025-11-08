@@ -97,7 +97,7 @@ const locales = [
     >
       <div
         v-if="isOpen"
-        class="md:hidden fixed inset-0 z-[60]"
+        class="md:hidden fixed inset-0 z-[110]"
         @click="isOpen = false"
       />
     </Transition>
@@ -112,7 +112,7 @@ const locales = [
     >
       <div
         v-if="isOpen"
-        class="md:hidden fixed top-20 left-0 right-0 z-[70] shadow-lg"
+        class="md:hidden fixed top-20 left-0 right-0 z-[120] shadow-lg"
         :class="isDarkMode ? 'bg-white text-black' : 'bg-black text-white'"
       >
         <div class="px-4 py-6 space-y-4">

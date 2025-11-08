@@ -58,14 +58,14 @@ watch(() => route.path, () => {
     >
       <div
         v-if="isOpen"
-        class="md:hidden fixed inset-0 bg-black/30 z-[45]"
+        class="md:hidden fixed inset-0 bg-black/30 z-[110]"
         @click="isOpen = false"
       />
     </Transition>
 
     <div
       class="mt-20 z-[90] relative"
-      :class="isOpen ? 'bg-default/95 backdrop-blur' : 'md:bg-transparent md:backdrop-blur-none'"
+      :class="{ 'bg-black/90 backdrop-blur': isOpen, 'bg-transparent': !isOpen }"
     >
       <UContainer class="py-4">
         <div class="flex items-center justify-between gap-4">
@@ -120,7 +120,7 @@ watch(() => route.path, () => {
         >
           <nav
             v-if="isOpen"
-            class="md:hidden absolute left-0 right-0 mt-4 bg-default/95 backdrop-blur border-t border-default shadow-lg z-[55]"
+            class="md:hidden fixed left-0 right-0 top-[184px] bg-black/90 backdrop-blur border-t border-gray-800 shadow-lg z-[120]"
             :dir="isRTL ? 'rtl' : 'ltr'"
           >
             <div class="flex flex-col gap-2 px-4 sm:px-6 lg:px-8 py-4">
