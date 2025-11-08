@@ -6,6 +6,7 @@ const { locale } = useI18n();
 const colorMode = useColorMode();
 const appConfig = useAppConfig();
 
+const isOpen = ref(false);
 const isRTL = computed(() => locale.value === "ar");
 const isDark = computed(() => colorMode.value === "dark");
 const textColor = computed(() => isDark.value ? appConfig.theme.colors.text.dark : appConfig.theme.colors.text.light);
@@ -37,53 +38,110 @@ const items = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith("/search"),
   },
 ]);
+
+// Close mobile menu when route changes
+watch(() => route.path, () => {
+  isOpen.value = false;
+});
 </script>
 
 <template>
   <div>
-    <!-- Backdrop blur layer that extends from main header to end of subheader -->
-    <div
-      class="absolute top-20 left-0 right-0 h-50 z-39 transition-all duration-300 backdrop-blur-none"
-    />
-
-    <!-- Subheader content -->
-    <UHeader
-      class="absolute top-20 left-0 right-0 z-40 border-0 bg-transparent! h-50 backdrop-blur-none"
-      :toggle="false"
-      :ui="{ toggle: 'hidden', overlay: 'hidden', content: 'hidden' }"
+    <!-- Backdrop Overlay - Only show on mobile when menu is open -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      leave-active-class="transition-all duration-150 ease-in"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
-      <template #left>
-        <div class="flex items-center gap-4 md:gap-14 bg-transparent">
-          <img
-            src="/logo.svg"
-            alt="Logo"
-            class="h-32 md:h-44 w-auto mt-6"
-          >
+      <div
+        v-if="isOpen"
+        class="md:hidden fixed inset-0 bg-black/30 z-[45]"
+        @click="isOpen = false"
+      />
+    </Transition>
 
+    <div
+      class="mt-20 z-[90] relative"
+      :class="isOpen ? 'bg-default/95 backdrop-blur' : 'md:bg-transparent md:backdrop-blur-none'"
+    >
+      <UContainer class="py-4">
+        <div class="flex items-center justify-between gap-4">
+          <!-- Logo and Desktop Navigation -->
+          <div class="flex items-center gap-4 md:gap-14">
+            <img
+              src="/logo.svg"
+              alt="Logo"
+              class="h-18 md:h-46 w-auto"
+            >
+
+            <nav
+              class="hidden md:flex items-center gap-4 md:gap-8"
+              :dir="isRTL ? 'rtl' : 'ltr'"
+            >
+              <NuxtLink
+                v-for="item in items"
+                :key="String(item.to)"
+                :to="item.to"
+                class="text-sm md:text-base font-normal transition-colors hover:opacity-80 relative"
+                :class="[
+                  item.active ? 'font-medium underline underline-offset-2 decoration-2' : '',
+                  isRTL ? 'font-[\'IBM_Plex_Sans_Arabic\']' : 'font-[\'Inter\']',
+                ]"
+                :style="{ color: textColor }"
+              >
+                {{ item.label }}
+              </NuxtLink>
+            </nav>
+          </div>
+
+        <!-- Mobile Menu Button -->
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-heroicons-bars-2"
+          class="md:hidden"
+          aria-label="Toggle menu"
+          :style="{ color: textColor }"
+          @click="isOpen = !isOpen"
+        />
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          leave-active-class="transition-all duration-150 ease-in"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
           <nav
-            class="flex items-center gap-4 md:gap-8"
+            v-if="isOpen"
+            class="md:hidden absolute left-0 right-0 mt-4 bg-default/95 backdrop-blur border-t border-default shadow-lg z-[55]"
             :dir="isRTL ? 'rtl' : 'ltr'"
           >
-            <NuxtLink
-              v-for="item in items"
-              :key="String(item.to)"
-              :to="item.to"
-              class="text-sm md:text-base font-normal transition-colors hover:opacity-80 relative pb-1"
-              :class="[
-                item.active ? 'font-medium underline underline-offset-2' : '',
-                isRTL ? 'font-[\'IBM_Plex_Sans_Arabic\']' : 'font-[\'Inter\']',
-              ]"
-              :style="{ color: textColor }"
-            >
-              {{ item.label }}
-            </NuxtLink>
+            <div class="flex flex-col gap-2 px-4 sm:px-6 lg:px-8 py-4">
+              <NuxtLink
+                v-for="item in items"
+                :key="String(item.to)"
+                :to="item.to"
+                class="text-base font-normal transition-colors hover:opacity-80 py-2 px-2 rounded"
+                :class="[
+                  item.active ? 'font-medium underline underline-offset-2 decoration-2' : '',
+                  isRTL ? 'font-[\'IBM_Plex_Sans_Arabic\']' : 'font-[\'Inter\']',
+                ]"
+                :style="{ color: textColor }"
+                @click="isOpen = false"
+              >
+                {{ item.label }}
+              </NuxtLink>
+            </div>
           </nav>
-        </div>
-      </template>
-
-      <template #right>
-        <!-- Optional right content -->
-      </template>
-    </UHeader>
+        </Transition>
+      </UContainer>
+    </div>
   </div>
 </template>

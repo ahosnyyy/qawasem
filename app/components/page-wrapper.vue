@@ -1,6 +1,5 @@
 <template>
-  <UContainer class="pt-70">
-    <AppSubheader />
+  <UContainer class="py-2">
     <slot />
   </UContainer>
 </template>
