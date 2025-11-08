@@ -65,7 +65,12 @@ watch(() => route.path, () => {
 
     <div
       class="mt-20 z-[90] relative"
-      :class="{ 'bg-black/90 backdrop-blur': isOpen, 'bg-transparent': !isOpen }"
+      :class="{ 
+        'backdrop-blur': isOpen,
+        'bg-neutral-900/95': isOpen && isDark,
+        'bg-white/95': isOpen && !isDark,
+        'bg-transparent': !isOpen 
+      }"
     >
       <UContainer class="py-4">
         <div class="flex items-center justify-between gap-4">
@@ -109,20 +114,25 @@ watch(() => route.path, () => {
         />
         </div>
 
-        <!-- Mobile Navigation Menu -->
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          leave-active-class="transition-all duration-150 ease-in"
-          enter-from-class="opacity-0 -translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-from-class="opacity-100 translate-y-0"
-          leave-to-class="opacity-0 -translate-y-2"
+      </UContainer>
+      
+      <!-- Mobile Navigation Menu -->
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        leave-active-class="transition-all duration-150 ease-in"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <nav
+          v-if="isOpen"
+          class="md:hidden absolute left-0 right-0 top-full backdrop-blur border-t shadow-lg z-[120]"
+          :class="[
+            isDark ? 'bg-neutral-900/95 text-white border-gray-800' : 'bg-white/95 text-black border-gray-200'
+          ]"
+          :dir="isRTL ? 'rtl' : 'ltr'"
         >
-          <nav
-            v-if="isOpen"
-            class="md:hidden fixed left-0 right-0 top-[184px] bg-black/90 backdrop-blur border-t border-gray-800 shadow-lg z-[120]"
-            :dir="isRTL ? 'rtl' : 'ltr'"
-          >
             <div class="flex flex-col gap-2 px-4 sm:px-6 lg:px-8 py-4">
               <NuxtLink
                 v-for="item in items"
@@ -139,9 +149,8 @@ watch(() => route.path, () => {
                 {{ item.label }}
               </NuxtLink>
             </div>
-          </nav>
-        </Transition>
-      </UContainer>
+        </nav>
+      </Transition>
     </div>
   </div>
 </template>
