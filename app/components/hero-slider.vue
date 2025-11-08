@@ -50,8 +50,8 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-hidden">
-    <div class="w-full pl-30">
+  <div class="relative w-full overflow-visible z-[92]">
+    <div class="w-full pl-36">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
         <div
@@ -61,10 +61,9 @@ const goToSlide = (index: number) => {
           class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
         >
           <!-- Left Content -->
-          <div class="relative flex flex-col justify-center gap-2 space-y-2 order-2 lg:order-2 mt-30 -mr-2">
+          <div class="relative flex flex-col justify-center gap-2 space-y-2 order-2 lg:order-2 mr-12 z-[96]">
             <!-- Counter and Previous Arrow on same row -->
             <div class="flex items-center justify-between">
-
               <!-- Previous Arrow -->
               <button
                 @click="prevSlide"
@@ -107,7 +106,7 @@ const goToSlide = (index: number) => {
             <!-- Next Arrow (positioned to the right) -->
             <button
               @click="nextSlide"
-              class="absolute -right-25 top-1/5 w-18 h-18 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
+              class="absolute -right-25 top-1/4 w-18 h-18 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
               :style="{ 
                 backgroundColor: 'rgba(217, 178, 122, 0.2)',
                 borderColor: primaryColor,
@@ -128,7 +127,7 @@ const goToSlide = (index: number) => {
 
             <!-- Title -->
             <h2 
-              class="text-2xl mt-2 mb-6"
+              class="text-3xl mt-2 mb-6"
               :style="{ color: textColor }"
             >
               {{ slide.title }}
@@ -144,11 +143,11 @@ const goToSlide = (index: number) => {
           </div>
 
           <!-- Right Image -->
-          <div class="flex items-end justify-center lg:justify-start order-1 lg:order-1 min-w-full -mt-10 overflow-visible">
+          <div class="flex items-end justify-center lg:justify-start order-1 lg:order-1 min-w-full -mt-20 overflow-visible relative z-[95]">
             <img
               :src="slide.image"
               :alt="slide.title"
-              class="w-[100%] xl:w-[108%] max-w-none object-contain object-bottom"
+              class="w-[100%] max-w-none object-contain object-bottom"
               loading="lazy"
             />
           </div>
