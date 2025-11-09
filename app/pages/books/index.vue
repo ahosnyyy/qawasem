@@ -60,9 +60,9 @@ const handleRead = (book: Book) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible px-4 sm:px-6 lg:px-10 pb-16 lg:-mt-16">
+  <div class="relative w-full overflow-visible px-4 sm:px-6 lg:px-10 pb-16">
     <!-- Page Title -->
-    <div class="text-center mb-8">
+    <div class="text-center mb-12">
       <p 
         class="text-lg lg:text-xl"
         :style="{ color: textColor, opacity: 0.8 }"

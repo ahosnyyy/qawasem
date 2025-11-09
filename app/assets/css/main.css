@@ -3,7 +3,6 @@
 
 @theme static {
   --font-sans: 'Inter', sans-serif;
-  --container-8xl: 90rem;
   
   /* Custom gold/bronze color palette */
   --color-gold-50: #fdfbf7;
@@ -20,7 +19,6 @@
 }
 
 :root {
-  --ui-container: var(--container-8xl);
   --ui-radius: 0rem;
   --ui-primary: var(--color-gold-500);
 }

@@ -50,7 +50,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible px-10 pt-10 lg:-mt-8 lg:pl-12 pb-16">
+  <div class="relative w-full overflow-visible px-10 pt-10 lg:pt-0 lg:pl-6 pb-16">
     <div class="w-full">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
@@ -58,10 +58,10 @@ const goToSlide = (index: number) => {
           v-for="(slide, index) in slides"
           v-show="index === currentSlide"
           :key="slide.id"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center 2xl:items-center"
+          class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center"
         >
           <!-- Left Content -->
-          <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2 2xl:justify-center">
+          <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2">
             <!-- Counter and Previous Arrow on same row -->
             <div class="flex items-center justify-between">
               <!-- Previous Arrow -->
@@ -106,7 +106,7 @@ const goToSlide = (index: number) => {
             <!-- Next Arrow (positioned to the right) -->
             <button
               @click="nextSlide"
-              class="absolute lg:-right-25 -top-4 lg:top-1/4 w-18 h-18 2xl:w-20 2xl:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
+              class="absolute lg:-right-25 -top-4 lg:top-1/5 w-18 h-18 2xl:w-20 2xl:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
               :style="{ 
                 backgroundColor: 'rgba(217, 178, 122, 0.2)',
                 borderColor: primaryColor,
@@ -143,7 +143,7 @@ const goToSlide = (index: number) => {
           </div>
 
           <!-- Right Image -->
-          <div class="flex items-start justify-center lg:justify-start 2xl:items-center order-2 lg:order-1 -mt-10 lg:-mr-10">
+          <div class="flex items-start justify-center lg:justify-start 2xl:items-center order-2 lg:order-1 -mt-10 lg:-mr-30">
             <img
               :src="slide.image"
               :alt="slide.title"
