@@ -3,17 +3,34 @@
 
 @theme static {
   --font-sans: 'Inter', sans-serif;
-  --container-8xl: 90rem; 
+  --container-8xl: 90rem;
+  
+  /* Custom gold/bronze color palette */
+  --color-gold-50: #fdfbf7;
+  --color-gold-100: #f9f3e8;
+  --color-gold-200: #f3e8d1;
+  --color-gold-300: #ead7b3;
+  --color-gold-400: #e1c594;
+  --color-gold-500: #D9B27A;
+  --color-gold-600: #c99f5f;
+  --color-gold-700: #a8854d;
+  --color-gold-800: #876a3e;
+  --color-gold-900: #6b5432;
+  --color-gold-950: #3a2e1b;
 }
 
 :root {
   --ui-container: var(--container-8xl);
   --ui-radius: 0rem;
-  --ui-primary: black;
+  --ui-primary: var(--color-gold-500);
 }
 
 .dark {
-  --ui-primary: white;
+  --ui-primary: var(--color-gold-400);
+  --ui-bg: black;
+  --ui-bg-muted: #0a0a0a;
+  --ui-bg-elevated: #121212;
+  --ui-bg-accented: #1a1a1a;
 }
 
 /* RTL Support */

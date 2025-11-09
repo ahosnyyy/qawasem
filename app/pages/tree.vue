@@ -5,7 +5,7 @@
       <button
         class="self-center mb-6 mt-6 lg:fixed lg:top-34 lg:left-20 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-3 rounded-full transition-all duration-300 lg:z-[130] flex items-center gap-2"
       >
-        <span>PDF تحميل الشجرة الحائطية</span>
+        <span>تحميل الشجرة الحائطية PDF</span>
       </button>
       
       <div class="relative w-full lg:w-[50%] flex justify-center">
