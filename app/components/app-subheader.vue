@@ -46,7 +46,7 @@ watch(() => route.path, () => {
 
 const containerClass = computed(() => {
   if (!isOpen.value) return '';
-  return isDark.value ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200';
+  return isDark.value ? 'bg-black border-gray-800' : 'bg-white border-gray-200';
 });
 </script>
 
@@ -63,7 +63,7 @@ const containerClass = computed(() => {
     >
       <div
         v-if="isOpen"
-        class="md:hidden fixed inset-0 bg-black/30 z-[110]"
+        class="md:hidde fixed inset-0 z-[110]"
         @click="isOpen = false"
       />
     </Transition>
