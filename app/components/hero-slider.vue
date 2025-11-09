@@ -50,24 +50,24 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible z-[92]">
-    <div class="w-full pl-6 md:pl-36">
+  <div class="relative w-full overflow-visible pt-10 lg:pt-0 pb-16 lg:pl-14">
+    <div class="w-full">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
         <div
           v-for="(slide, index) in slides"
           v-show="index === currentSlide"
           :key="slide.id"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+          class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
         >
           <!-- Left Content -->
-          <div class="relative flex flex-col justify-center gap-2 space-y-2 order-1 md:order-2 mr-12 z-[96]">
+          <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2">
             <!-- Counter and Previous Arrow on same row -->
             <div class="flex items-center justify-between">
               <!-- Previous Arrow -->
               <button
                 @click="prevSlide"
-                class="w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
+                class="mr-24 lg:mr-0 w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
                 :style="{ 
                   borderColor: 'white',
                   color: 'white',
@@ -106,7 +106,7 @@ const goToSlide = (index: number) => {
             <!-- Next Arrow (positioned to the right) -->
             <button
               @click="nextSlide"
-              class="absolute -right-25 top-1/4 w-18 h-18 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
+              class="absolute lg:-right-25 -top-4 lg:top-1/4 w-18 h-18 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
               :style="{ 
                 backgroundColor: 'rgba(217, 178, 122, 0.2)',
                 borderColor: primaryColor,
@@ -143,11 +143,11 @@ const goToSlide = (index: number) => {
           </div>
 
           <!-- Right Image -->
-          <div class="flex items-end justify-center lg:justify-start order-2 md:order-1 min-w-full -mt-20 overflow-visible relative z-[95]">
+          <div class="flex items-end justify-center lg:justify-start order-2 lg:order-1 -mt-10 lg:-mr-10">
             <img
               :src="slide.image"
               :alt="slide.title"
-              class="w-[100%] max-w-none object-contain object-bottom"
+              class="w-full"
               loading="lazy"
             />
           </div>

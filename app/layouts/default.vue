@@ -1,13 +1,12 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <AppHeader />
+  <AppHeader />
+  <UMain class="min-h-0">
     <AppSubheader />
     <AppBackground />
     <SocialIcons />
-    <!-- Main content - flex-grow pushes footer to bottom -->
-    <UMain class="min-h-0 flex-1 p-0">
+    <UContainer>
       <slot />
-    </UMain>
-    <AppFooter />
-  </div>
+    </UContainer>
+  </UMain>
+  <AppFooter />
 </template>
