@@ -50,7 +50,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible px-10 pt-10 lg:pt-0 xl:pt-0 pb-16 lg:pl-12">
+  <div class="relative w-full overflow-visible px-10 pt-10 lg:pt-0 pb-16 lg:pl-12">
     <div class="w-full">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
@@ -58,16 +58,16 @@ const goToSlide = (index: number) => {
           v-for="(slide, index) in slides"
           v-show="index === currentSlide"
           :key="slide.id"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center xl:items-start"
+          class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center 2xl:items-center"
         >
           <!-- Left Content -->
-          <div class="relative flex flex-col justify-center xl:justify-start space-y-2 order-1 lg:order-2 xl:mt-30">
+          <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2 2xl:justify-center">
             <!-- Counter and Previous Arrow on same row -->
             <div class="flex items-center justify-between">
               <!-- Previous Arrow -->
               <button
                 @click="prevSlide"
-                class="mr-24 lg:mr-0 w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
+                class="mr-24 lg:mr-0 w-12 h-12 2xl:w-14 2xl:h-14 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
                 :style="{ 
                   borderColor: 'white',
                   color: 'white',
@@ -76,7 +76,7 @@ const goToSlide = (index: number) => {
                 aria-label="Previous slide"
               >
                 <svg 
-                  class="w-4 h-4 rotate-180" 
+                  class="w-4 h-4 2xl:w-5 2xl:h-5 rotate-180" 
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -89,13 +89,13 @@ const goToSlide = (index: number) => {
               <!-- Counter -->
               <div class="flex items-center gap-2" dir="ltr">
                 <span 
-                  class="text-4xl lg:text-6xl font-bold underline underline-offset-1 leading-none"
+                  class="text-4xl lg:text-6xl 2xl:text-7xl font-bold underline underline-offset-1 leading-none"
                   :style="{ color: primaryColor }"
                 >
                   {{ String(slide.id).padStart(2, '0') }}
                 </span>
                 <span 
-                  class="text-xl lg:text-2xl font-bold underline underline-offset-1 leading-none"
+                  class="text-xl lg:text-2xl 2xl:text-3xl font-bold underline underline-offset-1 leading-none"
                   :style="{ color: textColor, opacity: 0.5 }"
                 >
                   / {{ String(slides.length).padStart(2, '0') }}
@@ -106,7 +106,7 @@ const goToSlide = (index: number) => {
             <!-- Next Arrow (positioned to the right) -->
             <button
               @click="nextSlide"
-              class="absolute lg:-right-25 -top-4 lg:top-1/4 w-18 h-18 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
+              class="absolute lg:-right-25 -top-4 lg:top-1/4 w-18 h-18 2xl:w-20 2xl:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
               :style="{ 
                 backgroundColor: 'rgba(217, 178, 122, 0.2)',
                 borderColor: primaryColor,
@@ -115,7 +115,7 @@ const goToSlide = (index: number) => {
               aria-label="Next slide"
             >
               <svg 
-                class="w-6 h-6" 
+                class="w-6 h-6 2xl:w-7 2xl:h-7" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -127,7 +127,7 @@ const goToSlide = (index: number) => {
 
             <!-- Title -->
             <h2 
-              class="text-3xl mt-2 mb-6"
+              class="text-3xl 2xl:text-4xl mt-2 mb-6"
               :style="{ color: textColor }"
             >
               {{ slide.title }}
@@ -135,7 +135,7 @@ const goToSlide = (index: number) => {
 
             <!-- Content -->
             <p 
-              class="text-md leading-relaxed text-justify"
+              class="text-md 2xl:text-lg leading-relaxed text-justify"
               :style="{ color: textColor, opacity: 0.9 }"
             >
               {{ slide.content }}
@@ -143,7 +143,7 @@ const goToSlide = (index: number) => {
           </div>
 
           <!-- Right Image -->
-          <div class="flex items-start justify-center lg:justify-start order-2 lg:order-1 -mt-10 lg:-mr-10">
+          <div class="flex items-start justify-center lg:justify-start 2xl:items-center order-2 lg:order-1 -mt-10 lg:-mr-10">
             <img
               :src="slide.image"
               :alt="slide.title"
