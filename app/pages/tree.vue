@@ -11,15 +11,9 @@
       <div class="relative w-full lg:w-[50%] flex justify-center">
         <!-- Light mode tree -->
         <img 
-          src="/images/tree-light.svg" 
+          src="/images/tree.svg" 
           alt="شجرة القواسم" 
-          class="w-full h-auto object-contain block dark:hidden"
-        />
-        <!-- Dark mode tree -->
-        <img 
-          src="/images/tree-dark.svg" 
-          alt="شجرة القواسم" 
-          class="w-full h-auto object-contain hidden dark:block"
+          class="w-full h-auto object-contain"
         />
         
         <!-- Tree root overlay at 2/3 from top -->
