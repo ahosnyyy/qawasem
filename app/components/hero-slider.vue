@@ -50,7 +50,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible pt-10 lg:pt-0 pb-16 lg:pl-14">
+  <div class="relative w-full overflow-visible px-10 pt-10 lg:pt-0 xl:pt-0 pb-16 lg:pl-12">
     <div class="w-full">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
@@ -58,10 +58,10 @@ const goToSlide = (index: number) => {
           v-for="(slide, index) in slides"
           v-show="index === currentSlide"
           :key="slide.id"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
+          class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center xl:items-start"
         >
           <!-- Left Content -->
-          <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2">
+          <div class="relative flex flex-col justify-center xl:justify-start space-y-2 order-1 lg:order-2 xl:mt-30">
             <!-- Counter and Previous Arrow on same row -->
             <div class="flex items-center justify-between">
               <!-- Previous Arrow -->
@@ -135,7 +135,7 @@ const goToSlide = (index: number) => {
 
             <!-- Content -->
             <p 
-              class="text-md leading-relaxed"
+              class="text-md leading-relaxed text-justify"
               :style="{ color: textColor, opacity: 0.9 }"
             >
               {{ slide.content }}
@@ -143,7 +143,7 @@ const goToSlide = (index: number) => {
           </div>
 
           <!-- Right Image -->
-          <div class="flex items-end justify-center lg:justify-start order-2 lg:order-1 -mt-10 lg:-mr-10">
+          <div class="flex items-start justify-center lg:justify-start order-2 lg:order-1 -mt-10 lg:-mr-10">
             <img
               :src="slide.image"
               :alt="slide.title"
@@ -160,17 +160,12 @@ const goToSlide = (index: number) => {
 <style scoped>
 .slide-enter-active,
 .slide-leave-active {
-  transition: all 0.5s ease;
+  transition: opacity 0.3s ease;
 }
 
-.slide-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
+.slide-enter-from,
 .slide-leave-to {
   opacity: 0;
-  transform: translateX(-30px);
 }
 </style>
 
