@@ -50,7 +50,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible px-10 pt-10 lg:pt-0 lg:pl-6 pb-16">
+  <div class="relative w-full overflow-visible pt-10 px-10 lg:px-8 lg:pt-0 pb-16">
     <div class="w-full">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
@@ -58,7 +58,7 @@ const goToSlide = (index: number) => {
           v-for="(slide, index) in slides"
           v-show="index === currentSlide"
           :key="slide.id"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center"
+          class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center"
         >
           <!-- Left Content -->
           <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2">
@@ -67,7 +67,7 @@ const goToSlide = (index: number) => {
               <!-- Previous Arrow -->
               <button
                 @click="prevSlide"
-                class="mr-24 lg:mr-0 w-12 h-12 2xl:w-14 2xl:h-14 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
+                class="mr-24 mb-4 lg:mb-0 lg:mr-0 w-12 h-12 2xl:w-14 2xl:h-14 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
                 :style="{ 
                   borderColor: 'white',
                   color: 'white',
