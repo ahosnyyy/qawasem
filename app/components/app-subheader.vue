@@ -43,6 +43,11 @@ const items = computed<NavigationMenuItem[]>(() => [
 watch(() => route.path, () => {
   isOpen.value = false;
 });
+
+const containerClass = computed(() => {
+  if (!isOpen.value) return '';
+  return isDark.value ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200';
+});
 </script>
 
 <template>
@@ -66,7 +71,9 @@ watch(() => route.path, () => {
     <div
       class="mt-20 z-[90] relative"
     >
-      <UContainer class="py-4">
+      <UContainer class="py-4"
+      :class="containerClass"
+      >
         <div class="flex items-center justify-between gap-4">
           <!-- Logo and Desktop Navigation -->
           <div class="flex items-center gap-4 md:gap-20">
@@ -124,7 +131,7 @@ watch(() => route.path, () => {
         v-if="isOpen"
         class="md:hidden fixed left-0 right-0 backdrop-blur border-t shadow-lg z-[120]"
         :class="[
-          isDark ? 'bg-neutral-900/95 text-white border-gray-800' : 'bg-white/95 text-black border-gray-200'
+          isDark ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200'
         ]"
         :style="{ top: 'calc(5rem + 5rem + 1.5rem)' }"
         :dir="isRTL ? 'rtl' : 'ltr'"
