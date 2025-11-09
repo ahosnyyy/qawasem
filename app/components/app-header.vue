@@ -77,7 +77,7 @@ const locales = [
             color="neutral"
             variant="ghost"
             icon="i-heroicons-bars-2"
-            class="md:hidden"
+            class="md:hidden !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent"
             aria-label="Toggle menu"
             :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'"
             @click="isOpen = !isOpen"
