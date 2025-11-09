@@ -50,7 +50,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible px-10 pt-10 lg:pt-0 pb-16 lg:pl-12">
+  <div class="relative w-full overflow-visible px-10 pt-10 lg:-mt-8 lg:pl-12 pb-16">
     <div class="w-full">
       <!-- Slide Content -->
       <TransitionGroup name="slide">

@@ -7,11 +7,11 @@ const textColor = computed(() => isDark.value ? "white" : appConfig.theme.colors
 </script>
 
 <template>
-  <div class="fixed bottom-0 left-0 z-[80] pointer-events-none">
-    <div class="container mx-auto px-4 lg:px-8 py-6">
-      <div class="flex justify-start pointer-events-auto" dir="ltr">
+  <div class="fixed bottom-0 left-0 right-0 w-full z-[80] pointer-events-none">
+    <div class="container mx-auto px-4 lg:px-8 py-6 bg-transparent">
+      <div class="flex justify-center lg:justify-start pointer-events-auto" dir="ltr">
         <p
-          class="text-sm flex items-center gap-2 bg-transparent"
+          class="text-sm flex items-center gap-2"
           :style="{ color: textColor, fontFamily: '\'IBM Plex Sans Arabic\', sans-serif' }"
         >
         © {{ new Date().getFullYear() }} 
