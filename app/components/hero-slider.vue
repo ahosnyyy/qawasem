@@ -50,7 +50,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible pt-10 px-10 lg:px-8 pb-16">
+  <div class="relative w-full overflow-visible pt-10 lg:pt-0 px-10 lg:px-8 pb-16">
     <div class="w-full">
       <!-- Slide Content -->
       <TransitionGroup name="slide">
@@ -143,11 +143,11 @@ const goToSlide = (index: number) => {
           </div>
 
           <!-- Right Image -->
-          <div class="flex w-full justify-center items-center lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-16">
+          <div class="flex w-full lg:w-[115%] justify-center items-center lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20">
             <img
               :src="slide.image"
               :alt="slide.title"
-              class="w-full"
+              class="w-full lg:w-[115%]"
               loading="lazy"
             />
           </div>
