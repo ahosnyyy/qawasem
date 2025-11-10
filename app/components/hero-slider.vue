@@ -52,108 +52,123 @@ const goToSlide = (index: number) => {
 <template>
   <div class="relative w-full overflow-visible pt-10 lg:pt-0 px-10 lg:px-8 pb-16">
     <div class="w-full">
-      <!-- Slide Content -->
-      <TransitionGroup name="slide">
-        <div
-          v-for="(slide, index) in slides"
-          v-show="index === currentSlide"
-          :key="slide.id"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center"
-        >
-          <!-- Left Content -->
-          <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2">
-            <!-- Counter and Previous Arrow on same row -->
-            <div class="flex items-center justify-between">
-              <!-- Previous Arrow -->
-              <button
-                @click="prevSlide"
-                class="mr-24 mb-4 lg:mb-0 lg:mr-0 w-12 h-12 2xl:w-14 2xl:h-14 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
-                :style="{ 
-                  borderColor: 'white',
-                  color: 'white',
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)'
-                }"
-                aria-label="Previous slide"
-              >
-                <svg 
-                  class="w-4 h-4 2xl:w-5 2xl:h-5 rotate-180" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  stroke-width="3"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-
-              <!-- Counter -->
-              <div class="flex items-center gap-2" dir="ltr">
-                <span 
-                  class="text-4xl lg:text-6xl 2xl:text-7xl font-bold underline underline-offset-1 leading-none"
-                  :style="{ color: primaryColor }"
-                >
-                  {{ String(slide.id).padStart(2, '0') }}
-                </span>
-                <span 
-                  class="text-xl lg:text-2xl 2xl:text-3xl font-bold underline underline-offset-1 leading-none"
-                  :style="{ color: textColor, opacity: 0.5 }"
-                >
-                  / {{ String(slides.length).padStart(2, '0') }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Next Arrow (positioned to the right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+        <!-- Left Content -->
+        <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2">
+          <!-- Counter and Previous Arrow on same row -->
+          <div class="flex items-center justify-between">
+            <!-- Previous Arrow -->
             <button
-              @click="nextSlide"
-              class="absolute lg:-right-25 -top-4 lg:top-1/5 w-18 h-18 2xl:w-20 2xl:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
+              @click="prevSlide"
+              class="mr-24 mb-4 lg:mb-0 lg:mr-0 w-12 h-12 2xl:w-14 2xl:h-14 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
               :style="{ 
-                backgroundColor: 'rgba(217, 178, 122, 0.2)',
-                borderColor: primaryColor,
-                color: 'white'
+                borderColor: 'white',
+                color: 'white',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)'
               }"
-              aria-label="Next slide"
+              aria-label="Previous slide"
             >
               <svg 
-                class="w-6 h-6 2xl:w-7 2xl:h-7" 
+                class="w-4 h-4 2xl:w-5 2xl:h-5 rotate-180" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
-                stroke-width="4"
+                stroke-width="3"
               >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
-            <!-- Title -->
-            <h2 
-              class="text-3xl mt-2 mb-6"
-              :style="{ color: textColor }"
-            >
-              {{ slide.title }}
-            </h2>
-
-            <!-- Content -->
-            <p 
-              class="text-md leading-relaxed text-justify"
-              :style="{ color: textColor, opacity: 0.9 }"
-            >
-              {{ slide.content }}
-            </p>
+            <!-- Counter -->
+            <div class="flex items-center gap-2" dir="ltr">
+              <span 
+                class="text-4xl lg:text-6xl 2xl:text-7xl font-bold underline underline-offset-1 leading-none"
+                :style="{ color: primaryColor }"
+              >
+                {{ String(slides[currentSlide]?.id || 1).padStart(2, '0') }}
+              </span>
+              <span 
+                class="text-xl lg:text-2xl 2xl:text-3xl font-bold underline underline-offset-1 leading-none"
+                :style="{ color: textColor, opacity: 0.5 }"
+              >
+                / {{ String(slides.length).padStart(2, '0') }}
+              </span>
+            </div>
           </div>
 
-          <!-- Right Image -->
-          <div class="flex w-full lg:w-[115%] justify-center items-center lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20">
+          <!-- Next Arrow (positioned to the right) -->
+          <button
+            @click="nextSlide"
+            class="absolute lg:-right-25 -top-4 lg:top-1/5 w-18 h-18 2xl:w-20 2xl:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
+            :style="{ 
+              backgroundColor: 'rgba(217, 178, 122, 0.2)',
+              borderColor: primaryColor,
+              color: 'white'
+            }"
+            aria-label="Next slide"
+          >
+            <svg 
+              class="w-6 h-6 2xl:w-7 2xl:h-7" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              stroke-width="4"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <!-- Text Content with Transition -->
+          <div class="relative min-h-[400px] md:min-h-[200px] lg:min-h-[250px]">
+            <TransitionGroup name="slide">
+              <div
+                v-for="(slide, index) in slides"
+                v-show="index === currentSlide"
+                :key="`text-${slide.id}`"
+                class="absolute inset-0"
+              >
+                <!-- Title -->
+                <h2 
+                  class="text-3xl mt-2 mb-6"
+                  :style="{ color: textColor }"
+                >
+                  {{ slide.title }}
+                </h2>
+
+                <!-- Content -->
+                <p 
+                  class="text-md leading-relaxed text-justify"
+                  :style="{ color: textColor, opacity: 0.9 }"
+                >
+                  {{ slide.content }}
+                </p>
+              </div>
+            </TransitionGroup>
+          </div>
+        </div>
+
+        <!-- Right Image with Transition -->
+        <div class="relative flex w-full lg:w-[115%] justify-center items-center lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20">
+          <TransitionGroup name="slide">
             <img
+              v-for="(slide, index) in slides"
+              v-show="index === currentSlide"
+              :key="`img-${slide.id}`"
               :src="slide.image"
               :alt="slide.title"
-              class="w-full lg:w-[115%]"
+              class="w-full lg:w-[115%] absolute inset-0"
               loading="lazy"
             />
-          </div>
-
+          </TransitionGroup>
+          <!-- Spacer to maintain aspect ratio -->
+          <img
+            :src="slides[currentSlide]?.image || ''"
+            :alt="slides[currentSlide]?.title || ''"
+            class="w-full lg:w-[115%] invisible"
+            loading="lazy"
+          />
         </div>
-      </TransitionGroup>
+      </div>
     </div>
   </div>
 </template>
