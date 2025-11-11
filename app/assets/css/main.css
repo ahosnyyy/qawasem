@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+@font-face {
+  font-family: 'Mohammad Bold Art';
+  src: url('../fonts/mohammad-bold-art-1.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme static {
   --font-sans: 'Inter', sans-serif;
   
@@ -19,7 +27,6 @@
 }
 
 :root {
-  --ui-radius: 0rem;
   --ui-primary: var(--color-gold-500);
 }
 

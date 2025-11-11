@@ -50,7 +50,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible pt-10 lg:pt-0 px-10 lg:px-8 pb-16">
+  <div class="relative w-full overflow-visible pt-10 lg:pt-0 px-10 lg:px-8">
     <div class="w-full">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
         <!-- Left Content -->
@@ -119,7 +119,7 @@ const goToSlide = (index: number) => {
           </button>
 
           <!-- Text Content with Transition -->
-          <div class="relative min-h-[400px] md:min-h-[200px] lg:min-h-[250px]">
+          <div class="relative min-h-[375px] md:min-h-[200px] lg:min-h-[250px]">
             <TransitionGroup name="slide">
               <div
                 v-for="(slide, index) in slides"
