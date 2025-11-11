@@ -151,7 +151,7 @@ function handleSearch() {
               <!-- Connecting Line (except for last item) -->
               <div 
                 v-if="index < searchResults.hierarchy.length - 1"
-                class="h-4 md:h-6 mt-4 relative flex items-start justify-center"
+                class="h-6 md:h-8 mt-4 relative flex items-start justify-center"
               >
                 <!-- Dashed Line -->
                 <div 
