@@ -29,6 +29,19 @@ const locales = [
         <div class="flex items-center gap-3 md:gap-12">
           <!-- Search - always visible -->
           <SearchInput />
+          <!-- Settings button (placed after search) -->
+          <button
+            class="hidden md:flex items-center gap-2 lg:gap-3 text-sm font-normal hover:opacity-70 dark:hover:opacity-60 transition-opacity cursor-pointer"
+            @click="navigateTo('/settings')"
+          >
+            <span>الإعدادات</span>
+            <img
+              src="/icons/settings.svg"
+              alt="Settings"
+              class="w-4 h-4"
+              :class="isDarkMode ? '' : 'filter brightness-0 invert'"
+            >
+          </button>
         </div>
       </template>
 
@@ -36,16 +49,6 @@ const locales = [
         <div class="flex items-center gap-3 md:gap-12">
           <!-- Desktop: Show all items -->
           <div class="hidden md:flex items-center gap-3 lg:gap-12">
-            <!-- Settings button -->
-            <button class="flex items-center gap-2 lg:gap-3 text-sm font-normal hover:opacity-70 dark:hover:opacity-60 transition-opacity cursor-pointer">
-              <span>الإعدادات</span>
-              <img
-                src="/icons/settings.svg"
-                alt="Settings"
-                class="w-4 h-4"
-                :class="isDarkMode ? '' : 'filter brightness-0 invert'"
-              >
-            </button>
 
             <!-- Phone and Email - show on large screens -->
             <div class="hidden lg:flex items-center gap-4 xl:gap-6 text-xs xl:text-sm font-light">
@@ -118,7 +121,10 @@ const locales = [
         <div class="px-4 py-6 space-y-4">
           <!-- Settings and Color Mode Toggle Row -->
           <div class="flex items-center justify-between gap-3">
-            <button class="flex items-center gap-3 text-sm font-normal hover:opacity-70 transition-opacity">
+            <button
+              class="flex items-center gap-3 text-sm font-normal hover:opacity-70 transition-opacity"
+              @click="navigateTo('/settings')"
+            >
               <span>الإعدادات</span>
               <img
                 src="/icons/settings.svg"
