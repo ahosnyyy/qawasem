@@ -100,7 +100,7 @@ function handleSearch() {
       
       <!-- Search Results -->
       <div v-if="showResults" class="w-full mt-24 mb-8">
-        <div class="flex flex-col lg:flex-row gap-12 lg:gap-40 px-12">
+        <div class="flex flex-col lg:flex-row gap-12 lg:gap-40 px-6 md:px-12">
           <!-- Left Side: Main Lineage Text -->
           <div class="flex-1 text-justify">
             <!-- Main Title -->
