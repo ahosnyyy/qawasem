@@ -11,17 +11,18 @@
       <div class="relative w-full md:w-[70%] lg:w-[48%] flex justify-center lg:-mt-10">
         <!-- Light mode tree -->
         <img 
-          src="/images/tree.svg" 
+          src="/images/tree.png" 
           alt="شجرة القواسم" 
           class="w-full h-auto object-contain"
         />
         
-        <!-- Tree root overlay at 2/3 from top -->
+        <!-- Tree root overlay at 2/3 from top 
         <img 
           src="/images/tree-root.svg" 
           alt="جذر الشجرة" 
           class="absolute top-[66.67%] left-1/2 transform -translate-x-1/3 -translate-y-1/2 w-auto h-auto max-w-[20%] z-10"
         />
+        -->
       </div>
     </div>
   </div>
