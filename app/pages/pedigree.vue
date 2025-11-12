@@ -133,7 +133,7 @@ function handleSearch() {
                   :src="person.image" 
                   :alt="person.name"
                   :class="[
-                    'rounded-full object-cover border-1 border-[#F1C687]',
+                    'rounded-full object-cover',
                     index === 0 ? 'w-32 h-32 md:w-36 md:h-36' : 'w-26 h-26'
                   ]"
                   style="box-shadow: 0 0 15px rgba(241, 198, 135, 0.6), 0 0 30px rgba(241, 198, 135, 0.4);"
@@ -142,7 +142,7 @@ function handleSearch() {
               
               <!-- Name -->
               <p 
-                class="mt-2 text-center text-sm md:text-base"
+                class="mt-4 text-center text-sm md:text-base"
                 :style="{ color: textColor }"
               >
                 {{ person.name }}
@@ -151,7 +151,7 @@ function handleSearch() {
               <!-- Connecting Line (except for last item) -->
               <div 
                 v-if="index < searchResults.hierarchy.length - 1"
-                class="h-6 md:h-8 mt-4 relative flex items-start justify-center"
+                class="h-6 md:h-8 mt-6 relative flex items-start justify-center"
               >
                 <!-- Dashed Line -->
                 <div 
@@ -161,7 +161,7 @@ function handleSearch() {
                 <!-- Circle with Dot -->
                 <div class="relative z-10 flex items-center justify-center -translate-y-1/2">
                   <!-- Outer Circle -->
-                  <div class="absolute w-6 h-6 rounded-full border-2 border-[#F1C687]"></div>
+                  <div class="absolute w-6 h-6 rounded-full border-1 border-[#F1C687]"></div>
                   <!-- Inner Dot -->
                   <div class="w-3 h-3 rounded-full bg-[#F1C687]"></div>
                 </div>
