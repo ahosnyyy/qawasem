@@ -111,7 +111,10 @@ const handleRead = (book: Book) => {
         </div>
 
         <!-- Book Image -->
-        <div class="w-[50%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-transform hover:scale-105">
+        <div 
+          @click="handleRead(book)"
+          class="w-[50%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-transform hover:scale-105 cursor-pointer"
+        >
           <img
             :src="book.image"
             :alt="book.title"

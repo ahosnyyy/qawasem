@@ -4,7 +4,10 @@
     
     <div class="mb-4">
       <p class="text-sm text-gray-600 mb-2">
-        Endpoint: <code class="bg-gray-100 px-2 py-1 rounded">GET /api/FamilyMembers?PageNumber=1&PageSize=10</code>
+        Endpoint: <code class="bg-gray-100 px-2 py-1 rounded">GET /api/family-members?PageNumber=1&PageSize=10</code>
+      </p>
+      <p class="text-xs text-gray-500 mt-1">
+        (Proxied through Nuxt server to avoid CORS)
       </p>
     </div>
 
@@ -73,16 +76,14 @@
 </template>
 
 <script setup>
-// Fetch data from the API endpoint
+// Fetch data from the local API endpoint (which proxies to the external API)
+// This avoids CORS issues by making the request server-side
 const { data, pending, error, refresh } = await useFetch(
-  'https://alqwassem-001-site1.stempurl.com/api/FamilyMembers',
+  '/api/family-members',
   {
     params: {
       PageNumber: 1,
       PageSize: 10
-    },
-    headers: {
-      'accept': '*/*'
     }
   }
 )
