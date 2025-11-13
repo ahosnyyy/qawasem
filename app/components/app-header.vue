@@ -20,7 +20,7 @@ const locales = [
 <template>
   <div class="relative">
     <UHeader
-      class="h-20 border-0 fixed top-0 left-0 right-0 z-[100]"
+      class="h-20 border-0 fixed top-0 left-0 right-0 z-[150]"
       :class="isDarkMode ? 'bg-white text-black' : 'bg-black text-white'"
       :toggle="false"
       :ui="{ toggle: 'hidden', overlay: 'hidden', content: 'hidden' }"

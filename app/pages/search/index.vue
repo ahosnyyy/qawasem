@@ -158,7 +158,7 @@ function selectUser(user: User) {
     <div class="relative flex flex-col items-center justify-center w-full px-4 md:px-8 lg:px-12">
       <NuxtLink
         to="/search/ancestor"
-        class="self-center mb-6 md:mb-8 lg:fixed lg:top-40 lg:left-24 lg:mb-0 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 lg:z-[130]"
+        class="self-end -mt-32 mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 z-[130]"
       >
         <span>البحث بين شخصين</span>
       </NuxtLink>

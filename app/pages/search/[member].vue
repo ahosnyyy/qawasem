@@ -85,6 +85,16 @@ const children = computed(() => {
 
 // Scroll functionality
 const scrollContainer = ref<HTMLElement | null>(null)
+const canScrollLeft = ref(false)
+const canScrollRight = ref(false)
+
+const checkScrollability = () => {
+  if (!scrollContainer.value) return
+  
+  const { scrollLeft, scrollWidth, clientWidth } = scrollContainer.value
+  canScrollLeft.value = scrollLeft > 0
+  canScrollRight.value = scrollLeft < scrollWidth - clientWidth - 1 // -1 for rounding errors
+}
 
 const scrollLeft = () => {
   if (scrollContainer.value) {
@@ -104,13 +114,37 @@ const scrollRight = () => {
   }
 }
 
+// Watch for scroll events and children changes
+watch([scrollContainer, () => children.value], () => {
+  if (scrollContainer.value) {
+    checkScrollability()
+    scrollContainer.value.addEventListener('scroll', checkScrollability)
+  }
+}, { immediate: true })
+
+// Check on mount and when children change
+onMounted(() => {
+  nextTick(() => {
+    checkScrollability()
+    if (scrollContainer.value) {
+      scrollContainer.value.addEventListener('scroll', checkScrollability)
+    }
+  })
+})
+
+onUnmounted(() => {
+  if (scrollContainer.value) {
+    scrollContainer.value.removeEventListener('scroll', checkScrollability)
+  }
+})
+
 </script>
 
 <template>
     <div class="relative flex flex-col items-center justify-center w-full px-4 md:px-8 lg:px-12">
       <NuxtLink
         to="/search/ancestor"
-        class="self-center mb-6 md:mb-8 lg:fixed lg:top-40 lg:left-24 lg:mb-0 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 lg:z-[130]"
+        class="self-end -mt-32 mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 z-[130]"
       >
         <span>البحث بين شخصين</span>
       </NuxtLink>
@@ -172,7 +206,8 @@ const scrollRight = () => {
           <!-- Left Arrow (flipped) -->
           <button
             @click="scrollRight"
-            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 hover:scale-110"
+            :disabled="!canScrollRight"
+            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
             aria-label="Scroll right"
           >
             <svg class="w-10 h-10 transform scale-x-[-1]" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -181,7 +216,7 @@ const scrollRight = () => {
           </button>
 
           <div ref="scrollContainer" class="overflow-x-auto pb-4 scroll-smooth no-scrollbar">
-            <div class="flex gap-4">
+            <div class="flex gap-4 justify-center">
               <!-- Children Cards Loop -->
               <div 
                 v-for="(child, index) in children" 
@@ -211,7 +246,8 @@ const scrollRight = () => {
           <!-- Right Arrow -->
           <button
             @click="scrollLeft"
-            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 hover:scale-110"
+            :disabled="!canScrollLeft"
+            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
             aria-label="Scroll left"
           >
             <svg class="w-10 h-10" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">

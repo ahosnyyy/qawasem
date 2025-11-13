@@ -7,19 +7,52 @@ const appConfig = useAppConfig();
 const isDark = computed(() => colorMode.value === "dark");
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || "#D9B27A") : (appConfig.theme?.colors?.text?.light || "#4A2E1E"));
 
-const { data: usersData, status } = await useFetch<{ id: number, name: string }[]>('https://jsonplaceholder.typicode.com/users', {
-  key: 'typicode-users',
-  lazy: true
+interface FamilyMember {
+  id: number
+  title: string
+  fullName: string
+  mobile: string | null
+  bod: string | null
+  gender: string
+  jobTitle: string | null
+  branch: string | null
+  education: string | null
+  isStillLive: boolean
+  motherName: string | null
+  wifeName: string | null
+  photoUrl: string
+}
+
+// Fetch all family members for the dropdown (with large page size)
+const { data: apiResponse, status } = await useFetch<{
+  success: boolean
+  status: number
+  message: string
+  data: {
+    pageNumber: number
+    pageSize: number
+    totalRecords: number
+    data: FamilyMember[]
+  }
+  errors: any
+}>('/api/family-members/search', {
+  key: 'pedigree-family-members',
+  lazy: true,
+  params: {
+    PageNumber: 1,
+    PageSize: 1000 // Large page size to get all members
+  }
 })
 
+// Map family members to SelectMenuItem format
 const users = computed<SelectMenuItem[]>(() => {
-  if (!usersData.value) return []
-  return usersData.value.map(user => ({
-    label: user.name,
-    value: String(user.id),
+  if (!apiResponse.value?.data?.data) return []
+  return apiResponse.value.data.data.map(member => ({
+    label: member.fullName,
+    value: String(member.id),
     avatar: { 
-      src: `https://i.pravatar.cc/120?img=${user.id}`,
-      alt: user.name
+      src: member.photoUrl,
+      alt: member.fullName
     }
   }))
 })
@@ -27,34 +60,105 @@ const users = computed<SelectMenuItem[]>(() => {
 const value = ref<SelectMenuItem | undefined>(undefined)
 const showResults = ref(false)
 
-// Dummy data for search results
-const searchResults = ref({
-  mainTitle: 'سلطان بن أحمد بن سلطان',
-  lineage: 'بن صقر بن خالد بن سلطان بن صقر بن راشد بن مطر بن كايد بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر (القواس) بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص \ عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط)بن الحسين بن علي بن أبي طالب',
-  hierarchy: [
-    {
-      name: 'سلطان بن أحمد القاسمي',
-      image: 'https://i.pravatar.cc/150?img=1'
-    },
-    {
-      name: 'أحمد بن سلطان القاسمي',
-      image: 'https://i.pravatar.cc/150?img=2'
-    },
-    {
-      name: 'سلطان بن صقر القاسمي',
-      image: 'https://i.pravatar.cc/150?img=3'
-    },
-    {
-      name: 'صقر بن خالد القاسمي',
-      image: 'https://i.pravatar.cc/150?img=4'
-    }
-  ]
+interface ParentMember {
+  id: number
+  title: string
+  fullName: string
+  photo: string
+  isStillLive: boolean
+  parent: ParentMember | null
+}
+
+interface MemberDetailsResponse {
+  success: boolean
+  status: number
+  message: string
+  data: {
+    id: number
+    title: string
+    fullName: string
+    mobile: string | null
+    bod: string | null
+    isStillLive: boolean
+    gender: string
+    bio: string | null
+    jobTitle: string | null
+    branch: string | null
+    education: string | null
+    photoUrl: string
+    relations: any[]
+    parent: ParentMember | null
+    childs: any[]
+  }
+  errors: any
+}
+
+// Fetch member details
+const detailsUrl = computed(() => {
+  const selectedValue = value.value
+  if (selectedValue && typeof selectedValue === 'object' && 'value' in selectedValue) {
+    return `/api/family-members/${selectedValue.value}/details`
+  }
+  return ''
 })
 
-function handleSearch() {
+const { data: memberDetails, status: detailsStatus, error: detailsError, refresh: refreshDetails } = await useFetch<MemberDetailsResponse>(
+  detailsUrl,
+  {
+    key: 'pedigree-member-details',
+    lazy: true,
+    immediate: false
+  }
+)
+
+// Build hierarchy from parent chain
+const buildHierarchy = (member: ParentMember | null, currentMember: MemberDetailsResponse['data'] | null): Array<{ name: string; image: string }> => {
+  const hierarchy: Array<{ name: string; image: string }> = []
+  
+  // Add current member first
+  if (currentMember) {
+    hierarchy.push({
+      name: currentMember.fullName,
+      image: currentMember.photoUrl
+    })
+  }
+  
+  // Traverse parent chain
+  let current = member
+  while (current) {
+    hierarchy.push({
+      name: current.fullName,
+      image: current.photo
+    })
+    current = current.parent
+  }
+  
+  return hierarchy
+}
+
+// Computed search results
+const searchResults = computed(() => {
+  if (!memberDetails.value?.data) return null
+  
+  const data = memberDetails.value.data
+  const hierarchy = buildHierarchy(data.parent, data)
+  
+  return {
+    mainTitle: data.fullName,
+    lineage: 'بن صقر بن خالد بن سلطان بن صقر بن راشد بن مطر بن كايد بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر (القواس) بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص \ عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط)بن الحسين بن علي بن أبي طالب',
+    hierarchy: hierarchy
+  }
+})
+
+async function handleSearch() {
+  if (!value.value) {
+    // TODO: Show error message to user
+    return
+  }
+  
+  // Trigger the API call
+  await refreshDetails()
   showResults.value = true
-  // TODO: Fetch results from API when value.value is selected
-  // For now, showing dummy data
 }
 </script>
 
@@ -83,9 +187,10 @@ function handleSearch() {
           <!-- Search Button -->
           <button
             @click="handleSearch"
-            class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-all duration-300 hover:scale-105"
+            :disabled="!value || detailsStatus === 'pending'"
+            class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            اظهر نتيجة البحث
+            {{ detailsStatus === 'pending' ? 'جاري البحث...' : 'اظهر نتيجة البحث' }}
           </button>
           
           <!-- Download Button - shown only when results exist -->
@@ -100,7 +205,18 @@ function handleSearch() {
       
       <!-- Search Results -->
       <div v-if="showResults" class="w-full mt-24 mb-8">
-        <div class="flex flex-col lg:flex-row gap-12 lg:gap-40 px-6 md:px-12">
+        <!-- Loading State -->
+        <div v-if="detailsStatus === 'pending'" class="text-center py-8">
+          <p :style="{ color: textColor }">جاري تحميل النسب...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="detailsError" class="text-center py-8">
+          <p :style="{ color: textColor }" class="text-red-500">حدث خطأ في تحميل البيانات. يرجى المحاولة مرة أخرى.</p>
+        </div>
+
+        <!-- Results -->
+        <div v-else-if="searchResults" class="flex flex-col lg:flex-row gap-12 lg:gap-40 px-6 md:px-12">
           <!-- Left Side: Main Lineage Text -->
           <div class="flex-1 text-justify">
             <!-- Main Title -->
