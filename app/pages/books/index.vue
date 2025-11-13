@@ -21,24 +21,25 @@ const books: Book[] = [
     title: "القول الحاسم في نسب القواسم",
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-1.svg",
-    downloadUrl: "/books/book-1.pdf",
-    readUrl: "/books/read/1"
+    downloadUrl: "/books/1.pdf",
+    readUrl: "/books/1"
   },
   {
     id: 2,
     title: "التذكرة بالأرحام",
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-2.svg",
-    downloadUrl: "/books/book-2.pdf",
-    readUrl: "/books/read/2"
+    downloadUrl: "/books/2.pdf",
+    readUrl: "/books/2"
   },
+  /*
   {
     id: 3,
     title: "تاريخ القواسم",
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-3.svg",
     downloadUrl: "/books/book-3.pdf",
-    readUrl: "/books/read/3"
+    readUrl: "/books/3"
   },
   {
     id: 4,
@@ -46,8 +47,9 @@ const books: Book[] = [
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-4.svg",
     downloadUrl: "/books/book-4.pdf",
-    readUrl: "/books/read/4"
+    readUrl: "/books/4"
   }
+  */
 ];
 
 const handleDownload = (book: Book) => {
@@ -85,7 +87,7 @@ const handleRead = (book: Book) => {
     </div>
 
     <!-- Books Grid -->
-    <div class="w-[95%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 xl:gap-10">
+    <div class="w-[95%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10 lg:gap-8 xl:gap-10">
       <div
         v-for="book in books"
         :key="book.id"
@@ -109,7 +111,7 @@ const handleRead = (book: Book) => {
         </div>
 
         <!-- Book Image -->
-        <div class="w-[93%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-transform hover:scale-105">
+        <div class="w-[50%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-transform hover:scale-105">
           <img
             :src="book.image"
             :alt="book.title"
@@ -119,7 +121,7 @@ const handleRead = (book: Book) => {
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center justify-center gap-10 w-full">
+        <div class="flex items-center justify-center gap-4 lg:gap-10 w-full">
           <!-- Download Button -->
           <div class="flex flex-col items-center gap-2">
             <button

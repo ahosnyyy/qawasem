@@ -44,13 +44,12 @@ const locales = [
           </button>
         </div>
       </template>
-
+      
       <template #right>
         <div class="flex items-center gap-3 md:gap-12">
           <!-- Desktop: Show all items -->
           <div class="hidden md:flex items-center gap-3 lg:gap-12">
-
-            <!-- Phone and Email - show on large screens -->
+            <!-- Phone and Email - show on large screens
             <div class="hidden lg:flex items-center gap-4 xl:gap-6 text-xs xl:text-sm font-light">
               <div class="flex items-center gap-2 xl:gap-3">
                 <span class="font-['Inter']" dir="ltr">+971 4 765 4321</span>
@@ -71,7 +70,7 @@ const locales = [
                 >
               </div>
             </div>
-
+            -->
             <ColorModeToggle />
           </div>
 
@@ -136,10 +135,9 @@ const locales = [
             <ColorModeToggle />
           </div>
 
-          <!-- Separator -->
+          <!-- 
           <div class="border-t border-current/20" />
 
-          <!-- Contact Info -->
           <div class="space-y-4 text-sm font-light pt-2">
             <div class="flex items-center justify-between gap-3">
               <span class="font-['Inter']" dir="ltr">+971 4 765 4321</span>
@@ -160,6 +158,7 @@ const locales = [
               >
             </div>
           </div>
+          -->
         </div>
       </div>
     </Transition>

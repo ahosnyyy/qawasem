@@ -8,40 +8,37 @@ const primaryColor = computed(() => isDark.value ? (appConfig.theme?.colors?.pri
 
 interface Slide {
   id: number;
-  title: string;
-  content: string;
+  text_1: string;
+  text_2: string;
+  text_3: string;
   image: string;
 }
 
-const slides: Slide[] = [
+const slides = computed<Slide[]>(() => [
   {
     id: 1,
-    title: "من هم القواسم",
-    content: "القواسم هم ذرية قاسم الكبير بن هاشم بن محمد بن قاسم بن راشد بن عطية بن سليمان بن إسحاق بن بشر بن قاسم بن حمود بن حسين بن محمد بن عبد الله بن إبراهيم بن يحيى بن شريف بن بشير بن ماجد بن عطية بن يعلي بن دويد بن ماجد بن عبد الرحمن بن القاسم بن إدريس بن جعفر الزكي بن علي الهادي بن محمد الجواد بن علي الرضا بن موسى الكاظم بن جعفر الصادق بن محمد الباقر بن علي زين العابدين بن الحسين بن علي بن أبي طالب. نسب آخر ويقال بأنهم يرجعون إلى محمد بن الحسن بن إدريس بن القاسم بن محمد الثائر بن موسى الثاني بن عبد الله الشيخ الصالح بن موسى الجون بن عبد الله الكامل بن الحسن المثنى بن الحسن بن علي بن أبي طالب",
-    image: "/images/image-1.png"
+    text_1: "استكشف شجرة",
+    text_2: " عائـــلـــة القـــــواســم",
+    text_3: "وتــعرف عــــلى تــاريــــخها الحــــــافل بالإنجــــــازات",
+    image: isDark.value ? "/images/image-1.jpg" : "/images/image-1.png"
   },
   {
     id: 2,
-    title: "تاريخ القواسم",
-    content: "من المعروف والمتوارث لديهم أن أجدادهم قدموا قبل مئات السنين إلى الخليج من العراق من مدينة سامراء، وسامراء شمال بغداد 90 ٪ من سكانها من الأشراف الحسنية والحسينية، وقد نقل الكاتب حسين الحسيني الزرباطي في كتابه دوحة السلطان في النسب والنسب القاسمي عن الشيخ الدكتور سلطان بن محمد القاسمي ما نصه: «أن قبيلة القواسم كانت تتولى حكومة البصرة في زمن المشعشعين» وللسادة القواسم وجودهم في سامراء منذ القدم فقد نزح جدهم السيد عبد الله الكبير من سامراء عام 1623 م بعد استيلاء الصفويين على مدينة بغداد وأعقب خمسة رجال هم كايد وكاسب وكايل وكامل وكنعان وتكونت لكل واحد من هؤلاء ذرية وعشير.",
+    text_1: "الموقع قـــائـــم",
+    text_2: "علي مؤلفات صاحب السمو",
+    text_3: "الشيخ الدكتور / سلــطان بن محــــمـــد القــاســـــمي",
     image: "/images/image-2.png"
-  },
-  {
-    id: 3,
-    title: "أصل القواسم",
-    content: "أصول القواسم وتاريخ مجيئهم إلى جلفار. فالمؤرخ البريطاني كيلي يعتقد أن القواسم كانوا يؤلفون فرعاً من بني غافر الذين هاجروا من نجد الواقعة وسط شبه الجزيرة العربية إلى عُمان في القرن السابع عشر تقريباً. وبالمقابل، فإن المؤرخ المصري سيد نوفل، يقول بأنهم قبائل عربية يعود أصلها إلى عبس من غطفان من عدنان اسمها الآن الرشايدة وكان مسكنها الأول سامراء في العراق. وهاجروا إلى جلفار في حوالي النصف الأول من القرن الثامن عشر ولكن إذا كان من الصعب تأكيد أحد الرأيين، فمن الممكن التدقيق في تاريخ الوصول. وهذا الأمر لا يخلو من الأهمية، لتعليقه بتحديد بداية ظهور القواسم وبروز دورهم في المنطقة.",
-    image: "/images/image-3.png"
   }
-];
+]);
 
 const currentSlide = ref(0);
 
 const nextSlide = () => {
-  currentSlide.value = (currentSlide.value + 1) % slides.length;
+  currentSlide.value = (currentSlide.value + 1) % slides.value.length;
 };
 
 const prevSlide = () => {
-  currentSlide.value = (currentSlide.value - 1 + slides.length) % slides.length;
+  currentSlide.value = (currentSlide.value - 1 + slides.value.length) % slides.value.length;
 };
 
 const goToSlide = (index: number) => {
@@ -119,28 +116,34 @@ const goToSlide = (index: number) => {
           </button>
 
           <!-- Text Content with Transition -->
-          <div class="relative min-h-[375px] md:min-h-[200px] lg:min-h-[250px]">
+          <div class="relative min-h-[375px] md:min-h-[200px] lg:min-h-[250px] mt-6">
             <TransitionGroup name="slide">
               <div
                 v-for="(slide, index) in slides"
                 v-show="index === currentSlide"
                 :key="`text-${slide.id}`"
-                class="absolute inset-0"
+                class="absolute inset-0 text-center space-y-4"
               >
                 <!-- Title -->
                 <h2 
-                  class="text-3xl mt-2 mb-6"
+                  class="text-lg mt-2"
                   :style="{ color: textColor }"
                 >
-                  {{ slide.title }}
+                  {{ slide.text_1 }}
                 </h2>
 
                 <!-- Content -->
                 <p 
-                  class="text-md leading-relaxed text-justify"
+                  class="text-4xl leading-relaxed"
                   :style="{ color: textColor, opacity: 0.9 }"
                 >
-                  {{ slide.content }}
+                  {{ slide.text_2 }}
+                </p>
+                <p 
+                  class="text-lg leading-relaxed"
+                  :style="{ color: textColor, opacity: 0.9 }"
+                >
+                  {{ slide.text_3 }}
                 </p>
               </div>
             </TransitionGroup>
@@ -148,22 +151,22 @@ const goToSlide = (index: number) => {
         </div>
 
         <!-- Right Image with Transition -->
-        <div class="relative flex w-full lg:w-[115%] justify-center items-center lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20">
+        <div class="relative flex w-full lg:w-[115%] justify-center items-center md:py-2 lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20">
           <TransitionGroup name="slide">
             <img
               v-for="(slide, index) in slides"
               v-show="index === currentSlide"
               :key="`img-${slide.id}`"
               :src="slide.image"
-              :alt="slide.title"
-              class="w-full lg:w-[115%] absolute inset-0"
+              :alt="slide.text_1"
+              class="w-full lg:w-[90%] absolute inset-0"
               loading="lazy"
             />
           </TransitionGroup>
           <!-- Spacer to maintain aspect ratio -->
           <img
             :src="slides[currentSlide]?.image || ''"
-            :alt="slides[currentSlide]?.title || ''"
+            :alt="slides[currentSlide]?.text_1 || ''"
             class="w-full lg:w-[115%] invisible"
             loading="lazy"
           />
