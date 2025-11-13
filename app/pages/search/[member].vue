@@ -9,64 +9,79 @@ const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.
 // Get member ID from route params
 const memberId = route.params.member;
 
-// Family members data
-interface FamilyMember {
-  id: number
-  name: string
-  relationship: string
-  avatar: string
+interface Relation {
+  relatedFullName: string
+  relationType: string
 }
 
-const familyMembers = ref<FamilyMember[]>([
+interface FamilyMemberDetails {
+  id: number
+  title: string
+  fullName: string
+  mobile: string | null
+  bod: string | null
+  isStillLive: boolean
+  gender: string
+  bio: string | null
+  jobTitle: string | null
+  branch: string | null
+  education: string | null
+  photoUrl: string
+  relations: Relation[]
+  parent: {
+    id: number
+    title: string
+    fullName: string
+    photo: string
+    isStillLive: boolean
+    parent: any
+  } | null
+  childs: Relation[]
+}
+
+type MemberDetailsResponse = {
+  success: boolean
+  status: number
+  message: string
+  data: FamilyMemberDetails
+  errors: any
+}
+
+// Fetch member details from API
+const { data: memberDetails, status, error } = await useFetch<MemberDetailsResponse>(
+  `/api/family-members/${memberId}/details`,
   {
-    id: 1,
-    name: 'أحمد بن سعود',
-    relationship: 'الأخ',
-    avatar: 'https://i.pravatar.cc/120?img=1'
-  },
-  {
-    id: 2,
-    name: 'فاطمة بنت سعود',
-    relationship: 'الأخت',
-    avatar: 'https://i.pravatar.cc/120?img=2'
-  },
-  {
-    id: 3,
-    name: 'خالد بن محمد',
-    relationship: 'الابن',
-    avatar: 'https://i.pravatar.cc/120?img=3'
-  },
-  {
-    id: 4,
-    name: 'نورة بنت محمد',
-    relationship: 'الابنة',
-    avatar: 'https://i.pravatar.cc/120?img=4'
-  },
-  {
-    id: 5,
-    name: 'عبدالله بن سعود',
-    relationship: 'الأخ',
-    avatar: 'https://i.pravatar.cc/120?img=5'
-  },
-  {
-    id: 6,
-    name: 'سارة بنت محمد',
-    relationship: 'الابنة',
-    avatar: 'https://i.pravatar.cc/120?img=6'
-  },
-  {
-    id: 7,
-    name: 'يوسف بن سعود',
-    relationship: 'الأخ',
-    avatar: 'https://i.pravatar.cc/120?img=7'
-  },
-  {
-    id: 8,
-    name: 'منى بنت سعود',
-    relationship: 'الأخت',
-    avatar: 'https://i.pravatar.cc/120?img=8'
+    key: `member-details-${memberId}`,
+    lazy: true
   }
-])
+)
+
+// Computed properties for organizing relations
+const mothers = computed(() => {
+  if (!memberDetails.value?.data?.relations) return []
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'والدة')
+})
+
+const wives = computed(() => {
+  if (!memberDetails.value?.data?.relations) return []
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'زوجة')
+})
+
+const brothers = computed(() => {
+  if (!memberDetails.value?.data?.relations) return []
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'اخ' || r.relationType === 'أخ')
+})
+
+const sisters = computed(() => {
+  if (!memberDetails.value?.data?.relations) return []
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'اخت' || r.relationType === 'أخت')
+})
+
+// Children (for scrollable cards)
+const children = computed(() => {
+  if (!memberDetails.value?.data?.childs) return []
+  return memberDetails.value.data.childs
+})
 
 // Scroll functionality
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -109,43 +124,51 @@ const scrollRight = () => {
         </h1>
       </div>
       
-      <div class="w-full mt-12 mb-8 px-4">
+      <div v-if="status === 'pending'" class="w-full mt-12 mb-8 px-4 text-center">
+        <p :style="{ color: textColor }">جاري التحميل...</p>
+      </div>
+
+      <div v-else-if="error" class="w-full mt-12 mb-8 px-4 text-center">
+        <p :style="{ color: textColor }" class="text-red-500">حدث خطأ في تحميل البيانات</p>
+      </div>
+
+      <div v-else-if="memberDetails?.data" class="w-full mt-12 mb-8 px-4">
         <!-- Name Section -->
         <div class="mb-8 text-center">
-            <p class="text-base text-xl" :style="{ color: textColor }">محمد</p>
+            <p class="text-base text-xl" :style="{ color: textColor }">{{ memberDetails.data.title }}</p>
             <p class="text-base text-xl" :style="{ color: textColor }">
-              بن سعود بن سلطان القاسمي
+              {{ memberDetails.data.fullName }}
             </p>
           </div>  
         <!-- Image Section -->
           <div class="flex justify-center mb-6">
             <img 
-              src="https://i.pravatar.cc/120?img=10"
-              alt="محمد"
+              :src="memberDetails.data.photoUrl"
+              :alt="memberDetails.data.fullName"
               class="w-36 h-36 rounded-2xl object-cover border border-[rgba(241,198,135,0.17)]"
             />
           </div>
 
           <!-- Details Section -->
           <div class="flex flex-row items-center justify-center gap-6">
-            <div class="text-center">
-              <p class="text-base" :style="{ color: textColor }">
-                الام :   الشيخة ناعمة بنت محمد بن صقر بن خالد القاسمي
+            <div v-if="mothers.length > 0" class="text-center">
+              <p class="text-base text-sm" :style="{ color: textColor, opacity: 0.8 }">
+                {{ 'الأم: ' + mothers[0]?.relatedFullName }}
               </p>
             </div>
             
             <!-- Vertical Separator -->
-            <div class="h-6 w-px" :style="{ backgroundColor: textColor, opacity: '0.3' }"></div>
+            <div v-if="mothers.length > 0 && wives.length > 0" class="h-6 w-px" :style="{ backgroundColor: textColor, opacity: '0.3' }"></div>
             
-            <div class="text-center">
-              <p class="text-base" :style="{ color: textColor }">
-                الزوجة :  سوسن بنت محمد بن سلطان بن خالد القاسمي
+            <div v-if="wives.length > 0" class="text-center">
+              <p class="text-base text-sm" :style="{ color: textColor, opacity: 0.8 }">
+                {{ 'الزوجة: ' + wives[0]?.relatedFullName }}
               </p>
             </div>
           </div>
 
-        <!-- Related Members Cards -->
-        <div class="w-full max-w-5xl mx-auto pt-12 relative px-12">
+        <!-- Related Members Cards (Children) -->
+        <div v-if="children.length > 0" class="w-full max-w-5xl mx-auto pt-12 relative px-12">
           <!-- Left Arrow (flipped) -->
           <button
             @click="scrollRight"
@@ -159,26 +182,26 @@ const scrollRight = () => {
 
           <div ref="scrollContainer" class="overflow-x-auto pb-4 scroll-smooth no-scrollbar">
             <div class="flex gap-4">
-              <!-- Dynamic Cards Loop -->
+              <!-- Children Cards Loop -->
               <div 
-                v-for="member in familyMembers" 
-                :key="member.id"
+                v-for="(child, index) in children" 
+                :key="index"
                 class="flex-shrink-0"
               >
                 <p class="text-center text-sm opacity-70" :style="{ color: textColor }">
-                  {{ member.relationship }}
+                  {{ child.relationType }}
                 </p>
                 <div 
-                  class="flex flex-col items-center gap-3 p-4 my-4 mx-2 rounded-2xl w-[180px] border transition-all hover:scale-103 cursor-pointer border-[rgba(241,198,135,0.17)]"
+                  class="flex flex-col items-center gap-3 p-4 my-4 mx-2 rounded-2xl w-[160px] border transition-all hover:scale-103 cursor-pointer border-[rgba(241,198,135,0.17)]"
                   :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.15)] to-[rgba(241,198,135,0.15)]' : 'bg-gradient-to-r from-[rgba(190,158,119,0.15)] to-[rgba(241,198,135,0.15)]'"
                 >
                   <img 
-                    :src="member.avatar"
-                    :alt="member.name"
+                    :src="memberDetails.data.gender === 'ذكر' ? 'https://alqwassem-001-site1.stempurl.com/images/male.png' : 'https://alqwassem-001-site1.stempurl.com/images/female.png'"
+                    :alt="child.relatedFullName"
                     class="w-30 h-30 rounded-lg object-cover"
                   />
-                  <p class="text-center text-sm" :style="{ color: textColor }">
-                    {{ member.name }}
+                  <p class="text-center text-sm line-clamp-2" :style="{ color: textColor }">
+                    {{ child.relatedFullName }}
                   </p>
                 </div>
               </div>
@@ -199,14 +222,10 @@ const scrollRight = () => {
 
         <!-- Siblings Card -->
         <div 
+          v-if="brothers.length > 0 || sisters.length > 0"
           class="w-full max-w-4xl mx-auto mt-4 p-8 rounded-xl border border-[rgba(241,198,135,0.17)]"
           :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
         >
-          <!-- Title -->
-          <h2 class="text-xl text-center mb-6" :style="{ color: textColor }">
-            الأخوة
-          </h2>
-
           <!-- Single Column Content -->
           <div class="flex items-center justify-center gap-24 max-w-2xl mx-auto">
             <div class="flex-shrink-0">
@@ -219,9 +238,32 @@ const scrollRight = () => {
                 <path d="M41.8286 30.775C43.2737 30.7753 44.6864 30.347 45.8881 29.5443C47.0898 28.7416 48.0265 27.6006 48.5797 26.2656C49.1329 24.9305 49.2778 23.4614 48.996 22.044C48.7142 20.6266 48.0185 19.3246 46.9967 18.3027C45.9749 17.2807 44.6731 16.5847 43.2557 16.3027C41.8384 16.0207 40.3692 16.1653 39.0341 16.7183C37.699 17.2712 36.5578 18.2077 35.7549 19.4093C34.952 20.6108 34.5234 22.0235 34.5234 23.4686C34.5255 25.4056 35.2957 27.2626 36.6652 28.6323C38.0347 30.0021 39.8916 30.7727 41.8286 30.775Z" :fill="textColor" fill-opacity="0.8"/>
               </svg>
             </div>
-            <div class="text-center">
-              <p class="text-base" :style="{ color: textColor }">عزة - نجلاء - وفاء - عائشة - سوسن</p>
-              <p class="text-base" :style="{ color: textColor }">الشيخ عبدالله بن محمد بن على آل ثاني</p>
+            <div class="text-center space-y-4">
+              <!-- Brothers -->
+              <div v-if="brothers.length > 0">
+                <p class="text-base mb-2" :style="{ color: textColor }">الأخوة</p>
+                <p 
+                  v-for="(brother, index) in brothers" 
+                  :key="index"
+                  class="text-base text-sm mb-1 whitespace-pre-line" 
+                  :style="{ color: textColor, opacity: 0.8 }"
+                >
+                  {{ brother.relatedFullName }}
+                </p>
+              </div>
+
+              <!-- Sisters -->
+              <div v-if="sisters.length > 0">
+                <p class="text-base mb-2 mt-4" :style="{ color: textColor }">الأخوات</p>
+                <p 
+                  v-for="(sister, index) in sisters" 
+                  :key="index"
+                  class="text-base text-sm whitespace-pre-line" 
+                  :style="{ color: textColor, opacity: 0.8 }"
+                >
+                  {{ sister.relatedFullName }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
