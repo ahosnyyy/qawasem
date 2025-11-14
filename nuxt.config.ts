@@ -3,8 +3,9 @@ import tailwindcss from "@tailwindcss/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  ssr: false,
   /*
+  ssr: false,
+  
   nitro: {
     preset: 'static'
   },
@@ -25,15 +26,8 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxtjs/i18n",
   ],
-  colorMode: {
-    preference: "system",
-    fallback: "light",
-    classSuffix: "",
-    storageKey: "app-color-mode",
-    storage: {
-      type: "localStorage",
-      key: "app-color-mode",
-    },
+  ui: {
+    colorMode: false
   },
   css: ["~/assets/css/main.css"],
   vite: {

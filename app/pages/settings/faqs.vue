@@ -1,8 +1,6 @@
 <script setup lang="ts">
-const colorMode = useColorMode()
+const { isDark } = useTheme()
 const appConfig = useAppConfig()
-
-const isDark = computed(() => colorMode.value === "dark")
 const textColor = computed(() =>
   isDark.value
     ? (appConfig.theme?.colors?.text?.dark || "#D9B27A")

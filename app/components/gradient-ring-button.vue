@@ -7,10 +7,8 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const colorMode = useColorMode()
+const { isDark } = useTheme()
 const appConfig = useAppConfig()
-
-const isDark = computed(() => colorMode.value === 'dark')
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || '#D9B27A') : (appConfig.theme?.colors?.text?.light || '#4A2E1E'))
 const gold = '#F1C687'
 

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-const colorMode = useColorMode();
+const { isDark } = useTheme();
 const appConfig = useAppConfig();
-
-const isDark = computed(() => colorMode.value === "dark");
 const textColor = computed(() => isDark.value ? appConfig.theme.colors.text.dark : appConfig.theme.colors.text.light);
 const isOpen = ref(false);
 

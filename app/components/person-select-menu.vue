@@ -19,7 +19,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: SelectMenuItem | undefined]
 }>()
 
-const colorMode = useColorMode()
+const { isDark } = useTheme()
 
 const value = computed({
   get: () => props.modelValue,
@@ -34,13 +34,13 @@ const selectedAvatar = computed(() => {
 })
 
 const baseBackground = computed(() => {
-  return colorMode.value === 'dark' 
+  return isDark.value 
     ? '!bg-gradient-to-r !from-[rgba(139,114,78,0.23)] !to-[rgba(241,198,135,0.23)]'
     : '!bg-white'
 })
 
 const contentBackground = computed(() => {
-  return colorMode.value === 'dark'
+  return isDark.value
     ? '!bg-gradient-to-r !from-[rgba(139,114,78,0.23)] !to-[rgba(241,198,135,0.23)]'
     : '!bg-white'
 })

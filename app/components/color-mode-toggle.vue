@@ -1,14 +1,9 @@
 <script setup lang="ts">
-const colorMode = useColorMode();
+// Use useCookie-based theme composable for SSR compatibility
+const { theme, isDark, toggleTheme } = useTheme();
 
 function toggleColorMode() {
-  // Use a more direct approach
-  if (colorMode.preference === "dark") {
-    colorMode.preference = "light";
-  }
-  else {
-    colorMode.preference = "dark";
-  }
+  toggleTheme();
 }
 </script>
 
@@ -16,7 +11,7 @@ function toggleColorMode() {
   <!-- Custom Color Mode Toggle Switch -->
   <button
     class="relative inline-flex items-center w-[68px] h-[30px] rounded-full transition-colors duration-300"
-    :style="colorMode.value === 'dark' ? { backgroundColor: '#22244B' } : { backgroundColor: '#F0FBFF' }"
+    :style="isDark ? { backgroundColor: '#22244B' } : { backgroundColor: '#F0FBFF' }"
     aria-label="Toggle color mode"
     dir="ltr"
     @click="toggleColorMode"
@@ -41,7 +36,7 @@ function toggleColorMode() {
     <div
       class="relative w-[24px] h-[24px] rounded-full shadow-md transition-all duration-300 ease-in-out"
       :class="[
-        colorMode.value === 'dark' ? 'translate-x-[4px] bg-white' : 'translate-x-[40px] bg-black',
+        isDark ? 'translate-x-[4px] bg-white' : 'translate-x-[40px] bg-black',
       ]"
     />
   </button>

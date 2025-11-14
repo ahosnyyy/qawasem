@@ -1,8 +1,6 @@
 <script setup lang="ts">
-const colorMode = useColorMode();
+const { isDark } = useTheme();
 const appConfig = useAppConfig();
-
-const isDark = computed(() => colorMode.value === "dark");
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || "#D9B27A") : (appConfig.theme?.colors?.text?.light || "#4A2E1E"));
 
 interface FamilyMember {
@@ -156,12 +154,19 @@ function selectUser(user: User) {
 <template>
   <div>
     <div class="relative flex flex-col items-center justify-center w-full px-4 md:px-8 lg:px-12">
-      <NuxtLink
-        to="/search/ancestor"
-        class="self-end -mt-32 mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 z-[130]"
-      >
-        <span>البحث بين شخصين</span>
-      </NuxtLink>
+      <ClientOnly>
+        <NuxtLink
+          to="/search/ancestor"
+          class="self-center md:self-end -mt-16 md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 z-[130]"
+        >
+          <span>البحث بين شخصين</span>
+        </NuxtLink>
+        <template #fallback>
+          <div class="self-center md:self-end -mt-16 md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] text-[#F1C687] px-6 py-2 rounded-full z-[130]">
+            <span>البحث بين شخصين</span>
+          </div>
+        </template>
+      </ClientOnly>
       <!-- Title and Search Section -->
       <div class="flex flex-col items-center gap-6 w-full max-w-4xl mx-auto px-4">
         <!-- Title -->

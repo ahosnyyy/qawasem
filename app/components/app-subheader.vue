@@ -3,12 +3,11 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const route = useRoute();
 const { locale } = useI18n();
-const colorMode = useColorMode();
+const { isDark } = useTheme();
 const appConfig = useAppConfig();
 
 const isOpen = ref(false);
 const isRTL = computed(() => locale.value === "ar");
-const isDark = computed(() => colorMode.value === "dark");
 const textColor = computed(() => isDark.value ? appConfig.theme.colors.text.dark : appConfig.theme.colors.text.light);
 
 const items = computed<NavigationMenuItem[]>(() => [

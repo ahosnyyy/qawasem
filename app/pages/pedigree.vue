@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { SelectMenuItem } from '@nuxt/ui'
 
-const colorMode = useColorMode();
+const { isDark } = useTheme();
 const appConfig = useAppConfig();
-
-const isDark = computed(() => colorMode.value === "dark");
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || "#D9B27A") : (appConfig.theme?.colors?.text?.light || "#4A2E1E"));
 
 interface FamilyMember {

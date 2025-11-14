@@ -4,12 +4,9 @@
 import { computed } from "vue";
 
 // const { locale, setLocale, t } = useI18n();
-const colorMode = useColorMode();
+const { isDark: isDarkMode } = useTheme();
 
 const isOpen = ref(false);
-
-// Ensure colorMode is properly reactive
-const isDarkMode = computed(() => colorMode?.value === "dark");
 
 /*
 const locales = [
@@ -100,7 +97,7 @@ const locales = [
     >
       <div
         v-if="isOpen"
-        class="md:hidden fixed inset-0 z-[110]"
+        class="md:hidden fixed inset-0 z-[140]"
         @click="isOpen = false"
       />
     </Transition>
@@ -115,7 +112,7 @@ const locales = [
     >
       <div
         v-if="isOpen"
-        class="md:hidden fixed top-20 left-0 right-0 z-[120] shadow-lg"
+        class="md:hidden fixed top-20 left-0 right-0 z-[160] shadow-lg"
         :class="isDarkMode ? 'bg-white text-black' : 'bg-black text-white'"
       >
         <div class="px-4 py-6 space-y-4">
