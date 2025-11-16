@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   /*
   ssr: false,
-  
+
   nitro: {
     preset: 'static'
   },
@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     "@nuxtjs/i18n",
   ],
   ui: {
-    colorMode: false
+    colorMode: false,
   },
   css: ["~/assets/css/main.css"],
   vite: {

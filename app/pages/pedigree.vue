@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SelectMenuItem } from '@nuxt/ui'
+import PedigreeCertificatePdf from '~/components/pedigree-certificate-pdf.client.vue'
 
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
@@ -192,12 +193,11 @@ async function handleSearch() {
           </button>
           
           <!-- Download Button - shown only when results exist -->
-          <button
-            v-if="showResults"
-            class="bg-[#4A2E1E] hover:scale-105 text-[#F1C687] py-2 min-w-2xs hover:scale-105 rounded-2xl transition-all duration-300"
-          >
-            <span>تحميل شهادة النسب PDF</span>
-          </button>
+          <PedigreeCertificatePdf
+            v-if="showResults && searchResults"
+            :name="searchResults.mainTitle"
+            :lineage="searchResults.lineage"
+          />
         </div>
       </div>
       
