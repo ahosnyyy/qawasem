@@ -76,11 +76,17 @@ const containerClass = computed(() => {
         <div class="flex items-center justify-between gap-4">
           <!-- Logo and Desktop Navigation -->
           <div class="flex items-center gap-4 md:gap-20">
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              class="h-18 md:h-46 w-auto"
+            <NuxtLink
+              to="/"
+              aria-label="Go to home"
+              class="inline-flex"
             >
+              <img
+                src="/logo.svg"
+                alt="Logo"
+                class="h-24 md:h-46 w-auto"
+              >
+            </NuxtLink>
 
             <nav
               class="hidden md:flex items-center gap-4 md:gap-8"

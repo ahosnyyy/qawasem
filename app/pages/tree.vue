@@ -4,12 +4,12 @@
       <!-- Download Button - Centered with tree on md, fixed on lg -->
       <ClientOnly>
         <button
-          class="self-center md:self-end -mt-16 md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 z-[130]"
+          class="self-center md:self-end md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 z-[130]"
         >
           <span>تحميل الشجرة الحائطية PDF</span>
         </button>
         <template #fallback>
-          <div class="self-center md:self-end -mt-16 md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] text-[#F1C687] px-6 py-2 rounded-full z-[130]">
+          <div class="self-center md:self-end md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] text-[#F1C687] px-6 py-2 rounded-full z-[130]">
             <span>تحميل الشجرة الحائطية PDF</span>
           </div>
         </template>

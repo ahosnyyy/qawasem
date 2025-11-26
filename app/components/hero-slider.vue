@@ -45,7 +45,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible pt-10 lg:pt-0 px-10 lg:px-8 -mt-10">
+  <div class="relative w-full overflow-visible pt-10 lg:pt-0 px-10 lg:px-8 mt-10 lg:-mt-10">
     <div class="w-full">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
         <!-- Left Content -->
@@ -149,7 +149,7 @@ const goToSlide = (index: number) => {
         </div>
 
         <!-- Right Image with Transition -->
-        <div class="relative flex w-full lg:w-[115%] justify-center items-center md:py-2 lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20">
+        <div class="relative flex w-full lg:w-[115%] justify-center items-center md:py-2 lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20 -mt-48 lg:-mt-0">
           <TransitionGroup name="slide">
             <img
               v-for="(slide, index) in slides"

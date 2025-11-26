@@ -178,6 +178,7 @@ async function handleSearch() {
           v-model="value"
           :items="users"
           :loading="status === 'pending'"
+          :show-loading-indicator="false"
           placeholder="ادخل اسم الشخص"
         />
         

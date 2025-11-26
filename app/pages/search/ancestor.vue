@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SelectMenuItem } from '@nuxt/ui'
+import SearchBetweenCertificatePdf from '~/components/search-between-certificate-pdf.client.vue'
 
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
@@ -150,6 +151,7 @@ async function handleSearch() {
             v-model="person1"
             :items="users"
             :loading="status === 'pending'"
+            :show-loading-indicator="false"
             placeholder="ادخل اسم الشخص الأول"
             class="flex-1"
           />
@@ -164,6 +166,7 @@ async function handleSearch() {
             v-model="person2"
             :items="users"
             :loading="status === 'pending'"
+            :show-loading-indicator="false"
             placeholder="ادخل اسم الشخص الثاني"
             class="flex-1"
           />
@@ -179,13 +182,13 @@ async function handleSearch() {
             {{ searchStatus === 'pending' ? 'جاري البحث...' : 'اظهر نتيجة البحث' }}
           </button>
           
-          <!-- Download Button - shown only when results exist -->
-          <button
-            v-if="showResults"
-            class="bg-[#4A2E1E] hover:scale-105 text-[#F1C687] py-2 min-w-2xs hover:scale-105 rounded-2xl transition-all duration-300"
-          >
-            <span>تحميل نتيجة البحث PDF</span>
-          </button>
+          <!-- PDF Certificate Button - shown only when results exist -->
+          <SearchBetweenCertificatePdf
+            v-if="showResults && searchResults && searchData?.data"
+            :common-ancestor="searchData.data.commonAncestor"
+            :member1="searchData.data.member1"
+            :member2="searchData.data.member2"
+          />
         </div>
       </div>
       

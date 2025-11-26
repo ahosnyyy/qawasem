@@ -7,12 +7,14 @@ interface Props {
   loading?: boolean
   placeholder?: string
   class?: string
+  showLoadingIndicator?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   placeholder: 'ادخل اسم الشخص',
   class: 'w-full max-w-md',
-  loading: false
+  loading: false,
+  showLoadingIndicator: true
 })
 
 const emit = defineEmits<{
@@ -51,7 +53,7 @@ const contentBackground = computed(() => {
     v-model="value"
     :avatar="selectedAvatar"
     :items="items || []"
-    :loading="loading"
+    :loading="showLoadingIndicator ? loading : false"
     :placeholder="placeholder"
     style="font-family: 'IBM Plex Sans Arabic'; direction: rtl;"
     :class="class"
