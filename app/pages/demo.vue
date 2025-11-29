@@ -1,10 +1,13 @@
 <script setup lang="ts">
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
+const runtimeConfig = useRuntimeConfig();
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || "#D9B27A") : (appConfig.theme?.colors?.text?.light || "#4A2E1E"));
 
+const apiHost = runtimeConfig.public.familyMembersApiBase?.replace(/\/$/, "") || "";
+
 // Base API URL
-const API_BASE_URL = 'https://alqwassem-001-site1.stempurl.com/api/FamilyMembers'
+const API_BASE_URL = `${apiHost}/api/FamilyMembers`
 
 // Test states
 const activeTest = ref<string | null>(null)

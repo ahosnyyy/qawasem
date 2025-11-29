@@ -2,7 +2,9 @@
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
 const route = useRoute();
+const runtimeConfig = useRuntimeConfig();
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || "#D9B27A") : (appConfig.theme?.colors?.text?.light || "#4A2E1E"));
+const apiHost = runtimeConfig.public.familyMembersApiBase?.replace(/\/$/, "") || "";
 
 // Get member ID from route params
 const memberId = route.params.member;
@@ -236,7 +238,7 @@ onUnmounted(() => {
                   :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.15)] to-[rgba(241,198,135,0.15)]' : 'bg-gradient-to-r from-[rgba(190,158,119,0.15)] to-[rgba(241,198,135,0.15)]'"
                 >
                   <img 
-                    :src="memberDetails.data.gender === 'ذكر' ? 'https://alqwassem-001-site1.stempurl.com/images/male.png' : 'https://alqwassem-001-site1.stempurl.com/images/female.png'"
+                    :src="memberDetails.data.gender === 'ذكر' ? `${apiHost}/images/male.png` : `${apiHost}/images/female.png`"
                     :alt="child.relatedFullName"
                     class="w-30 h-30 rounded-lg object-cover"
                   />

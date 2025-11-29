@@ -2,8 +2,18 @@ export default defineEventHandler(async (event) => {
   // Get query parameters from the request
   const query = getQuery(event);
 
+  const config = useRuntimeConfig(event);
+  const baseUrl = config.familyMembersApiBase?.replace(/\/$/, "");
+
+  if (!baseUrl) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Family members API base URL is not configured",
+    });
+  }
+
   // Build the external API URL with query parameters
-  const apiUrl = "https://alqwassem-001-site1.stempurl.com/api/FamilyMembers";
+  const apiUrl = `${baseUrl}/api/FamilyMembers`;
   const params = new URLSearchParams({
     PageNumber: String(query.PageNumber || 1),
     PageSize: String(query.PageSize || 10),

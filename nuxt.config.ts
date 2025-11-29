@@ -3,6 +3,16 @@ import tailwindcss from "@tailwindcss/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
+  runtimeConfig: {
+    familyMembersApiBase:
+      process.env.FAMILY_MEMBERS_API_BASE
+      || "http://deltaxqatar-001-site5.stempurl.com",
+    public: {
+      familyMembersApiBase:
+        process.env.FAMILY_MEMBERS_API_BASE
+        || "http://deltaxqatar-001-site5.stempurl.com",
+    },
+  },
   /*
   ssr: false,
 

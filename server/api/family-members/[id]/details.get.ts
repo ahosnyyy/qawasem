@@ -9,8 +9,18 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const config = useRuntimeConfig(event);
+  const baseUrl = config.familyMembersApiBase?.replace(/\/$/, "");
+
+  if (!baseUrl) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Family members API base URL is not configured",
+    });
+  }
+
   // Build the external API URL
-  const apiUrl = `https://alqwassem-001-site1.stempurl.com/api/FamilyMembers/${id}/details`;
+  const apiUrl = `${baseUrl}/api/FamilyMembers/${id}/details`;
 
   try {
     // Make the request from server-side (no CORS issues)
