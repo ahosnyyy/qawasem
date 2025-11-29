@@ -9,12 +9,10 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   runtimeConfig: {
     familyMembersApiBase:
-      env?.FAMILY_MEMBERS_API_BASE
-      || "http://deltaxqatar-001-site5.stempurl.com",
+      env?.FAMILY_MEMBERS_API_BASE,
     public: {
       familyMembersApiBase:
-        env?.FAMILY_MEMBERS_API_BASE
-        || "http://deltaxqatar-001-site5.stempurl.com",
+        env?.FAMILY_MEMBERS_API_BASE,
     },
   },
   /*
