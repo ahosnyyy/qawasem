@@ -1,15 +1,19 @@
 import tailwindcss from "@tailwindcss/vite";
 
+const env = (globalThis as any).process?.env as
+  | Record<string, string | undefined>
+  | undefined;
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   runtimeConfig: {
     familyMembersApiBase:
-      process.env.FAMILY_MEMBERS_API_BASE
+      env?.FAMILY_MEMBERS_API_BASE
       || "http://deltaxqatar-001-site5.stempurl.com",
     public: {
       familyMembersApiBase:
-        process.env.FAMILY_MEMBERS_API_BASE
+        env?.FAMILY_MEMBERS_API_BASE
         || "http://deltaxqatar-001-site5.stempurl.com",
     },
   },
