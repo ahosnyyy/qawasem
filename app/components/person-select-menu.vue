@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: SelectMenuItem | undefined]
+  'search': [query: string]
 }>()
 
 const { isDark } = useTheme()
@@ -46,10 +47,68 @@ const contentBackground = computed(() => {
     ? '!bg-gradient-to-r !from-[rgba(139,114,78,0.23)] !to-[rgba(241,198,135,0.23)]'
     : '!bg-white'
 })
+
+const selectMenuRef = ref<any>(null)
+let observer: MutationObserver | null = null
+const attachedInputs = new WeakSet<HTMLInputElement>()
+
+// Function to attach search listener to an input
+function attachSearchListener(input: HTMLInputElement) {
+  if (attachedInputs.has(input)) return
+  
+  attachedInputs.add(input)
+  const handleInput = (e: Event) => {
+    const query = (e.target as HTMLInputElement)?.value || ''
+    emit('search', query)
+  }
+  input.addEventListener('input', handleInput)
+  
+  // Store cleanup function on the element
+  ;(input as any).__searchCleanup = () => {
+    input.removeEventListener('input', handleInput)
+    attachedInputs.delete(input)
+    delete (input as any).__searchCleanup
+  }
+}
+
+// Set up MutationObserver to watch for search input appearing
+onMounted(() => {
+  observer = new MutationObserver(() => {
+    // Find all inputs with the search placeholder
+    const searchInputs = Array.from(
+      document.querySelectorAll('input[type="text"]')
+    ).filter((input) => 
+      input.getAttribute('placeholder')?.includes('ابحث')
+    ) as HTMLInputElement[]
+    
+    searchInputs.forEach(attachSearchListener)
+  })
+  
+  // Observe the entire document for added nodes
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  })
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+  }
+  
+  // Clean up all attached listeners
+  const allInputs = document.querySelectorAll('input[type="text"]')
+  allInputs.forEach((input) => {
+    if ((input as any).__searchCleanup) {
+      ;(input as any).__searchCleanup()
+    }
+  })
+})
 </script>
 
 <template>
   <USelectMenu
+    ref="selectMenuRef"
     v-model="value"
     :avatar="selectedAvatar"
     :items="items || []"

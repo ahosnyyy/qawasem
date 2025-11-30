@@ -22,8 +22,40 @@ interface FamilyMember {
   photoUrl: string
 }
 
-// Fetch all family members for the dropdown (with large page size)
-const { data: apiResponse, status } = await useFetch<{
+// Search queries for each select menu
+const searchQuery1 = ref('')
+const searchQuery2 = ref('')
+
+// Debounced search queries
+const debouncedSearchQuery1 = ref('')
+const debouncedSearchQuery2 = ref('')
+
+// Debounce function
+let debounceTimer1: NodeJS.Timeout | null = null
+let debounceTimer2: NodeJS.Timeout | null = null
+
+watch(searchQuery1, (newValue) => {
+  if (debounceTimer1) clearTimeout(debounceTimer1)
+  debounceTimer1 = setTimeout(() => {
+    debouncedSearchQuery1.value = newValue
+  }, 300)
+})
+
+watch(searchQuery2, (newValue) => {
+  if (debounceTimer2) clearTimeout(debounceTimer2)
+  debounceTimer2 = setTimeout(() => {
+    debouncedSearchQuery2.value = newValue
+  }, 300)
+})
+
+// Cleanup timers on unmount
+onUnmounted(() => {
+  if (debounceTimer1) clearTimeout(debounceTimer1)
+  if (debounceTimer2) clearTimeout(debounceTimer2)
+})
+
+// Fetch family members for person1 dropdown
+const { data: apiResponse1, status: status1 } = await useFetch<{
   success: boolean
   status: number
   message: string
@@ -35,18 +67,43 @@ const { data: apiResponse, status } = await useFetch<{
   }
   errors: any
 }>('/api/family-members/search', {
-  key: 'ancestor-family-members',
+  key: 'ancestor-family-members-1',
   lazy: true,
-  params: {
+  params: computed(() => ({
     PageNumber: 1,
-    PageSize: 1000 // Large page size to get all members
-  }
+    PageSize: debouncedSearchQuery1.value ? 50 : 10, // Load 10 initially, 50 when searching
+    ...(debouncedSearchQuery1.value && { Search: debouncedSearchQuery1.value })
+  })),
+  watch: [debouncedSearchQuery1]
 })
 
-// Map family members to SelectMenuItem format
-const users = computed<SelectMenuItem[]>(() => {
-  if (!apiResponse.value?.data?.data) return []
-  return apiResponse.value.data.data.map(member => ({
+// Fetch family members for person2 dropdown
+const { data: apiResponse2, status: status2 } = await useFetch<{
+  success: boolean
+  status: number
+  message: string
+  data: {
+    pageNumber: number
+    pageSize: number
+    totalRecords: number
+    data: FamilyMember[]
+  }
+  errors: any
+}>('/api/family-members/search', {
+  key: 'ancestor-family-members-2',
+  lazy: true,
+  params: computed(() => ({
+    PageNumber: 1,
+    PageSize: debouncedSearchQuery2.value ? 50 : 10, // Load 10 initially, 50 when searching
+    ...(debouncedSearchQuery2.value && { Search: debouncedSearchQuery2.value })
+  })),
+  watch: [debouncedSearchQuery2]
+})
+
+// Map family members to SelectMenuItem format for person1
+const users1 = computed<SelectMenuItem[]>(() => {
+  if (!apiResponse1.value?.data?.data) return []
+  return apiResponse1.value.data.data.map(member => ({
     label: member.fullName,
     value: String(member.id),
     avatar: { 
@@ -55,6 +112,22 @@ const users = computed<SelectMenuItem[]>(() => {
     }
   }))
 })
+
+// Map family members to SelectMenuItem format for person2
+const users2 = computed<SelectMenuItem[]>(() => {
+  if (!apiResponse2.value?.data?.data) return []
+  return apiResponse2.value.data.data.map(member => ({
+    label: member.fullName,
+    value: String(member.id),
+    avatar: { 
+      src: member.photoUrl,
+      alt: member.fullName
+    }
+  }))
+})
+
+// Combined loading status
+const isLoading = computed(() => status1.value === 'pending' || status2.value === 'pending')
 
 const person1 = ref<SelectMenuItem | undefined>(undefined)
 const person2 = ref<SelectMenuItem | undefined>(undefined)
@@ -149,11 +222,12 @@ async function handleSearch() {
         <div class="flex flex-col sm:flex-row gap-4 md:gap-12 w-full items-center justify-center">
           <PersonSelectMenu
             v-model="person1"
-            :items="users"
-            :loading="status === 'pending'"
+            :items="users1"
+            :loading="status1 === 'pending'"
             :show-loading-indicator="false"
             placeholder="ادخل اسم الشخص الأول"
             class="flex-1"
+            @search="searchQuery1 = $event"
           />
           
           <img 
@@ -164,11 +238,12 @@ async function handleSearch() {
           
           <PersonSelectMenu
             v-model="person2"
-            :items="users"
-            :loading="status === 'pending'"
+            :items="users2"
+            :loading="status2 === 'pending'"
             :show-loading-indicator="false"
             placeholder="ادخل اسم الشخص الثاني"
             class="flex-1"
+            @search="searchQuery2 = $event"
           />
         </div>
         <!-- Buttons Container -->
