@@ -20,6 +20,7 @@
     "@nuxtjs/i18n": "10.1.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tato30/vue-pdf": "^1.11.5",
+    "dom-to-image-more": "^3.7.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
     "nuxt": "^4.1.3",

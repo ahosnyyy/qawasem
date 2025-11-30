@@ -22,7 +22,28 @@ interface FamilyMember {
   photoUrl: string
 }
 
-// Fetch all family members for the dropdown (with large page size)
+// Search query for the select menu
+const searchQuery = ref('')
+
+// Debounced search query
+const debouncedSearchQuery = ref('')
+
+// Debounce function
+let debounceTimer: NodeJS.Timeout | null = null
+
+watch(searchQuery, (newValue) => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    debouncedSearchQuery.value = newValue
+  }, 300)
+})
+
+// Cleanup timer on unmount
+onUnmounted(() => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+})
+
+// Fetch family members for the dropdown
 const { data: apiResponse, status } = await useFetch<{
   success: boolean
   status: number
@@ -37,10 +58,12 @@ const { data: apiResponse, status } = await useFetch<{
 }>('/api/family-members/search', {
   key: 'pedigree-family-members',
   lazy: true,
-  params: {
+  params: computed(() => ({
     PageNumber: 1,
-    PageSize: 1000 // Large page size to get all members
-  }
+    PageSize: debouncedSearchQuery.value ? 50 : 10, // Load 10 initially, 50 when searching
+    ...(debouncedSearchQuery.value && { Search: debouncedSearchQuery.value })
+  })),
+  watch: [debouncedSearchQuery]
 })
 
 // Map family members to SelectMenuItem format
@@ -180,6 +203,7 @@ async function handleSearch() {
           :loading="status === 'pending'"
           :show-loading-indicator="false"
           placeholder="ادخل اسم الشخص"
+          @search="searchQuery = $event"
         />
         
         <!-- Buttons Container -->
