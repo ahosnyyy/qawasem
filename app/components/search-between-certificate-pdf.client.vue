@@ -319,59 +319,10 @@ async function generatePDF() {
 
     // Title
     textCtx.font = 'bold 48px "Mohammad Bold Art", sans-serif'
-    textCtx.fillText('وثيقة البحث بين شخصين', CERTIFICATE_WIDTH / 2, 180)
+    //textCtx.fillText('وثيقة البحث بين شخصين', CERTIFICATE_WIDTH / 2, 180)
 
-    // Helper function to load image
-    const loadImage = (src: string): Promise<HTMLImageElement> => {
-      return new Promise((resolve, reject) => {
-        const img = new Image()
-        img.crossOrigin = 'anonymous'
-        img.onload = () => resolve(img)
-        img.onerror = () => reject(new Error(`Failed to load image: ${src}`))
-        img.src = src
-      })
-    }
-
-    // Load all person images
-    const personImages: Map<string, HTMLImageElement> = new Map()
-    try {
-      // Load common ancestor image
-      if (props.commonAncestor?.photo) {
-        const commonImg = await loadImage(props.commonAncestor.photo)
-        personImages.set('common', commonImg)
-      }
-      
-      // Load member1 images
-      for (const member of props.member1 || []) {
-        if (member.photo && !personImages.has(member.photo)) {
-          try {
-            const img = await loadImage(member.photo)
-            personImages.set(member.photo, img)
-          } catch (e) {
-            console.warn('Failed to load image for member1:', member.fullName)
-          }
-        }
-      }
-      
-      // Load member2 images
-      for (const member of props.member2 || []) {
-        if (member.photo && !personImages.has(member.photo)) {
-          try {
-            const img = await loadImage(member.photo)
-            personImages.set(member.photo, img)
-          } catch (e) {
-            console.warn('Failed to load image for member2:', member.fullName)
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('Some images failed to load, continuing without them:', error)
-    }
-
-    // Helper function to draw circular image with shadow
+    // Helper function to draw circular node with optional image (we'll ignore images for now)
     const drawCircularImage = (img: HTMLImageElement | null, x: number, y: number, size: number) => {
-      if (!img) return
-      
       textCtx.save()
       
       // Set shadow for the circle
@@ -385,8 +336,9 @@ async function generatePDF() {
       textCtx.arc(x, y, size / 2, 0, Math.PI * 2)
       textCtx.clip()
       
-      // Draw the image
-      textCtx.drawImage(img, x - size / 2, y - size / 2, size, size)
+      // For now, ignore actual images and just fill with a solid color
+      textCtx.fillStyle = 'rgba(180, 142, 101, 0.2)'
+      textCtx.fillRect(x - size / 2, y - size / 2, size, size)
       
       textCtx.restore()
       
@@ -428,108 +380,126 @@ async function generatePDF() {
       textCtx.fill()
     }
 
-    // Draw visual tree
-    const treeStartY = 250
-    const imageSize = 60 // Size for branch images
-    const commonImageSize = 80 // Size for common ancestor
-    const verticalSpacing = 100 // Space between nodes
-    const horizontalSpacing = 200 // Space between left and right branches
+    // Layout configuration for the visual tree (easier to tweak spacing here)
+    const layout = {
+      treeStartY: 200,            // Y position of common ancestor
+      imageSize: 56,              // Size for branch nodes
+      commonImageSize: 80,        // Size for common ancestor node
+      verticalSpacing: 130,       // Space between nodes vertically (includes name + bigger gap + connector)
+      horizontalSpacing: 210,     // Space between left and right branches
+      nameBelowNodeOffset: 16,    // Distance from bottom of node down to name text
+      dotBelowNameOffset: 30,     // Distance from bottom of name down to junction dot (more space after names)
+      branchLabelOffset: 48       // Distance from last node bottom to branch label
+    }
     
-    // Draw Common Ancestor at top center
+    // Draw visual tree
+    const treeStartY = layout.treeStartY
+    const imageSize = layout.imageSize
+    const commonImageSize = layout.commonImageSize
+    const verticalSpacing = layout.verticalSpacing
+    const horizontalSpacing = layout.horizontalSpacing
+    
+    // Common ancestor (similar structure to page tree: circle, name, then dot + vertical to branches)
     const centerX = CERTIFICATE_WIDTH / 2
     const commonY = treeStartY
     
-    const commonImg = props.commonAncestor?.photo ? personImages.get(props.commonAncestor.photo) : null
-    drawCircularImage(commonImg, centerX, commonY, commonImageSize)
+    // Ancestor node circle (background node)
+    drawCircularImage(null, centerX, commonY, commonImageSize)
     
-    // Common ancestor name
+    // Common ancestor name (under the circle)
     textCtx.fillStyle = '#B48E65'
     textCtx.font = 'bold 24px "Mohammad Bold Art", sans-serif'
     textCtx.textAlign = 'center'
-    textCtx.fillText(commonAncestorName.value || '', centerX, commonY + commonImageSize / 2 + 15)
+    const commonNameY = commonY + commonImageSize / 2 + 15
+    textCtx.fillText(commonAncestorName.value || '', centerX, commonNameY)
     
-    // Draw connecting lines from common ancestor
-    const junctionY = commonY + commonImageSize / 2 + 40
-    const branchStartY = junctionY + 30
+    // Junction dot under the name (extra space for better readability)
+    const headDotY = commonNameY + 36
+    drawJunctionCircle(centerX, headDotY, '#B48E65')
     
-    // Vertical line from common ancestor
-    drawDashedLine(centerX, commonY + commonImageSize / 2, centerX, junctionY, '#B48E65')
+    // Vertical dashed line from head dot down to branch junction line
+    // Increase this value to make the dotted line taller
+    const junctionY = headDotY + 40
+    drawDashedLine(centerX, headDotY, centerX, junctionY, '#B48E65')
     
-    // Junction circle
-    drawJunctionCircle(centerX, junctionY, '#B48E65')
-    
-    // Horizontal line connecting branches
+    // Horizontal line connecting both branches at the bottom of the vertical line
     const leftBranchX = centerX - horizontalSpacing
     const rightBranchX = centerX + horizontalSpacing
     drawDashedLine(leftBranchX, junctionY, rightBranchX, junctionY, '#B48E65')
     
+    // Where branch nodes start below the junction line
+    // Increase distance between head node and first branch nodes by increasing this offset
+    const branchStartY = junctionY + 5
+    
     // Draw Member 1 Branch (Left side) - reverse to show from ancestor to person
     const member1Array = [...(props.member1 || [])].reverse()
-    let member1Y = branchStartY
     
     for (let i = 0; i < member1Array.length; i++) {
       const member = member1Array[i]
-      const img = member.photo ? personImages.get(member.photo) : null
+      if (!member) continue
+      const nodeCenterY = branchStartY + i * verticalSpacing
       
-      // Draw image
-      drawCircularImage(img, leftBranchX, member1Y, imageSize)
+      // Draw node (circle)
+      drawCircularImage(null, leftBranchX, nodeCenterY, imageSize)
       
-      // Draw name
+      // Name below the node (similar to UI tree)
+      const nameY = nodeCenterY + imageSize / 2 + layout.nameBelowNodeOffset
       textCtx.fillStyle = '#B48E65'
       textCtx.font = '18px "Mohammad Bold Art", sans-serif'
       textCtx.textAlign = 'center'
-      const nameY = member1Y + imageSize / 2 + 20
       textCtx.fillText(member.fullName || '', leftBranchX, nameY)
       
-      // Draw connecting line (except for last item)
+      // Draw connector (dot + dashed line) except for last item
       if (i < member1Array.length - 1) {
-        const nextY = member1Y + verticalSpacing
-        drawDashedLine(leftBranchX, member1Y + imageSize / 2, leftBranchX, nextY - imageSize / 2, '#B48E65')
-        drawJunctionCircle(leftBranchX, nextY - imageSize / 2, '#B48E65')
-        member1Y = nextY
-      } else {
-        member1Y += imageSize / 2 + 30
+        const dotY = nameY + layout.dotBelowNameOffset
+        const nextNodeCenterY = branchStartY + (i + 1) * verticalSpacing
+        
+        // Dashed line from dot down to just above next node
+        drawDashedLine(leftBranchX, dotY, leftBranchX, nextNodeCenterY - imageSize / 2, '#B48E65')
+        // Junction circle at top of dashed line (just under the name)
+        drawJunctionCircle(leftBranchX, dotY, '#B48E65')
       }
     }
     
-    // Draw label for member1
+    // Draw label for member1 under the last node
+    const lastMember1CenterY = branchStartY + (member1Array.length - 1) * verticalSpacing
     textCtx.font = 'bold 20px "Mohammad Bold Art", sans-serif'
-    textCtx.fillText('الشخص الأول', leftBranchX, member1Y + 10)
-    const member1BottomY = member1Y + 40
+    textCtx.fillText('الشخص الأول', leftBranchX, lastMember1CenterY + imageSize / 2 + layout.branchLabelOffset)
+    const member1BottomY = lastMember1CenterY + imageSize / 2 + layout.branchLabelOffset + 20
     
     // Draw Member 2 Branch (Right side) - reverse to show from ancestor to person
     const member2Array = [...(props.member2 || [])].reverse()
-    let member2Y = branchStartY
     
     for (let i = 0; i < member2Array.length; i++) {
       const member = member2Array[i]
-      const img = member.photo ? personImages.get(member.photo) : null
+      if (!member) continue
+      const nodeCenterY = branchStartY + i * verticalSpacing
       
-      // Draw image
-      drawCircularImage(img, rightBranchX, member2Y, imageSize)
+      // Draw node (circle)
+      drawCircularImage(null, rightBranchX, nodeCenterY, imageSize)
       
-      // Draw name
+      // Name below the node
+      const nameY = nodeCenterY + imageSize / 2 + layout.nameBelowNodeOffset
       textCtx.fillStyle = '#B48E65'
       textCtx.font = '18px "Mohammad Bold Art", sans-serif'
       textCtx.textAlign = 'center'
-      const nameY = member2Y + imageSize / 2 + 20
       textCtx.fillText(member.fullName || '', rightBranchX, nameY)
       
-      // Draw connecting line (except for last item)
+      // Connector (dot + dashed line) except for last item
       if (i < member2Array.length - 1) {
-        const nextY = member2Y + verticalSpacing
-        drawDashedLine(rightBranchX, member2Y + imageSize / 2, rightBranchX, nextY - imageSize / 2, '#B48E65')
-        drawJunctionCircle(rightBranchX, nextY - imageSize / 2, '#B48E65')
-        member2Y = nextY
-      } else {
-        member2Y += imageSize / 2 + 30
+        const dotY = nameY + layout.dotBelowNameOffset
+        const nextNodeCenterY = branchStartY + (i + 1) * verticalSpacing
+        
+        drawDashedLine(rightBranchX, dotY, rightBranchX, nextNodeCenterY - imageSize / 2, '#B48E65')
+        drawJunctionCircle(rightBranchX, dotY, '#B48E65')
       }
     }
     
-    // Draw label for member2
+    // Draw label for member2 under the last node
+    const lastMember2CenterY = branchStartY + (member2Array.length - 1) * verticalSpacing
     textCtx.font = 'bold 20px "Mohammad Bold Art", sans-serif'
-    textCtx.fillText('الشخص الثاني', rightBranchX, member2Y + 10)
-    const member2BottomY = member2Y + 40
+    textCtx.fillText('الشخص الثاني', rightBranchX, lastMember2CenterY + imageSize / 2 + layout.branchLabelOffset)
+    const member2BottomY = lastMember2CenterY + imageSize / 2 + layout.branchLabelOffset + 20
     
     // Calculate the bottom of the tree (use the maximum Y from both branches)
     const maxTreeY = Math.max(member1BottomY, member2BottomY)
