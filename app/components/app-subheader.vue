@@ -138,7 +138,7 @@ const containerClass = computed(() => {
         :class="[
           isDark ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200'
         ]"
-        :style="{ top: 'calc(5rem + 5rem + 1.5rem)' }"
+        :style="{ top: 'calc(5rem + 5rem + 3rem)' }"
         :dir="isRTL ? 'rtl' : 'ltr'"
       >
         <div class="flex flex-col gap-2 px-4 sm:px-6 lg:px-8 py-4">
