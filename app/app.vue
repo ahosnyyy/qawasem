@@ -28,11 +28,26 @@ useHead({
   ],
 });
 
+// Minimum loading duration in milliseconds (simulates loading experience)
+const MIN_LOADING_DURATION = 1000; // 1 second
+const loadStartTime = ref<number | null>(null);
+
 const hideLoader = () => {
-  isAppReady.value = true;
+  if (!loadStartTime.value) {
+    loadStartTime.value = Date.now();
+  }
+
+  const elapsed = Date.now() - loadStartTime.value;
+  const remainingTime = Math.max(0, MIN_LOADING_DURATION - elapsed);
+
+  setTimeout(() => {
+    isAppReady.value = true;
+  }, remainingTime);
 };
 
 if (import.meta.client) {
+  loadStartTime.value = Date.now();
+  
   if (document.readyState === "complete") {
     hideLoader();
   } else {

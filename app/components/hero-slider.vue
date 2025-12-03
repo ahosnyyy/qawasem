@@ -49,13 +49,13 @@ const goToSlide = (index: number) => {
     <div class="w-full">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
         <!-- Left Content -->
-        <div class="relative flex flex-col justify-center space-y-2 order-1 lg:order-2">
+        <div class="relative flex flex-col justify-center space-y-2 order-2">
           <!-- Counter and Previous Arrow on same row -->
           <div class="flex items-center justify-between">
             <!-- Previous Arrow -->
             <button
               @click="prevSlide"
-              class="mr-24 mb-4 lg:mb-0 lg:mr-0 w-12 h-12 2xl:w-14 2xl:h-14 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
+              class="mr-18 lg:mr-24 mb-4 lg:mb-0 lg:mr-0 w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 rounded-full border-2 flex items-center justify-center transition-all hover:scale-105"
               :style="{ 
                 borderColor: 'white',
                 color: 'white',
@@ -94,7 +94,7 @@ const goToSlide = (index: number) => {
           <!-- Next Arrow (positioned to the right) -->
           <button
             @click="nextSlide"
-            class="absolute lg:-right-25 -top-4 lg:top-1/5 w-18 h-18 2xl:w-20 2xl:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
+            class="absolute lg:-right-25 -top-4 lg:top-1/5 w-14 h-14 lg:w-18 lg:h-18 2xl:w-20 2xl:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 border-4"
             :style="{ 
               backgroundColor: 'rgba(217, 178, 122, 0.2)',
               borderColor: primaryColor,
@@ -149,7 +149,7 @@ const goToSlide = (index: number) => {
         </div>
 
         <!-- Right Image with Transition -->
-        <div class="relative flex w-full lg:w-[115%] justify-center items-center md:py-2 lg:justify-start lg:items-start order-2 lg:order-1 lg:-mr-20 -mt-48 lg:-mt-0">
+        <div class="relative flex w-full lg:w-[115%] justify-center items-center md:py-2 lg:justify-start lg:items-start order-1 lg:-mr-20 -mt-24 lg:-mt-0">
           <TransitionGroup name="slide">
             <img
               v-for="(slide, index) in slides"
