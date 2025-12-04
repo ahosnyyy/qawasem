@@ -7,19 +7,30 @@ const textColor = computed(() => isDark.value ? "white" : appConfig.theme.colors
 <template>
   <div class="w-full">
     <div class="container bottom-0 mx-auto px-4 lg:px-8 py-6 bg-transparent">
-      <div class="flex justify-center lg:justify-start" dir="ltr">
-        <p
-          class="text-sm flex items-center gap-2"
+      <div class="flex flex-col lg:flex-row justify-center lg:justify-end items-center gap-4" dir="rtl">
+        <!--
+        <div class="flex justify-center lg:justify-start" dir="ltr">
+          <p
+            class="text-sm flex items-center gap-2"
+            :style="{ color: textColor, fontFamily: '\'IBM Plex Sans Arabic\', sans-serif' }"
+          >
+          © {{ new Date().getFullYear() }} 
+            <img
+              :src="isDark ? '/karezma-dark.svg' : '/karezma-light.svg'"
+              alt="Karezma Logo"
+              class="h-6"
+            >
+            جميع الحقوق محفوظة
+          </p>
+        </div>
+        -->
+        <NuxtLink
+          to="/privacy"
+          class="text-sm hover:opacity-80 transition-opacity"
           :style="{ color: textColor, fontFamily: '\'IBM Plex Sans Arabic\', sans-serif' }"
         >
-        © {{ new Date().getFullYear() }} 
-          <img
-            :src="isDark ? '/karezma-dark.svg' : '/karezma-light.svg'"
-            alt="Karezma Logo"
-            class="h-6"
-          >
-          جميع الحقوق محفوظة
-        </p>
+          سياسة الخصوصية
+        </NuxtLink>
       </div>
     </div>
   </div>

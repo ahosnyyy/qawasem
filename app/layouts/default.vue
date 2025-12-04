@@ -8,5 +8,5 @@
       <slot />
     </UContainer>
   </UMain>
-  <!--<AppFooter />-->
+  <AppFooter />
 </template>
