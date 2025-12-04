@@ -12,6 +12,7 @@ const memberId = route.params.member;
 interface Relation {
   relatedFullName: string
   relationType: string
+  id?: number
 }
 
 interface FamilyMemberDetails {
@@ -138,6 +139,64 @@ onUnmounted(() => {
   }
 })
 
+// Function to handle child card click and navigate to details
+const handleChildClick = async (child: Relation) => {
+  // If child has an ID, navigate directly
+  if (child.id) {
+    navigateTo(`/search/${child.id}`)
+    return
+  }
+
+  // Otherwise, search for the child by name to get their ID
+  try {
+    const searchResponse = await $fetch<{
+      success: boolean
+      status: number
+      message: string
+      data: {
+        pageNumber: number
+        pageSize: number
+        totalRecords: number
+        data: Array<{
+          id: number
+          fullName: string
+        }>
+      }
+      errors: any
+    }>('/api/family-members/search', {
+      params: {
+        PageNumber: 1,
+        PageSize: 10,
+        Search: child.relatedFullName
+      }
+    })
+
+    // Find exact match by full name
+    const exactMatch = searchResponse.data?.data?.find(
+      member => member.fullName === child.relatedFullName
+    )
+
+    if (exactMatch) {
+      navigateTo(`/search/${exactMatch.id}`)
+    } else {
+      // If no exact match, show a message or navigate to search page with the name
+      console.warn(`Could not find exact match for: ${child.relatedFullName}`)
+      // Optionally navigate to search page with the name as query
+      navigateTo({
+        path: '/search',
+        query: { q: child.relatedFullName }
+      })
+    }
+  } catch (error) {
+    console.error('Error searching for child:', error)
+    // Fallback: navigate to search page with the name
+    navigateTo({
+      path: '/search',
+      query: { q: child.relatedFullName }
+    })
+  }
+}
+
 </script>
 
 <template>
@@ -241,7 +300,8 @@ onUnmounted(() => {
                   {{ child.relationType }}
                 </p>
                 <div 
-                  class="flex flex-col items-center gap-3 p-4 my-4 mx-2 rounded-2xl w-[160px] border transition-all hover:scale-103 cursor-pointer border-[rgba(241,198,135,0.17)]"
+                  @click="handleChildClick(child)"
+                  class="flex flex-col items-center gap-3 p-4 my-4 mx-2 rounded-2xl w-[160px] border transition-smooth hover:scale-105 cursor-pointer border-[rgba(241,198,135,0.17)]"
                   :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.15)] to-[rgba(241,198,135,0.15)]' : 'bg-gradient-to-r from-[rgba(190,158,119,0.15)] to-[rgba(241,198,135,0.15)]'"
                 >
                   <img 

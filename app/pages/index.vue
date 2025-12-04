@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="animate-fade-in">
     <HeroSlider />
   </div>
 </template>

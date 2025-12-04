@@ -60,9 +60,9 @@ const handleRead = (book: Book) => {
 </script>
 
 <template>
-  <div class="relative w-full overflow-visible px-4 sm:px-6 lg:px-10 pb-16">
+  <div class="relative w-full overflow-visible px-4 sm:px-6 lg:px-10 pb-16 animate-fade-in">
     <!-- Page Title -->
-    <div class="text-center mb-12">
+    <div class="text-center mb-12 animate-fade-in-down">
       <p 
         class="text-lg lg:text-xl"
         :style="{ color: textColor, opacity: 0.8 }"
@@ -87,9 +87,10 @@ const handleRead = (book: Book) => {
     <!-- Books Grid -->
     <div class="w-[95%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10 lg:gap-8 xl:gap-10">
       <div
-        v-for="book in books"
+        v-for="(book, index) in books"
         :key="book.id"
-        class="flex flex-col items-center"
+        class="flex flex-col items-center animate-fade-in-scale"
+        :style="{ animationDelay: `${index * 0.15}s` }"
       >
         <!-- Book Title and Author -->
         <div class="text-center mb-2">
@@ -111,7 +112,7 @@ const handleRead = (book: Book) => {
         <!-- Book Image -->
         <div 
           @click="handleRead(book)"
-          class="w-[50%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-transform hover:scale-105 cursor-pointer"
+          class="w-[50%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-smooth img-hover-lift cursor-pointer"
         >
           <img
             :src="book.image"
@@ -127,7 +128,7 @@ const handleRead = (book: Book) => {
           <div class="flex flex-col items-center gap-2">
             <button
               @click="handleDownload(book)"
-              class="w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-105 border-1"
+              class="w-14 h-14 rounded-full flex items-center justify-center transition-smooth btn-hover-glow border-1 hover:scale-105"
               :style="{ 
                 background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.23) 0%, rgba(139, 114, 78, 0.23) 100%)',
                 borderColor: primaryColor
@@ -158,7 +159,7 @@ const handleRead = (book: Book) => {
           <div class="flex flex-col items-center gap-2">
             <button
               @click="handleRead(book)"
-              class="w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-105 border-1"
+              class="w-14 h-14 rounded-full flex items-center justify-center transition-smooth btn-hover-glow border-1 hover:scale-105"
               :style="{ 
                 background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.23) 0%, rgba(139, 114, 78, 0.23) 100%)',
                 borderColor: primaryColor
@@ -204,10 +205,6 @@ const handleRead = (book: Book) => {
 
 <style scoped>
 /* Add smooth transitions */
-button {
-  transition: all 0.2s ease-in-out;
-}
-
 button:active {
   transform: scale(0.95);
 }

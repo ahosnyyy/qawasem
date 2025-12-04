@@ -214,12 +214,12 @@ async function handleSearch() {
 </script>
 
 <template>
-  <div>
+  <div class="animate-fade-in">
     <div class="relative flex flex-col items-center justify-center w-full px-4 md:px-8 lg:px-12">
       <!-- Title and Search Section -->
       <div class="flex flex-col items-center gap-8 w-full max-w-4xl mx-auto px-4">
         <!-- Title -->
-        <h1 class="text-2xl md:text-3xl text-center mb-4"
+        <h1 class="text-2xl md:text-3xl text-center mb-4 animate-fade-in-down"
         :style="{ color: textColor }"
         >
           البحث بين شخصين
@@ -227,31 +227,35 @@ async function handleSearch() {
         
         <!-- Select Menu -->
         <div class="flex flex-col sm:flex-row gap-4 md:gap-12 w-full items-center justify-center">
-          <PersonSelectMenu
-            v-model="person1"
-            :items="users1"
-            :loading="status1 === 'pending'"
-            :show-loading-indicator="false"
-            placeholder="ادخل اسم الشخص الأول"
-            class="flex-1"
-            @search="searchQuery1 = $event"
-          />
+          <div class="flex-1 animate-fade-in-left animate-delay-200">
+            <PersonSelectMenu
+              v-model="person1"
+              :items="users1"
+              :loading="status1 === 'pending'"
+              :show-loading-indicator="false"
+              placeholder="ادخل اسم الشخص الأول"
+              class="w-full"
+              @search="searchQuery1 = $event"
+            />
+          </div>
           
           <img 
             src="/icons/exchange.svg" 
             alt="exchange" 
-            class="w-8 h-8 sm:w-6 sm:h-6"
+            class="w-8 h-8 sm:w-6 sm:h-6 animate-scale-in animate-delay-300"
           />
           
-          <PersonSelectMenu
-            v-model="person2"
-            :items="users2"
-            :loading="status2 === 'pending'"
-            :show-loading-indicator="false"
-            placeholder="ادخل اسم الشخص الثاني"
-            class="flex-1"
-            @search="searchQuery2 = $event"
-          />
+          <div class="flex-1 animate-fade-in-right animate-delay-200">
+            <PersonSelectMenu
+              v-model="person2"
+              :items="users2"
+              :loading="status2 === 'pending'"
+              :show-loading-indicator="false"
+              placeholder="ادخل اسم الشخص الثاني"
+              class="w-full"
+              @search="searchQuery2 = $event"
+            />
+          </div>
         </div>
         <!-- Buttons Container -->
         <div class="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-16">
@@ -259,7 +263,7 @@ async function handleSearch() {
           <button
             @click="handleSearch"
             :disabled="!person1 || !person2 || searchStatus === 'pending'"
-            class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-smooth btn-hover-glow disabled:opacity-50 disabled:cursor-not-allowed animate-fade-in-up animate-delay-300"
           >
             {{ searchStatus === 'pending' ? 'جاري البحث...' : 'اظهر نتيجة البحث' }}
           </button>
@@ -275,7 +279,8 @@ async function handleSearch() {
       </div>
       
       <!-- Search Results -->
-      <div v-if="showResults" class="w-full mt-12 mb-8">
+      <Transition name="results-fade">
+        <div v-if="showResults" class="w-full mt-12 mb-8">
         <!-- Loading State -->
         <div v-if="searchStatus === 'pending'" class="text-center py-8">
           <p :style="{ color: textColor }">جاري البحث عن السلف المشترك...</p>
@@ -299,12 +304,12 @@ async function handleSearch() {
           <div class="flex flex-col items-center w-full max-w-6xl mx-auto px-4">
             
             <!-- Common Ancestor (Parent Node) -->
-            <div class="flex flex-col items-center mb-6">
+            <div class="flex flex-col items-center mb-6 animate-fade-in-scale animate-delay-200">
               <div class="relative">
                 <img 
                   :src="searchResults.commonAncestor.image" 
                   :alt="searchResults.commonAncestor.name"
-                  class="rounded-full object-cover w-32 h-32 md:w-36 md:h-36"
+                  class="rounded-full object-cover w-32 h-32 md:w-36 md:h-36 img-hover-lift transition-smooth"
                   style="box-shadow: 0 0 15px rgba(241, 198, 135, 0.6), 0 0 30px rgba(241, 198, 135, 0.4);"
                 />
               </div>
@@ -350,14 +355,15 @@ async function handleSearch() {
               <div 
                 v-for="(person, index) in searchResults.leftBranch" 
                 :key="`left-${index}`"
-                class="flex flex-col items-center"
+                class="flex flex-col items-center animate-fade-in-left"
+                :style="{ animationDelay: `${(index + 1) * 0.1}s` }"
               >
                 <!-- Portrait -->
                 <div class="relative">
                   <img 
                     :src="person.image" 
                     :alt="person.name"
-                    class="rounded-full object-cover w-22 h-22 md:w-24 md:h-24"
+                    class="rounded-full object-cover w-22 h-22 md:w-24 md:h-24 img-hover-lift transition-smooth"
                     style="box-shadow: 0 0 15px rgba(241, 198, 135, 0.6), 0 0 30px rgba(241, 198, 135, 0.4);"
                   />
                 </div>
@@ -409,14 +415,15 @@ async function handleSearch() {
               <div 
                 v-for="(person, index) in searchResults.rightBranch" 
                 :key="`right-${index}`"
-                class="flex flex-col items-center"
+                class="flex flex-col items-center animate-fade-in-right"
+                :style="{ animationDelay: `${(index + 1) * 0.1}s` }"
               >
                 <!-- Portrait -->
                 <div class="relative">
                   <img 
                     :src="person.image" 
                     :alt="person.name"
-                    class="rounded-full object-cover w-22 h-22 md:w-24 md:h-24"
+                    class="rounded-full object-cover w-22 h-22 md:w-24 md:h-24 img-hover-lift transition-smooth"
                     style="box-shadow: 0 0 15px rgba(241, 198, 135, 0.6), 0 0 30px rgba(241, 198, 135, 0.4);"
                   />
                 </div>
@@ -467,6 +474,7 @@ async function handleSearch() {
           </div>
         </div>
       </div>
+      </Transition>
       
       <div v-if="!showResults" class="relative w-full flex justify-center">
         
@@ -475,3 +483,14 @@ async function handleSearch() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.results-fade-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.results-fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+</style>
