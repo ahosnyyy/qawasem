@@ -121,7 +121,7 @@ onUnmounted(() => {
       base: `!rounded-2xl ${baseBackground} !border !border-[rgba(241,198,135,0.17)] !ring-0 focus-visible:!ring-0 focus-visible:!outline-none !text-[#BE9E77]`,
       trailingIcon: '!text-[#F1C687]',
       placeholder: '!text-[#BE9E77] opacity-70',
-      content: `!rounded-2xl ${contentBackground} !border !border-[rgba(241,198,135,0.17)] min-w-fit`,
+      content: `!rounded-2xl ${contentBackground} !border !border-[rgba(241,198,135,0.17)] w-full max-w-[90vw] sm:max-w-none sm:min-w-fit`,
       separator: '!bg-[rgba(241,198,135,0.17)]',
       item: '!text-[#BE9E77] data-highlighted:not-data-disabled:before:bg-[rgba(241,198,135,0.1)]',
       input: '!border-[rgba(241,198,135,0.17)] !text-[#BE9E77] placeholder:!text-[#F1C687]'
