@@ -180,6 +180,13 @@ onUnmounted(() => {
             <p class="text-base text-xl" :style="{ color: textColor }">
               {{ memberDetails.data.fullName }}
             </p>
+            <p 
+              v-if="!memberDetails.data.isStillLive"
+              class="text-base text-sm mt-1"
+              :style="{ color: textColor, opacity: 0.7 }"
+            >
+              {{ memberDetails.data.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
+            </p>
           </div>  
         <!-- Image Section -->
           <div class="flex justify-center mb-6">

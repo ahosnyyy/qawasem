@@ -231,6 +231,13 @@ function selectUser(user: User) {
                 >
                   {{ user.label }}
                 </p>
+                <p 
+                  v-if="!user.details.isStillLive"
+                  class="text-center text-xs mt-1"
+                  :style="{ color: selectedUser?.value === user.value ? '#4A2E1E' : textColor, opacity: 0.7 }"
+                >
+                  {{ user.details.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
+                </p>
               </div>
             </div>
           </div>
@@ -269,6 +276,13 @@ function selectUser(user: User) {
                     </p>
                     <p class="text-base text-lg" :style="{ color: textColor }">
                       {{ memberDetails.data.fullName }}
+                    </p>
+                    <p 
+                      v-if="!memberDetails.data.isStillLive"
+                      class="text-base text-sm mt-1"
+                      :style="{ color: textColor, opacity: 0.7 }"
+                    >
+                      {{ memberDetails.data.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
                     </p>
                   </div>
 

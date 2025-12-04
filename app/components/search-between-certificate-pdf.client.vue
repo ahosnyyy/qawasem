@@ -67,6 +67,7 @@ interface AncestorMember {
   fullName: string
   photo: string
   isStillLive: boolean
+  gender: string
   parent: any
 }
 
@@ -461,11 +462,11 @@ async function generatePDF() {
       treeStartY: 200,            // Y position of common ancestor
       imageSize: 56,              // Size for branch nodes
       commonImageSize: 80,        // Size for common ancestor node
-      verticalSpacing: 130,       // Space between nodes vertically (includes name + bigger gap + connector)
+      verticalSpacing: 140,       // Space between nodes vertically (includes name + bigger gap + connector)
       horizontalSpacing: 210,     // Space between left and right branches
       nameBelowNodeOffset: 16,    // Distance from bottom of node down to name text
       dotBelowNameOffset: 30,     // Distance from bottom of name down to junction dot (more space after names)
-      branchLabelOffset: 48       // Distance from last node bottom to branch label
+      branchLabelOffset: 56       // Distance from last node bottom to branch label
     }
     
     // Draw visual tree
@@ -489,8 +490,18 @@ async function generatePDF() {
     const commonNameY = commonY + commonImageSize / 2 + 15
     textCtx.fillText(commonAncestorName.value || '', centerX, commonNameY)
     
+    // Add "رحمه الله" / "رحمها الله" below common ancestor name if not still alive
+    if (props.commonAncestor && !props.commonAncestor.isStillLive) {
+      const rahmaText = props.commonAncestor.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله'
+      textCtx.font = '16px "Mohammad Bold Art", sans-serif'
+      textCtx.fillStyle = '#B48E65'
+      textCtx.globalAlpha = 0.7
+      textCtx.fillText(rahmaText, centerX, commonNameY + 24)
+      textCtx.globalAlpha = 1.0
+    }
+    
     // Junction dot under the name (extra space for better readability)
-    const headDotY = commonNameY + 36
+    const headDotY = commonNameY + 48
     drawJunctionCircle(centerX, headDotY, '#B48E65')
     
     // Vertical dashed line from head dot down to branch junction line
@@ -527,9 +538,19 @@ async function generatePDF() {
       textCtx.textAlign = 'center'
       textCtx.fillText(member.fullName || '', rightBranchX, nameY)
       
+      // Add "رحمه الله" / "رحمها الله" below name if not still alive
+      if (!member.isStillLive) {
+        const rahmaText = member.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله'
+        textCtx.font = '14px "Mohammad Bold Art", sans-serif'
+        textCtx.fillStyle = '#B48E65'
+        textCtx.globalAlpha = 0.7
+        textCtx.fillText(rahmaText, rightBranchX, nameY + 24)
+        textCtx.globalAlpha = 1.0
+      }
+      
       // Draw connector (dot + dashed line) except for last item
       if (i < member1Array.length - 1) {
-        const dotY = nameY + layout.dotBelowNameOffset
+        const dotY = nameY + layout.dotBelowNameOffset + (!member.isStillLive ? 18 : 0)
         const nextNodeCenterY = branchStartY + (i + 1) * verticalSpacing
         
         // Dashed line from dot down to just above next node
@@ -565,9 +586,19 @@ async function generatePDF() {
       textCtx.textAlign = 'center'
       textCtx.fillText(member.fullName || '', leftBranchX, nameY)
       
+      // Add "رحمه الله" / "رحمها الله" below name if not still alive
+      if (!member.isStillLive) {
+        const rahmaText = member.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله'
+        textCtx.font = '14px "Mohammad Bold Art", sans-serif'
+        textCtx.fillStyle = '#B48E65'
+        textCtx.globalAlpha = 0.7
+        textCtx.fillText(rahmaText, leftBranchX, nameY + 18)
+        textCtx.globalAlpha = 1.0
+      }
+      
       // Connector (dot + dashed line) except for last item
       if (i < member2Array.length - 1) {
-        const dotY = nameY + layout.dotBelowNameOffset
+        const dotY = nameY + layout.dotBelowNameOffset + (!member.isStillLive ? 18 : 0)
         const nextNodeCenterY = branchStartY + (i + 1) * verticalSpacing
         
         drawDashedLine(leftBranchX, dotY, leftBranchX, nextNodeCenterY - imageSize / 2, '#B48E65')

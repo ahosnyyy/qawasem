@@ -88,6 +88,7 @@ interface ParentMember {
   fullName: string
   photo: string
   isStillLive: boolean
+  gender: string
   parent: ParentMember | null
 }
 
@@ -134,14 +135,16 @@ const { data: memberDetails, status: detailsStatus, error: detailsError, refresh
 )
 
 // Build hierarchy from parent chain
-const buildHierarchy = (member: ParentMember | null, currentMember: MemberDetailsResponse['data'] | null): Array<{ name: string; image: string }> => {
-  const hierarchy: Array<{ name: string; image: string }> = []
+const buildHierarchy = (member: ParentMember | null, currentMember: MemberDetailsResponse['data'] | null): Array<{ name: string; image: string; isStillLive: boolean; gender: string }> => {
+  const hierarchy: Array<{ name: string; image: string; isStillLive: boolean; gender: string }> = []
   
   // Add current member first
   if (currentMember) {
     hierarchy.push({
       name: currentMember.fullName,
-      image: currentMember.photoUrl
+      image: currentMember.photoUrl,
+      isStillLive: currentMember.isStillLive,
+      gender: currentMember.gender
     })
   }
   
@@ -150,7 +153,9 @@ const buildHierarchy = (member: ParentMember | null, currentMember: MemberDetail
   while (current) {
     hierarchy.push({
       name: current.fullName,
-      image: current.photo
+      image: current.photo,
+      isStillLive: current.isStillLive,
+      gender: current.gender
     })
     current = current.parent
   }
@@ -249,6 +254,13 @@ async function handleSearch() {
             >
               {{ searchResults.mainTitle }}
             </h2>
+            <p 
+              v-if="!memberDetails?.data?.isStillLive"
+              class="text-lg md:text-xl mb-16 text-center"
+              :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif', opacity: 0.7 }"
+            >
+              {{ memberDetails?.data?.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
+            </p>
             
             <!-- Lineage Paragraph -->
             <p 
@@ -285,6 +297,13 @@ async function handleSearch() {
                 :style="{ color: textColor }"
               >
                 {{ person.name }}
+              </p>
+              <p 
+                v-if="!person.isStillLive"
+                class="mt-1 text-center text-xs"
+                :style="{ color: textColor, opacity: 0.7 }"
+              >
+                {{ person.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
               </p>
               
               <!-- Connecting Line (except for last item) -->

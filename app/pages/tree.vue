@@ -1,3 +1,11 @@
+<script setup lang="ts">
+const { isDark } = useTheme();
+
+const treeImage = computed(() => {
+  return isDark.value ? '/images/tree-dark.png' : '/images/tree.png'
+})
+</script>
+
 <template>
   <div>
     <div class="relative flex flex-col items-center justify-center w-full px-4 sm:px-6 lg:px-10">
@@ -16,20 +24,18 @@
       </ClientOnly>
       
       <div class="relative w-full md:w-[70%] lg:w-[48%] flex justify-center lg:-mt-10">
-        <!-- Light mode tree -->
+        <!-- Theme-aware tree image -->
         <img 
-          src="/images/tree.png" 
+          :src="treeImage" 
           alt="شجرة القواسم" 
           class="w-full h-auto object-contain"
         />
         
-        <!-- Tree root overlay at 2/3 from top 
         <img 
-          src="/images/tree-root.svg" 
+          src="/logo.svg" 
           alt="جذر الشجرة" 
-          class="absolute top-[66.67%] left-1/2 transform -translate-x-1/3 -translate-y-1/2 w-auto h-auto max-w-[20%] z-10"
+          class="absolute top-[78%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-auto h-auto max-w-[25%] z-10"
         />
-        -->
       </div>
     </div>
   </div>

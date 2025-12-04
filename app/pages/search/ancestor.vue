@@ -139,6 +139,7 @@ interface AncestorMember {
   fullName: string
   photo: string
   isStillLive: boolean
+  gender: string
   parent: any
 }
 
@@ -181,15 +182,21 @@ const searchResults = computed(() => {
   return {
     commonAncestor: {
       name: data.commonAncestor.fullName,
-      image: data.commonAncestor.photo
+      image: data.commonAncestor.photo,
+      isStillLive: data.commonAncestor.isStillLive,
+      gender: data.commonAncestor.gender
     },
     leftBranch: data.member1.map((member: AncestorMember) => ({
       name: member.fullName,
-      image: member.photo
+      image: member.photo,
+      isStillLive: member.isStillLive,
+      gender: member.gender
     })).reverse(),
     rightBranch: data.member2.map((member: AncestorMember) => ({
       name: member.fullName,
-      image: member.photo
+      image: member.photo,
+      isStillLive: member.isStillLive,
+      gender: member.gender
     })).reverse()
   }
 })
@@ -307,6 +314,13 @@ async function handleSearch() {
               >
                 {{ searchResults.commonAncestor.name }}
               </p>
+              <p 
+                v-if="!searchResults.commonAncestor.isStillLive"
+                class="mt-1 text-center text-sm"
+                :style="{ color: textColor, opacity: 0.7 }"
+              >
+                {{ (searchResults.commonAncestor.gender || searchData?.data?.commonAncestor?.gender) === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
+              </p>
             </div>
 
             <!-- Connecting Lines from Parent to Branches -->
@@ -354,6 +368,13 @@ async function handleSearch() {
                   :style="{ color: textColor }"
                 >
                   {{ person.name }}
+                </p>
+                <p 
+                  v-if="!person.isStillLive"
+                  class="mt-1 text-center text-xs"
+                  :style="{ color: textColor, opacity: 0.7 }"
+                >
+                  {{ (person.gender || searchData?.data?.member1?.[searchResults.leftBranch.length - 1 - index]?.gender) === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
                 </p>
                 
                 <!-- Connecting Line (except for last item) -->
@@ -406,6 +427,13 @@ async function handleSearch() {
                   :style="{ color: textColor }"
                 >
                   {{ person.name }}
+                </p>
+                <p 
+                  v-if="!person.isStillLive"
+                  class="mt-1 text-center text-xs"
+                  :style="{ color: textColor, opacity: 0.7 }"
+                >
+                  {{ (person.gender || searchData?.data?.member2?.[searchResults.rightBranch.length - 1 - index]?.gender) === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
                 </p>
                 
                 <!-- Connecting Line (except for last item) -->
