@@ -35,7 +35,7 @@ if (!currentBook) {
 
 const initialPageFromQuery = Number(route.query.page);
 const page = ref(!Number.isNaN(initialPageFromQuery) && initialPageFromQuery > 0 ? initialPageFromQuery : 1);
-const pdf = shallowRef<unknown>(null);
+const pdf = shallowRef<InstanceType<typeof import("pdfjs-dist")["PDFDocumentLoadingTask"]> | null>(null);
 const pages = ref(0);
 
 const { isDark } = useTheme();
@@ -49,6 +49,10 @@ const showShareModal = ref(false);
 const shareUrl = ref("");
 const includeCurrentPage = ref(false);
 const copied = ref(false);
+const isFullScreen = ref(false);
+const zoomScale = ref(1);
+const fitToHeight = ref(false);
+const fullscreenHeight = ref(0);
 const encodedShareUrl = computed(() => encodeURIComponent(shareUrl.value || ""));
 
 // Keyboard navigation handler (RTL: Right = Previous, Left = Next)
@@ -131,6 +135,39 @@ function openShareModal() {
 function closeShareModal() {
   showShareModal.value = false;
 }
+
+function openFullScreen() {
+  zoomScale.value = 1;
+  fitToHeight.value = true;
+  isFullScreen.value = true;
+  document.body.style.overflow = "hidden";
+  fullscreenHeight.value = window.innerHeight - 140;
+}
+
+function closeFullScreen() {
+  isFullScreen.value = false;
+  document.body.style.overflow = "";
+}
+
+function zoomIn() {
+  fitToHeight.value = false;
+  zoomScale.value = Math.min(zoomScale.value + 0.05, 2);
+}
+
+function zoomOut() {
+  fitToHeight.value = false;
+  zoomScale.value = Math.max(zoomScale.value - 0.05, 0.5);
+}
+
+function fitHeight() {
+  fitToHeight.value = true;
+}
+
+const zoomPercentage = computed(() => {
+  if (fitToHeight.value)
+    return "ملائم";
+  return `${Math.round(zoomScale.value * 100)}%`;
+});
 
 async function copyToClipboard() {
   if (!shareUrl.value) {
@@ -232,6 +269,20 @@ watch([includeCurrentPage, page], () => {
       </button>
 
       <div class="flex items-center gap-3">
+        <button
+          class="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
+          :style="{
+            background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+          }"
+          title="ملء الشاشة"
+          @click="openFullScreen"
+        >
+          <UIcon
+            name="i-lucide-maximize"
+            class="w-4 h-4"
+            :style="{ color: textColor }"
+          />
+        </button>
         <span
           class="px-4 py-1 rounded-full"
           :style="{
@@ -287,7 +338,187 @@ watch([includeCurrentPage, page], () => {
       </button>
     </div>
 
-    <UModal v-model:open="showShareModal">
+    <!-- Fullscreen Overlay -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="isFullScreen"
+          class="fixed inset-0 z-50 flex flex-col"
+          :style="{
+            backgroundColor: isDark ? '#1a1a1a' : '#f5f0e8',
+          }"
+        >
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-2">
+            <h2 class="text-lg font-semibold" :style="{ color: textColor }">
+              {{ currentBook?.title }}
+            </h2>
+            <button
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110"
+              :style="{
+                background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+              }"
+              title="إغلاق"
+              @click="closeFullScreen"
+            >
+              <UIcon
+                name="i-lucide-x"
+                class="w-5 h-5"
+                :style="{ color: textColor }"
+              />
+            </button>
+          </div>
+
+          <!-- PDF Viewer -->
+          <div class="flex-1 overflow-auto px-4">
+            <div class="min-h-full flex items-start justify-center py-4">
+              <ClientOnly>
+                <VuePDF
+                  v-if="pdf"
+                  :pdf="pdf"
+                  :page="page"
+                  :scale="fitToHeight ? undefined : zoomScale"
+                  :height="fitToHeight ? fullscreenHeight : undefined"
+                />
+              </ClientOnly>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex justify-center items-center gap-4 py-2 flex-wrap">
+            <!-- Prev Button -->
+            <button
+              class="flex items-center gap-2 disabled:opacity-30 hover:opacity-70 transition-all"
+              :disabled="page <= 1"
+              :style="{ color: textColor }"
+              @click="page = page > 1 ? page - 1 : page"
+            >
+              <div class="flex items-center">
+                <span
+                  class="w-3 h-3 -rotate-90"
+                  :style="{
+                    backgroundColor: textColor,
+                    WebkitMask: 'url(/icons/down.svg) center / contain no-repeat',
+                    mask: 'url(/icons/down.svg) center / contain no-repeat',
+                  }"
+                  aria-hidden="true"
+                />
+                <span
+                  class="w-3 h-3 -rotate-90"
+                  :style="{
+                    backgroundColor: textColor,
+                    WebkitMask: 'url(/icons/down.svg) center / contain no-repeat',
+                    mask: 'url(/icons/down.svg) center / contain no-repeat',
+                  }"
+                  aria-hidden="true"
+                />
+              </div>
+              <span>الصفحة السابقة</span>
+            </button>
+
+            <!-- Zoom Controls -->
+            <div class="flex items-center gap-1">
+              <button
+                class="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-30"
+                :style="{
+                  color: textColor,
+                  background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+                }"
+                title="تصغير"
+                :disabled="!fitToHeight && zoomScale <= 0.5"
+                @click="zoomOut"
+              >
+                <UIcon name="i-lucide-minus" class="w-4 h-4" />
+              </button>
+              <button
+                class="px-3 py-1 rounded-full text-sm transition-all hover:scale-105"
+                :style="{
+                  color: fitToHeight ? '#22c55e' : textColor,
+                  background: fitToHeight
+                    ? 'linear-gradient(180deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.3) 100%)'
+                    : 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+                }"
+                :title="fitToHeight ? 'إعادة تعيين' : 'ملائم للارتفاع'"
+                @click="fitHeight"
+              >
+                {{ zoomPercentage }}
+              </button>
+              <button
+                class="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-30"
+                :style="{
+                  color: textColor,
+                  background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+                }"
+                title="تكبير"
+                :disabled="!fitToHeight && zoomScale >= 2"
+                @click="zoomIn"
+              >
+                <UIcon name="i-lucide-plus" class="w-4 h-4" />
+              </button>
+            </div>
+
+            <!-- Page Counter -->
+            <span
+              class="px-4 py-1 rounded-full"
+              :style="{
+                color: textColor,
+                background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+              }"
+            >
+              {{ page }} / {{ pages }}
+            </span>
+
+            <!-- Share Button -->
+            <button
+              class="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
+              :style="{
+                background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+              }"
+              title="مشاركة"
+              @click="openShareModal"
+            >
+              <UIcon
+                name="i-lucide-share-2"
+                class="w-4 h-4"
+                :style="{ color: textColor }"
+              />
+            </button>
+
+            <!-- Next Button -->
+            <button
+              class="flex items-center gap-2 disabled:opacity-30 hover:opacity-70 transition-all"
+              :disabled="page >= pages"
+              :style="{ color: textColor }"
+              @click="page = page < pages ? page + 1 : page"
+            >
+              <span>الصفحة التالية</span>
+              <div class="flex items-center">
+                <span
+                  class="w-3 h-3 rotate-90"
+                  :style="{
+                    backgroundColor: textColor,
+                    WebkitMask: 'url(/icons/down.svg) center / contain no-repeat',
+                    mask: 'url(/icons/down.svg) center / contain no-repeat',
+                  }"
+                  aria-hidden="true"
+                />
+                <span
+                  class="w-3 h-3 rotate-90"
+                  :style="{
+                    backgroundColor: textColor,
+                    WebkitMask: 'url(/icons/down.svg) center / contain no-repeat',
+                    mask: 'url(/icons/down.svg) center / contain no-repeat',
+                  }"
+                  aria-hidden="true"
+                />
+              </div>
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <UModal v-model:open="showShareModal" :ui="{ overlay: 'z-60', content: 'z-60' }">
       <template #content>
         <div class="p-6 text-center relative">
           <button
@@ -401,3 +632,15 @@ watch([includeCurrentPage, page], () => {
     </UModal>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
