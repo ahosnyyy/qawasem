@@ -50,10 +50,21 @@ const shareUrl = ref("");
 const includeCurrentPage = ref(false);
 const copied = ref(false);
 const isFullScreen = ref(false);
-const zoomScale = ref(1);
-const fitToHeight = ref(false);
+const fitToHeight = ref(true);
 const fullscreenHeight = ref(0);
+const currentHeight = ref(0);
+const pageInput = ref("");
 const encodedShareUrl = computed(() => encodeURIComponent(shareUrl.value || ""));
+const pageInputColor = computed(() => (isDark.value ? "#FDF5E7" : "#3D2B1F"));
+const pageInputPlaceholderColor = computed(() => (isDark.value ? "rgba(253, 245, 231, 0.55)" : "rgba(61, 43, 31, 0.5)"));
+
+function goToPage() {
+  const inputPage = Number.parseInt(pageInput.value, 10);
+  if (!Number.isNaN(inputPage) && inputPage >= 1 && inputPage <= pages.value) {
+    page.value = inputPage;
+  }
+  pageInput.value = "";
+}
 
 // Keyboard navigation handler (RTL: Right = Previous, Left = Next)
 function handleKeyPress(event: KeyboardEvent) {
@@ -137,11 +148,11 @@ function closeShareModal() {
 }
 
 function openFullScreen() {
-  zoomScale.value = 1;
   fitToHeight.value = true;
   isFullScreen.value = true;
   document.body.style.overflow = "hidden";
   fullscreenHeight.value = window.innerHeight - 140;
+  currentHeight.value = fullscreenHeight.value;
 }
 
 function closeFullScreen() {
@@ -151,22 +162,24 @@ function closeFullScreen() {
 
 function zoomIn() {
   fitToHeight.value = false;
-  zoomScale.value = Math.min(zoomScale.value + 0.05, 2);
+  currentHeight.value = Math.min(currentHeight.value * 1.1, fullscreenHeight.value * 2.5);
 }
 
 function zoomOut() {
   fitToHeight.value = false;
-  zoomScale.value = Math.max(zoomScale.value - 0.05, 0.5);
+  currentHeight.value = Math.max(currentHeight.value * 0.9, fullscreenHeight.value * 0.3);
 }
 
 function fitHeight() {
   fitToHeight.value = true;
+  currentHeight.value = fullscreenHeight.value;
 }
 
 const zoomPercentage = computed(() => {
-  if (fitToHeight.value)
-    return "ملائم";
-  return `${Math.round(zoomScale.value * 100)}%`;
+  if (fullscreenHeight.value <= 0)
+    return "100%";
+  const percentage = Math.round((currentHeight.value / fullscreenHeight.value) * 100);
+  return `${percentage}%`;
 });
 
 async function copyToClipboard() {
@@ -232,7 +245,7 @@ watch([includeCurrentPage, page], () => {
           fit-parent
         />
         <div v-else class="flex items-center justify-center h-96">
-          <span :style="{ color: textColor }">جاري التحميل...</span>
+          <span :style="{ color: textColor }">جارِ التحميل...</span>
         </div>
       </ClientOnly>
     </div>
@@ -283,15 +296,25 @@ watch([includeCurrentPage, page], () => {
             :style="{ color: textColor }"
           />
         </button>
-        <span
-          class="px-4 py-1 rounded-full"
+        <div
+          class="px-3 py-1 rounded-full flex items-center gap-1"
           :style="{
             color: textColor,
             background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
           }"
         >
-          {{ page }} / {{ pages }}
-        </span>
+          <input
+            v-model="pageInput"
+            type="text"
+            inputmode="numeric"
+            class="page-input w-10 text-center px-0.5 py-0.25 rounded bg-white/5 focus:bg-white/15 focus:outline-none transition"
+            :placeholder="String(page)"
+            :style="{ 'color': pageInputColor, 'caretColor': pageInputColor, '--placeholder-color': pageInputPlaceholderColor }"
+            @keydown.enter="goToPage"
+            @blur="pageInput = ''"
+          >
+          <span>/ {{ pages }}</span>
+        </div>
         <button
           class="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
           :style="{
@@ -370,15 +393,14 @@ watch([includeCurrentPage, page], () => {
           </div>
 
           <!-- PDF Viewer -->
-          <div class="flex-1 overflow-auto px-4">
+          <div class="flex-1 overflow-auto px-4" @click.self="closeFullScreen">
             <div class="min-h-full flex items-start justify-center py-4">
               <ClientOnly>
                 <VuePDF
                   v-if="pdf"
                   :pdf="pdf"
                   :page="page"
-                  :scale="fitToHeight ? undefined : zoomScale"
-                  :height="fitToHeight ? fullscreenHeight : undefined"
+                  :height="currentHeight"
                 />
               </ClientOnly>
             </div>
@@ -388,7 +410,7 @@ watch([includeCurrentPage, page], () => {
           <div class="flex justify-center items-center gap-4 py-2 flex-wrap">
             <!-- Prev Button -->
             <button
-              class="flex items-center gap-2 disabled:opacity-30 hover:opacity-70 transition-all"
+              class="flex items-center gap-2 disabled:opacity-30 hover:opacity-70 transition-all me-12"
               :disabled="page <= 1"
               :style="{ color: textColor }"
               @click="page = page > 1 ? page - 1 : page"
@@ -419,38 +441,47 @@ watch([includeCurrentPage, page], () => {
             <!-- Zoom Controls -->
             <div class="flex items-center gap-1">
               <button
-                class="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-30"
+                class="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-30"
                 :style="{
                   color: textColor,
                   background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
                 }"
                 title="تصغير"
-                :disabled="!fitToHeight && zoomScale <= 0.5"
+                :disabled="currentHeight <= fullscreenHeight * 0.3"
                 @click="zoomOut"
               >
                 <UIcon name="i-lucide-minus" class="w-4 h-4" />
               </button>
               <button
-                class="px-3 py-1 rounded-full text-sm transition-all hover:scale-105"
+                class="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                :class="{ 'opacity-50': fitToHeight }"
                 :style="{
-                  color: fitToHeight ? '#22c55e' : textColor,
-                  background: fitToHeight
-                    ? 'linear-gradient(180deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.3) 100%)'
-                    : 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+                  color: textColor,
+                  background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
                 }"
-                :title="fitToHeight ? 'إعادة تعيين' : 'ملائم للارتفاع'"
+                title="ملائم للارتفاع"
                 @click="fitHeight"
               >
-                {{ zoomPercentage }}
+                <UIcon name="i-lucide-move-vertical" class="w-4 h-4" />
               </button>
+              <span
+                class="px-3 py-1 rounded-full text-sm min-w-14 text-center"
+                :style="{
+                  color: textColor,
+                  background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
+                }"
+              >
+                {{ zoomPercentage }}
+              </span>
+
               <button
-                class="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-30"
+                class="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-30"
                 :style="{
                   color: textColor,
                   background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
                 }"
                 title="تكبير"
-                :disabled="!fitToHeight && zoomScale >= 2"
+                :disabled="currentHeight >= fullscreenHeight * 2.5"
                 @click="zoomIn"
               >
                 <UIcon name="i-lucide-plus" class="w-4 h-4" />
@@ -458,15 +489,25 @@ watch([includeCurrentPage, page], () => {
             </div>
 
             <!-- Page Counter -->
-            <span
-              class="px-4 py-1 rounded-full"
+            <div
+              class="px-3 py-1 rounded-full flex items-center gap-1"
               :style="{
                 color: textColor,
                 background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.2) 0%, rgba(139, 114, 78, 0.2) 100%)',
               }"
             >
-              {{ page }} / {{ pages }}
-            </span>
+              <input
+                v-model="pageInput"
+                type="text"
+                inputmode="numeric"
+                class="page-input w-10 text-center px-0.5 py-0.25 rounded bg-white/5 focus:bg-white/15 focus:outline-none transition"
+                :placeholder="String(page)"
+                :style="{ 'color': pageInputColor, 'caretColor': pageInputColor, '--placeholder-color': pageInputPlaceholderColor }"
+                @keydown.enter="goToPage"
+                @blur="pageInput = ''"
+              >
+              <span>/ {{ pages }}</span>
+            </div>
 
             <!-- Share Button -->
             <button
@@ -486,7 +527,7 @@ watch([includeCurrentPage, page], () => {
 
             <!-- Next Button -->
             <button
-              class="flex items-center gap-2 disabled:opacity-30 hover:opacity-70 transition-all"
+              class="flex items-center gap-2 disabled:opacity-30 hover:opacity-70 transition-all ms-12"
               :disabled="page >= pages"
               :style="{ color: textColor }"
               @click="page = page < pages ? page + 1 : page"
@@ -634,6 +675,11 @@ watch([includeCurrentPage, page], () => {
 </template>
 
 <style scoped>
+:global(.page-input::placeholder) {
+  color: var(--placeholder-color, rgba(255, 255, 255, 0.5));
+  opacity: 1;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
