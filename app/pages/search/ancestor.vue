@@ -377,8 +377,8 @@ defineShortcuts({
                 </p>
               </div>
 
-              <!-- Connecting Lines from Parent to Branches -->
-              <div class="relative w-full">
+              <!-- Connecting Lines from Parent to Branches (only show if both branches have members) -->
+              <div v-if="searchResults.leftBranch.length > 0 && searchResults.rightBranch.length > 0" class="relative w-full">
                 <!-- Vertical line from parent -->
                 <div
                   class="absolute left-1/2 top-0 w-px h-16 transform -translate-x-1/2"
@@ -396,8 +396,8 @@ defineShortcuts({
                 />
               </div>
 
-              <!-- Two Branches -->
-              <div class="flex flex-row w-full items-start justify-between gap-12 md:gap-16 lg:gap-24 mt-6">
+              <!-- Two Branches Layout (when both have members) -->
+              <div v-if="searchResults.leftBranch.length > 0 && searchResults.rightBranch.length > 0" class="flex flex-row w-full items-start justify-between gap-12 md:gap-16 lg:gap-24 mt-6">
                 <!-- Left Branch -->
                 <div class="flex-1 flex flex-col items-center">
                   <div
@@ -516,6 +516,76 @@ defineShortcuts({
                   >
                     الشخصية الثانية
                   </p>
+                </div>
+              </div>
+
+              <!-- Single Branch Layout (stratified - when one branch is empty) -->
+              <div v-else class="flex flex-col items-center w-full max-w-md mx-auto">
+                <!-- The non-empty branch -->
+                <div
+                  v-for="(person, index) in (searchResults.leftBranch.length > 0 ? searchResults.leftBranch : searchResults.rightBranch)"
+                  :key="`single-${index}`"
+                  class="flex flex-col items-center animate-fade-in"
+                  :style="{ animationDelay: `${(index + 1) * 0.1}s` }"
+                >
+                  <!-- Connecting Line from common ancestor (before first item) -->
+                  <div
+                    v-if="index === 0"
+                    class="h-6 md:h-8 mb-4 relative flex items-start justify-center"
+                  >
+                    <!-- Circle with Dot at top -->
+                    <div class="relative z-10 flex items-center justify-center -translate-y-1/2">
+                      <div class="absolute w-6 h-6 rounded-full border-1" :style="{ borderColor: textColor }" />
+                      <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: textColor }" />
+                    </div>
+                    <!-- Dashed Line going down -->
+                    <div
+                      class="absolute top-0 left-1/2 transform -translate-x-1/2 h-full w-px"
+                      :style="{ background: `repeating-linear-gradient(to bottom, ${textColor} 0px, ${textColor} 2px, transparent 2px, transparent 6px)` }"
+                    />
+                  </div>
+
+                  <!-- Portrait -->
+                  <div class="relative">
+                    <img
+                      :src="person.image"
+                      :alt="person.name"
+                      class="rounded-full object-cover w-22 h-22 md:w-24 md:h-24 img-hover-lift transition-smooth"
+                      style="box-shadow: 0 0 15px rgba(241, 198, 135, 0.6), 0 0 30px rgba(241, 198, 135, 0.4);"
+                    >
+                  </div>
+
+                  <!-- Name -->
+                  <p
+                    class="mt-4 text-center text-sm md:text-base"
+                    :style="{ color: textColor }"
+                  >
+                    {{ person.name }}
+                  </p>
+                  <p
+                    v-if="!person.isStillLive"
+                    class="mt-1 text-center text-xs"
+                    :style="{ color: textColor, opacity: 0.7 }"
+                  >
+                    {{ person.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
+                  </p>
+
+                  <!-- Connecting Line (after each item except last) -->
+                  <div
+                    v-if="index < (searchResults.leftBranch.length > 0 ? searchResults.leftBranch : searchResults.rightBranch).length - 1"
+                    class="h-6 md:h-8 mt-4 relative flex items-start justify-center"
+                  >
+                    <!-- Dashed Line -->
+                    <div
+                      class="absolute top-0 left-1/2 transform -translate-x-1/2 h-full w-px"
+                      :style="{ background: `repeating-linear-gradient(to bottom, ${textColor} 0px, ${textColor} 2px, transparent 2px, transparent 6px)` }"
+                    />
+                    <!-- Circle with Dot -->
+                    <div class="relative z-10 flex items-center justify-center -translate-y-1/2">
+                      <div class="absolute w-6 h-6 rounded-full border-1" :style="{ borderColor: textColor }" />
+                      <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: textColor }" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

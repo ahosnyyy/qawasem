@@ -492,141 +492,200 @@ async function generatePDF(_mode: "print" | "download" = "print") {
       textCtx.globalAlpha = 1.0;
     }
 
+    // Check if we have a stratified layout (one branch is empty)
+    const member1Array = [...(props.member1 || [])].reverse();
+    const member2Array = [...(props.member2 || [])].reverse();
+    const hasBothBranches = member1Array.length > 0 && member2Array.length > 0;
+    const hasOnlyMember1 = member1Array.length > 0 && member2Array.length === 0;
+    const hasOnlyMember2 = member2Array.length > 0 && member1Array.length === 0;
+
     // Junction dot under the name (extra space for better readability)
     const headDotY = commonNameY + 48;
     drawJunctionCircle(centerX, headDotY, "#B48E65");
 
     // Vertical dashed line from head dot down to branch junction line
-    // Increase this value to make the dotted line taller
     const junctionY = headDotY + 40;
     drawDashedLine(centerX, headDotY, centerX, junctionY, "#B48E65");
 
-    // Horizontal line connecting both branches at the bottom of the vertical line
+    // Branch X positions
     const leftBranchX = centerX - horizontalSpacing;
     const rightBranchX = centerX + horizontalSpacing;
-    drawDashedLine(leftBranchX, junctionY, rightBranchX, junctionY, "#B48E65");
+
+    // Only draw horizontal line if both branches have members
+    if (hasBothBranches) {
+      drawDashedLine(leftBranchX, junctionY, rightBranchX, junctionY, "#B48E65");
+    }
 
     // Where branch nodes start below the junction line
-    // Increase distance between head node and first branch nodes by increasing this offset
     const branchStartY = junctionY + 5;
 
-    // Draw Member 1 Branch (Right side) - reverse to show from ancestor to person
-    const member1Array = [...(props.member1 || [])].reverse();
-    const member1ImagesReversed = [...member1Images].reverse();
-    let currentY1 = branchStartY; // Dynamic Y position that accumulates extra height
-    let lastMember1NameY = branchStartY;
-    let lastMember1ExtraHeight = 0;
+    // Variables for tracking bottom positions
+    let member1BottomY = branchStartY;
+    let member2BottomY = branchStartY;
 
-    for (let i = 0; i < member1Array.length; i++) {
-      const member = member1Array[i];
-      if (!member)
-        continue;
-      const nodeCenterY = currentY1;
-      const memberImage = member1ImagesReversed[i] || null;
+    // Stratified layout: single branch centered when one is empty
+    if (hasOnlyMember1 || hasOnlyMember2) {
+      const singleBranchArray = hasOnlyMember1 ? member1Array : member2Array;
+      const singleBranchImages = hasOnlyMember1 ? [...member1Images].reverse() : [...member2Images].reverse();
 
-      // Draw node (circle with image from API)
-      drawCircularImage(memberImage, rightBranchX, nodeCenterY, imageSize);
+      let currentY = branchStartY;
+      let lastNameY = branchStartY;
+      let lastExtraHeight = 0;
 
-      // Name below the node (similar to UI tree) - with word wrapping for long names
-      const nameY = nodeCenterY + imageSize / 2 + layout.nameBelowNodeOffset;
-      textCtx.fillStyle = "#B48E65";
-      textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
-      textCtx.textAlign = "center";
-      const maxNameWidth = 120; // Max width before wrapping
-      const nameLineHeight = 22;
-      const nameHeight = drawWrappedText(member.fullName || "", rightBranchX, nameY, maxNameWidth, nameLineHeight);
-      const extraNameHeight = nameHeight > nameLineHeight ? nameLineHeight : 0;
+      for (let i = 0; i < singleBranchArray.length; i++) {
+        const member = singleBranchArray[i];
+        if (!member)
+          continue;
 
-      // Track for label positioning
-      lastMember1NameY = nameY;
-      lastMember1ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
+        const nodeCenterY = currentY;
+        const memberImage = singleBranchImages[i] || null;
 
-      // Add "رحمه الله" / "رحمها الله" below name if not still alive
-      if (!member.isStillLive) {
-        const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
-        textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
+        // Draw node centered
+        drawCircularImage(memberImage, centerX, nodeCenterY, imageSize);
+
+        // Name below the node
+        const nameY = nodeCenterY + imageSize / 2 + layout.nameBelowNodeOffset;
         textCtx.fillStyle = "#B48E65";
-        textCtx.globalAlpha = 0.7;
-        textCtx.fillText(rahmaText, rightBranchX, nameY + nameHeight + 4);
-        textCtx.globalAlpha = 1.0;
+        textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
+        textCtx.textAlign = "center";
+        const maxNameWidth = 150;
+        const nameLineHeight = 22;
+        const nameHeight = drawWrappedText(member.fullName || "", centerX, nameY, maxNameWidth, nameLineHeight);
+        const extraNameHeight = nameHeight > nameLineHeight ? nameLineHeight : 0;
+
+        lastNameY = nameY;
+        lastExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
+
+        // Add "رحمه الله" / "رحمها الله" below name if not still alive
+        if (!member.isStillLive) {
+          const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
+          textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
+          textCtx.fillStyle = "#B48E65";
+          textCtx.globalAlpha = 0.7;
+          textCtx.fillText(rahmaText, centerX, nameY + nameHeight + 4);
+          textCtx.globalAlpha = 1.0;
+        }
+
+        // Draw connector (dot + dashed line) except for last item
+        if (i < singleBranchArray.length - 1) {
+          const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
+          const nextNodeCenterY = dotY + 40 + imageSize / 2;
+          currentY = nextNodeCenterY;
+
+          drawDashedLine(centerX, dotY, centerX, nextNodeCenterY - imageSize / 2, "#B48E65");
+          drawJunctionCircle(centerX, dotY, "#B48E65");
+        }
       }
 
-      // Draw connector (dot + dashed line) except for last item
-      if (i < member1Array.length - 1) {
-        const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
-        // Calculate next node position dynamically
-        const nextNodeCenterY = dotY + 40 + imageSize / 2; // 40px gap between dot and next node top
-        currentY1 = nextNodeCenterY;
-
-        // Dashed line from dot down to just above next node
-        drawDashedLine(rightBranchX, dotY, rightBranchX, nextNodeCenterY - imageSize / 2, "#B48E65");
-        // Junction circle at top of dashed line (just under the name)
-        drawJunctionCircle(rightBranchX, dotY, "#B48E65");
+      // No label for stratified single-branch layout
+      if (hasOnlyMember1) {
+        member1BottomY = lastNameY + layout.dotBelowNameOffset + lastExtraHeight + 10;
+      }
+      else {
+        member2BottomY = lastNameY + layout.dotBelowNameOffset + lastExtraHeight + 10;
       }
     }
+    else if (hasBothBranches) {
+      // Original two-branch layout
+      const member1ImagesReversed = [...member1Images].reverse();
+      let currentY1 = branchStartY;
+      let lastMember1NameY = branchStartY;
+      let lastMember1ExtraHeight = 0;
 
-    // Draw label for member1 under the last node (adjusted for wrapped names)
-    textCtx.font = "bold 20px \"Mohammad Bold Art\", sans-serif";
-    textCtx.fillText("الشخصية الأولي", rightBranchX, lastMember1NameY + layout.dotBelowNameOffset + lastMember1ExtraHeight + 10);
-    const member1BottomY = lastMember1NameY + layout.dotBelowNameOffset + lastMember1ExtraHeight + 40;
+      for (let i = 0; i < member1Array.length; i++) {
+        const member = member1Array[i];
+        if (!member)
+          continue;
+        const nodeCenterY = currentY1;
+        const memberImage = member1ImagesReversed[i] || null;
 
-    // Draw Member 2 Branch (Left side) - reverse to show from ancestor to person
-    const member2Array = [...(props.member2 || [])].reverse();
-    const member2ImagesReversed = [...member2Images].reverse();
-    let currentY2 = branchStartY; // Dynamic Y position that accumulates extra height
-    let lastMember2NameY = branchStartY;
-    let lastMember2ExtraHeight = 0;
+        drawCircularImage(memberImage, rightBranchX, nodeCenterY, imageSize);
 
-    for (let i = 0; i < member2Array.length; i++) {
-      const member = member2Array[i];
-      if (!member)
-        continue;
-      const nodeCenterY = currentY2;
-      const memberImage = member2ImagesReversed[i] || null;
-
-      // Draw node (circle with image from API)
-      drawCircularImage(memberImage, leftBranchX, nodeCenterY, imageSize);
-
-      // Name below the node - with word wrapping for long names
-      const nameY = nodeCenterY + imageSize / 2 + layout.nameBelowNodeOffset;
-      textCtx.fillStyle = "#B48E65";
-      textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
-      textCtx.textAlign = "center";
-      const maxNameWidth = 180; // Max width before wrapping
-      const nameLineHeight = 22;
-      const nameHeight = drawWrappedText(member.fullName || "", leftBranchX, nameY, maxNameWidth, nameLineHeight);
-      const extraNameHeight = nameHeight > nameLineHeight ? nameLineHeight : 0;
-
-      // Track for label positioning
-      lastMember2NameY = nameY;
-      lastMember2ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
-
-      // Add "رحمه الله" / "رحمها الله" below name if not still alive
-      if (!member.isStillLive) {
-        const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
-        textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
+        const nameY = nodeCenterY + imageSize / 2 + layout.nameBelowNodeOffset;
         textCtx.fillStyle = "#B48E65";
-        textCtx.globalAlpha = 0.7;
-        textCtx.fillText(rahmaText, leftBranchX, nameY + nameHeight + 4);
-        textCtx.globalAlpha = 1.0;
+        textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
+        textCtx.textAlign = "center";
+        const maxNameWidth = 120;
+        const nameLineHeight = 22;
+        const nameHeight = drawWrappedText(member.fullName || "", rightBranchX, nameY, maxNameWidth, nameLineHeight);
+        const extraNameHeight = nameHeight > nameLineHeight ? nameLineHeight : 0;
+
+        lastMember1NameY = nameY;
+        lastMember1ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
+
+        if (!member.isStillLive) {
+          const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
+          textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
+          textCtx.fillStyle = "#B48E65";
+          textCtx.globalAlpha = 0.7;
+          textCtx.fillText(rahmaText, rightBranchX, nameY + nameHeight + 4);
+          textCtx.globalAlpha = 1.0;
+        }
+
+        if (i < member1Array.length - 1) {
+          const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
+          const nextNodeCenterY = dotY + 40 + imageSize / 2;
+          currentY1 = nextNodeCenterY;
+
+          drawDashedLine(rightBranchX, dotY, rightBranchX, nextNodeCenterY - imageSize / 2, "#B48E65");
+          drawJunctionCircle(rightBranchX, dotY, "#B48E65");
+        }
       }
 
-      // Connector (dot + dashed line) except for last item
-      if (i < member2Array.length - 1) {
-        const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
-        // Calculate next node position dynamically
-        const nextNodeCenterY = dotY + 40 + imageSize / 2; // 40px gap between dot and next node top
-        currentY2 = nextNodeCenterY;
+      textCtx.font = "bold 20px \"Mohammad Bold Art\", sans-serif";
+      textCtx.fillText("الشخصية الأولي", rightBranchX, lastMember1NameY + layout.dotBelowNameOffset + lastMember1ExtraHeight + 10);
+      member1BottomY = lastMember1NameY + layout.dotBelowNameOffset + lastMember1ExtraHeight + 40;
 
-        drawDashedLine(leftBranchX, dotY, leftBranchX, nextNodeCenterY - imageSize / 2, "#B48E65");
-        drawJunctionCircle(leftBranchX, dotY, "#B48E65");
+      // Draw Member 2 Branch (Left side)
+      const member2ImagesReversed = [...member2Images].reverse();
+      let currentY2 = branchStartY;
+      let lastMember2NameY = branchStartY;
+      let lastMember2ExtraHeight = 0;
+
+      for (let i = 0; i < member2Array.length; i++) {
+        const member = member2Array[i];
+        if (!member)
+          continue;
+        const nodeCenterY = currentY2;
+        const memberImage = member2ImagesReversed[i] || null;
+
+        drawCircularImage(memberImage, leftBranchX, nodeCenterY, imageSize);
+
+        const nameY = nodeCenterY + imageSize / 2 + layout.nameBelowNodeOffset;
+        textCtx.fillStyle = "#B48E65";
+        textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
+        textCtx.textAlign = "center";
+        const maxNameWidth = 180;
+        const nameLineHeight = 22;
+        const nameHeight = drawWrappedText(member.fullName || "", leftBranchX, nameY, maxNameWidth, nameLineHeight);
+        const extraNameHeight = nameHeight > nameLineHeight ? nameLineHeight : 0;
+
+        lastMember2NameY = nameY;
+        lastMember2ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
+
+        if (!member.isStillLive) {
+          const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
+          textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
+          textCtx.fillStyle = "#B48E65";
+          textCtx.globalAlpha = 0.7;
+          textCtx.fillText(rahmaText, leftBranchX, nameY + nameHeight + 4);
+          textCtx.globalAlpha = 1.0;
+        }
+
+        if (i < member2Array.length - 1) {
+          const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
+          const nextNodeCenterY = dotY + 40 + imageSize / 2;
+          currentY2 = nextNodeCenterY;
+
+          drawDashedLine(leftBranchX, dotY, leftBranchX, nextNodeCenterY - imageSize / 2, "#B48E65");
+          drawJunctionCircle(leftBranchX, dotY, "#B48E65");
+        }
       }
+
+      textCtx.font = "bold 20px \"Mohammad Bold Art\", sans-serif";
+      textCtx.fillText("الشخصية الثانية", leftBranchX, lastMember2NameY + layout.dotBelowNameOffset + lastMember2ExtraHeight + 10);
+      member2BottomY = lastMember2NameY + layout.dotBelowNameOffset + lastMember2ExtraHeight + 40;
     }
-
-    // Draw label for member2 under the last node (adjusted for wrapped names)
-    textCtx.font = "bold 20px \"Mohammad Bold Art\", sans-serif";
-    textCtx.fillText("الشخصية الثانية", leftBranchX, lastMember2NameY + layout.dotBelowNameOffset + lastMember2ExtraHeight + 10);
-    const member2BottomY = lastMember2NameY + layout.dotBelowNameOffset + lastMember2ExtraHeight + 40;
 
     // Calculate the bottom of the tree (use the maximum Y from both branches)
     const maxTreeY = Math.max(member1BottomY, member2BottomY);
