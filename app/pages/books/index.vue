@@ -18,7 +18,7 @@ const books: Book[] = [
     id: 1,
     title: "القول الحاسم في نسب القواسم",
     author: "للدكتور/سلطان بن محمد القاسمي",
-    image: "/books/book-1.svg",
+    image: "/books/book-1.png",
     downloadUrl: "/books/1.pdf",
     readUrl: "/books/1",
   },
@@ -26,7 +26,7 @@ const books: Book[] = [
     id: 2,
     title: "التذكرة بالأرحام",
     author: "للدكتور/سلطان بن محمد القاسمي",
-    image: "/books/book-2.svg",
+    image: "/books/book-2.png",
     downloadUrl: "/books/2.pdf",
     readUrl: "/books/2",
   },
@@ -103,7 +103,6 @@ async function copyToClipboard() {
   }
   catch (error) {
     console.error("Clipboard copy failed", error);
-    window.prompt("انسخ الرابط:", shareUrl.value);
   }
 }
 </script>
