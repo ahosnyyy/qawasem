@@ -1,13 +1,12 @@
 <script setup lang="ts">
-const { isDark } = useTheme()
-const appConfig = useAppConfig()
+const { isDark } = useTheme();
+const appConfig = useAppConfig();
 const textColor = computed(() =>
   isDark.value
     ? (appConfig.theme?.colors?.text?.dark || "#D9B27A")
     : (appConfig.theme?.colors?.text?.light || "#4A2E1E"),
-)
-const mutedColor = computed(() => (isDark.value ? "#b09775" : "#7A5B3F"))
-
+);
+const mutedColor = computed(() => (isDark.value ? "#b09775" : "#7A5B3F"));
 </script>
 
 <template>
@@ -16,11 +15,17 @@ const mutedColor = computed(() => (isDark.value ? "#b09775" : "#7A5B3F"))
       <h1 class="text-2xl md:text-3xl mb-12" :style="{ color: textColor }">
         عن التطبيق
       </h1>
-      <p class="text-base md:text-lg leading-relaxed text-justify mx-auto" :style="{ color: mutedColor }">
-        التطبيق قائم على تاريخ ونسب عائلة القواسم ، والسير الذاتية لكل من شيوخها وافرادها وعلاقات النسب القائمة داخل وبين افراد العائلة حتي الوصول الي  نسب سيدنا علي بن ابي طالب رضي الله عنه وارضاه..... التطبيق مناسب لكل من انظمة الاندرويد وال IOS بمنتهي الدقه والكفاءه. بتحميلك التطبيق ستحصل علي تجربة فريدة من نوعها ومميزه للوصول الي تفاصيل ومعلومات صحيحه عن افراد وتاريخ ونسب القواسم
-      </p>
+      <ul class="space-y-3 text-base md:text-lg leading-relaxed text-justify mx-auto list-disc list-inside" :style="{ color: mutedColor }">
+        <li>
+          تطبيق القواسم: منصة رقمية رسمية مخصصة لعرض شجرة عائلة القواسم، وتقديم بيانات نسب معتمدة من الجهات الرسمية المعنية بالمحتوى.
+        </li>
+        <li>
+          المستخدم: أي فرد يقوم باستخدام التطبيق أو تصفح محتواه.
+        </li>
+        <li>
+          الجهات الرسمية المعنية بالمحتوى: الجهات المخوّلة رسميًا باعتماد وتحديث المعلومات الخاصة بنسب القواسم وفروع العائلة.
+        </li>
+      </ul>
     </div>
   </section>
 </template>
-
-

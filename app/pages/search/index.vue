@@ -186,7 +186,7 @@ function selectUser(user: User) {
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="ابحث عن شخص..."
+            placeholder="أبحث عن شخص..."
             style="font-family: 'IBM Plex Sans Arabic'; direction: rtl;"
             class="w-full px-4 py-2 rounded-2xl border border-[rgba(241,198,135,0.17)] focus:outline-none focus:ring-0 text-[#BE9E77] placeholder:text-[#BE9E77] placeholder:opacity-70"
             :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"

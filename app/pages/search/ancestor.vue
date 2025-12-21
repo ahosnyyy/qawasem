@@ -268,7 +268,7 @@ defineShortcuts({
               :items="users1"
               :loading="status1 === 'pending'"
               :show-loading-indicator="false"
-              placeholder="ادخل اسم الشخصية الأولي"
+              placeholder="أدخل اسم الشخصية الأولي"
               class="w-full"
               @search="searchQuery1 = $event"
             />
@@ -286,7 +286,7 @@ defineShortcuts({
               :items="users2"
               :loading="status2 === 'pending'"
               :show-loading-indicator="false"
-              placeholder="ادخل اسم الشخصية الثانية"
+              placeholder="أدخل اسم الشخصية الثانية"
               class="w-full"
               @search="searchQuery2 = $event"
             />
@@ -300,7 +300,7 @@ defineShortcuts({
             class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-smooth btn-hover-glow disabled:opacity-50 disabled:cursor-not-allowed animate-fade-in-up animate-delay-300"
             @click="handleSearch"
           >
-            {{ searchStatus === 'pending' ? 'جاري البحث...' : 'اظهر نتيجة البحث' }}
+            {{ searchStatus === 'pending' ? 'جاري البحث...' : 'أظهر نتيجة البحث' }}
           </button>
 
           <!-- PDF Certificate Button - shown only when results exist -->

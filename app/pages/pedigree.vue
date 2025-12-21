@@ -242,7 +242,7 @@ defineShortcuts({
           :items="users"
           :loading="status === 'pending'"
           :show-loading-indicator="false"
-          placeholder="ادخل اسم الشخص"
+          placeholder="أدخل اسم الشخص"
           @search="searchQuery = $event"
         />
 
@@ -254,7 +254,7 @@ defineShortcuts({
             class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             @click="handleSearch"
           >
-            {{ detailsStatus === 'pending' ? 'جاري البحث...' : 'اظهر نتيجة البحث' }}
+            {{ detailsStatus === 'pending' ? 'جاري البحث...' : 'أظهر نتيجة البحث' }}
           </button>
 
           <!-- PDF Certificate Button - shown only when results exist -->

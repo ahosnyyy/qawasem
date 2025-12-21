@@ -20,7 +20,7 @@ const books: Book[] = [
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-1.png",
     downloadUrl: "/books/1.pdf",
-    readUrl: "/books/1",
+    readUrl: "https://sheikhdrsultan.ae/Portal/Publication/2020/Qawasem",
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ const books: Book[] = [
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-2.png",
     downloadUrl: "/books/2.pdf",
-    readUrl: "/books/2",
+    readUrl: "https://sheikhdrsultan.ae/Portal/Publication/2020/Kinship-Index",
   },
   /*
   {
@@ -51,7 +51,23 @@ const books: Book[] = [
 ];
 
 function handleRead(book: Book) {
-  navigateTo(book.readUrl);
+  const targetUrl = book.readUrl;
+
+  if (import.meta.client && typeof window !== "undefined") {
+    if (/^https?:\/\//i.test(targetUrl)) {
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+    navigateTo(targetUrl);
+    return;
+  }
+
+  if (/^https?:\/\//i.test(targetUrl)) {
+    navigateTo(targetUrl, { external: true });
+    return;
+  }
+
+  navigateTo(targetUrl);
 }
 
 const showShareModal = ref(false);
@@ -66,7 +82,7 @@ function buildShareUrl(book: Book) {
   return book.readUrl;
 }
 
-function handleShare(book: Book) {
+function _handleShare(book: Book) {
   shareUrl.value = buildShareUrl(book);
   copied.value = false;
   showShareModal.value = true;
@@ -171,7 +187,7 @@ async function copyToClipboard() {
 
         <!-- Action Buttons -->
         <div class="flex items-center justify-center gap-4 lg:gap-10 w-full">
-          <!-- Share Button -->
+          <!--
           <div class="flex flex-col items-center gap-2">
             <button
               class="w-14 h-14 rounded-full flex items-center justify-center transition-smooth btn-hover-glow border-1 hover:scale-105"
@@ -180,7 +196,7 @@ async function copyToClipboard() {
                 borderColor: primaryColor,
               }"
               aria-label="مشاركة الرابط"
-              @click="handleShare(book)"
+              @click="_handleShare(book)"
             >
               <svg
                 class="w-6 h-6"
@@ -201,6 +217,7 @@ async function copyToClipboard() {
               مشاركة الرابط
             </span>
           </div>
+          -->
 
           <!-- Read Button -->
           <div class="flex flex-col items-center gap-2">
