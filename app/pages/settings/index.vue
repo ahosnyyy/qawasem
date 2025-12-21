@@ -17,7 +17,7 @@ const actions = [
       class="text-2xl md:text-3xl text-center mt-8 mb-24"
       :style="{ color: textColor }"
     >
-      الاعدادات
+      الإعدادات
     </h1>
 
     <!-- Actions row -->

@@ -78,7 +78,7 @@ onMounted(() => {
     const searchInputs = Array.from(
       document.querySelectorAll('input[type="text"]')
     ).filter((input) => 
-      input.getAttribute('placeholder')?.includes('ابحث')
+      input.getAttribute('placeholder')?.includes('أبحث')
     ) as HTMLInputElement[]
     
     searchInputs.forEach(attachSearchListener)
@@ -127,7 +127,7 @@ onUnmounted(() => {
       input: '!border-[rgba(241,198,135,0.17)] !text-[#BE9E77] placeholder:!text-[#F1C687]'
     }"
     :search-input="{
-      placeholder: 'ابحث',
+      placeholder: 'أبحث',
       class: '!text-[#BE9E77] placeholder:!text-[#F1C687]'
     }"
   >

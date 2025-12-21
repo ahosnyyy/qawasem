@@ -155,7 +155,7 @@ onUnmounted(() => {
                 ref="searchInputRef"
                 v-model="searchQuery"
                 type="text"
-                placeholder="ابحث.."
+                placeholder="أبحث.."
                 class="w-full h-12 px-6 py-3 rounded-full border font-normal text-lg placeholder-gray-400 bg-gray-50 text-black border-gray-200 focus:outline-none focus:border-gray-300"
                 dir="rtl"
               >

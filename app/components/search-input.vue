@@ -26,7 +26,7 @@ const handleInputClick = () => {
     <!-- Trigger Input - just opens the modal -->
     <input
       type="text"
-      placeholder="ابحث.."
+      placeholder="أبحث.."
       class="w-70 h-10 px-6 py-4 rounded-full border-2 font-normal text-lg transition-colors placeholder-gray-600 placeholder:font-normal bg-white text-black border-gray-200 focus:outline-none focus:border-gray-400 cursor-pointer"
       dir="rtl"
       readonly
