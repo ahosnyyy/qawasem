@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   ssr: false,
 
   nitro: {
-    preset: 'static'
+  preset: 'static'
   },
   hooks: {
     "prerender:routes" ({ routes }) {
@@ -31,6 +31,16 @@ export default defineNuxtConfig({
       hashMode: true
     }
   }, */
+  nitro: {
+    routeRules: {
+      "/**": {
+        headers: {
+          "X-Frame-Options": "DENY",
+          "Content-Security-Policy": "frame-ancestors 'none';",
+        },
+      },
+    },
+  },
   devtools: { enabled: true },
   modules: [
     "@nuxt/eslint",
