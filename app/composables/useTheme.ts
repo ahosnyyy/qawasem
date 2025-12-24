@@ -9,9 +9,8 @@ export function useTheme() {
   const theme = useCookie<"light" | "dark">("theme", {
     default: () => "light",
     sameSite: "lax",
-    secure: import.meta.env.MODE === "production",
+    secure: import.meta.env.PROD,
     httpOnly: false,
-    path: "/",
   });
 
   const isDark = computed(() => theme.value === "dark");
