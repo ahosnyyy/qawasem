@@ -203,6 +203,14 @@ const searchResults = computed(() => {
   };
 });
 
+// Computed display name - first 5 words only, always on one line
+const displayName = computed(() => {
+  if (!searchResults.value?.mainTitle)
+    return "";
+  const nameWords = searchResults.value.mainTitle.split(" ").filter(w => w.length > 0);
+  return nameWords.slice(0, 5).join(" ");
+});
+
 async function handleSearch() {
   if (!value.value) {
     // TODO: Show error message to user
@@ -299,10 +307,10 @@ defineShortcuts({
           <div class="flex-1 text-justify">
             <!-- Main Title -->
             <h2
-              class="text-4xl md:text-5xl font-bold mb-16 text-center text-justift"
+              class="text-4xl md:text-5xl font-bold mb-16 text-center text-justift whitespace-nowrap"
               :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
             >
-              {{ searchResults.mainTitle }}
+              {{ displayName }}
             </h2>
             <p
               v-if="!memberDetails?.data?.isStillLive"

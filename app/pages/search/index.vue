@@ -134,7 +134,7 @@ const mothers = computed<Relation[]>(() => {
 const wives = computed<Relation[]>(() => {
   if (!memberDetails.value?.data?.relations)
     return [];
-  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === "زوجة");
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === "زوجة" || r.relationType === "زوج");
 });
 
 const brothers = computed<Relation[]>(() => {
@@ -317,8 +317,13 @@ function selectUser(user: User) {
 
                   <!-- Wives -->
                   <div v-if="wives.length > 0">
-                    <p class="text-base text-sm" :style="{ color: textColor, opacity: 0.8 }">
-                      {{ `الزوجة: ${wives[0]?.relatedFullName}` }}
+                    <p
+                      v-for="(wife, index) in wives"
+                      :key="index"
+                      class="text-base text-sm mb-1"
+                      :style="{ color: textColor, opacity: 0.8 }"
+                    >
+                      {{ `${wife.relationType === 'زوج' ? 'الزوج' : 'الزوجة'}: ${wife.relatedFullName}` }}
                     </p>
                   </div>
                 </div>

@@ -65,7 +65,7 @@ const mothers = computed(() => {
 
 const wives = computed(() => {
   if (!memberDetails.value?.data?.relations) return []
-  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'زوجة')
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'زوجة' || r.relationType === 'زوج')
 })
 
 const brothers = computed(() => {
@@ -268,8 +268,13 @@ const handleChildClick = async (child: Relation) => {
             <div v-if="mothers.length > 0 && wives.length > 0" class="h-6 w-px" :style="{ backgroundColor: textColor, opacity: '0.3' }"></div>
             
             <div v-if="wives.length > 0" class="text-center">
-              <p class="text-base text-sm" :style="{ color: textColor, opacity: 0.8 }">
-                {{ 'الزوجة: ' + wives[0]?.relatedFullName }}
+              <p
+                v-for="(wife, index) in wives"
+                :key="index"
+                class="text-base text-sm mb-1"
+                :style="{ color: textColor, opacity: 0.8 }"
+              >
+                {{ (wife.relationType === 'زوج' ? 'الزوج' : 'الزوجة') + ': ' + wife.relatedFullName }}
               </p>
             </div>
           </div>

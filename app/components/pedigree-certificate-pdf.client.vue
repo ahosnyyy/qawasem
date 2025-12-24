@@ -15,7 +15,7 @@ const isGenerating = ref(false);
 const certificateRef = ref<HTMLElement | null>(null);
 const bgImageRef = ref<HTMLImageElement | null>(null);
 const toast = useToast();
-const colorMode = useColorMode();
+const { isDark } = useTheme();
 
 const currentDate = computed(() => {
   const date = new Date();
@@ -259,26 +259,11 @@ async function generatePDF() {
     textCtx.font = "30px \"Mohammad Bold Art\", sans-serif";
     textCtx.fillText("الحاكم من القول الحاسم", CERTIFICATE_WIDTH / 2, 240);
 
-    // Name (bold) - with word wrapping for long names (max 2 lines)
+    // Name (bold) - first 5 words only, always on one line
     textCtx.font = "bold 38px \"Mohammad Bold Art\", sans-serif";
-    const maxNameWidth = 150;
-    const nameText = props.name || " ";
-    const nameTextWidth = textCtx.measureText(nameText).width;
-
-    if (nameTextWidth <= maxNameWidth) {
-      // Name fits in one line
-      textCtx.fillText(nameText, CERTIFICATE_WIDTH / 2, 330);
-    }
-    else {
-      // Split name into two lines
-      const nameWords = nameText.split(" ");
-      const midPoint = Math.ceil(nameWords.length / 2);
-      const nameLine1 = nameWords.slice(0, midPoint).join(" ");
-      const nameLine2 = nameWords.slice(midPoint).join(" ");
-      const nameLineHeight = 55;
-      textCtx.fillText(nameLine1, CERTIFICATE_WIDTH / 2, 300);
-      textCtx.fillText(nameLine2, CERTIFICATE_WIDTH / 2, 300 + nameLineHeight);
-    }
+    const nameWords = (props.name || " ").split(" ").filter(w => w.length > 0);
+    const nameText = nameWords.slice(0, 5).join(" ");
+    textCtx.fillText(nameText, CERTIFICATE_WIDTH / 2, 330);
 
     // Lineage text with word wrapping and RTL justification within margins
     textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
@@ -443,7 +428,7 @@ async function generatePDF() {
       icon: "i-lucide-alert-circle",
       color: "error",
       ui: {
-        root: colorMode.value === "dark" ? "bg-gray-900 ring-gray-800" : "",
+        root: isDark.value ? "bg-gray-900 ring-gray-800" : "",
       },
     });
   }
