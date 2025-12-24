@@ -1,7 +1,13 @@
 <script setup>
 // This works on both server and client
 // Based on: https://nuxt.com/docs/4.x/guide/best-practices/hydration
-const userTheme = useCookie("theme", { default: () => "light" });
+const userTheme = useCookie<"light" | "dark">("theme", {
+  default: () => "light",
+  sameSite: "lax",
+  secure: import.meta.env.MODE === "production",
+  httpOnly: false,
+  path: "/",
+});
 </script>
 
 <template>
