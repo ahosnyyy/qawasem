@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Use useCookie-based theme composable for SSR compatibility
-const { _theme, isDark, toggleTheme } = useTheme();
+const { isDark, toggleTheme } = useTheme();
 
 function toggleColorMode() {
   toggleTheme();
