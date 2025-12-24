@@ -20,7 +20,7 @@ const books: Book[] = [
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-1.png",
     downloadUrl: "/books/1.pdf",
-    readUrl: "https://sheikhdrsultan.ae/Portal/Publication/2020/Qawasem",
+    readUrl: "https://share.google/5ZDNx3pBfGgJTVmTP",
   },
   {
     id: 2,
@@ -28,26 +28,24 @@ const books: Book[] = [
     author: "للدكتور/سلطان بن محمد القاسمي",
     image: "/books/book-2.png",
     downloadUrl: "/books/2.pdf",
-    readUrl: "https://sheikhdrsultan.ae/Portal/Publication/2020/Kinship-Index",
+    readUrl: "https://share.google/3fyHXPus9YTy2lwcP",
   },
-  /*
   {
     id: 3,
-    title: "تاريخ القواسم",
+    title: "القواسم في عمان",
     author: "للدكتور/سلطان بن محمد القاسمي",
-    image: "/books/book-3.svg",
-    downloadUrl: "/books/book-3.pdf",
-    readUrl: "/books/3"
+    image: "/books/book-3.png",
+    downloadUrl: "/books/3.pdf",
+    readUrl: "https://share.google/USc4rCuvIveQbz1c1",
   },
   {
     id: 4,
-    title: "القواسم في عمان",
+    title: "تاريخ القواسم",
     author: "للدكتور/سلطان بن محمد القاسمي",
-    image: "/books/book-4.svg",
-    downloadUrl: "/books/book-4.pdf",
-    readUrl: "/books/4"
-  }
-  */
+    image: "/books/book-4.png",
+    downloadUrl: "/books/4.pdf",
+    readUrl: "https://share.google/ob6IDks3amQq21OoN",
+  },
 ];
 
 function handleRead(book: Book) {
@@ -148,7 +146,7 @@ async function copyToClipboard() {
     </div>
 
     <!-- Books Grid -->
-    <div class="w-[95%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10 lg:gap-8 xl:gap-10">
+    <div class="w-[95%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 xl:gap-10">
       <div
         v-for="(book, index) in books"
         :key="book.id"
@@ -158,7 +156,7 @@ async function copyToClipboard() {
         <!-- Book Title and Author -->
         <div class="text-center mb-2">
           <h3
-            class="text-lg lg:text-xl mb-1"
+            class="text-lg mb-1"
             :style="{ color: textColor }"
           >
             {{ book.title }}
@@ -174,7 +172,7 @@ async function copyToClipboard() {
 
         <!-- Book Image -->
         <div
-          class="w-[50%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-smooth img-hover-lift cursor-pointer"
+          class="w-[80%] aspect-[3/4] mb-4 flex items-center justify-center overflow-hidden transition-smooth img-hover-lift cursor-pointer"
           @click="handleRead(book)"
         >
           <img
@@ -227,38 +225,46 @@ async function copyToClipboard() {
                 background: 'linear-gradient(180deg, rgba(217, 178, 122, 0.23) 0%, rgba(139, 114, 78, 0.23) 100%)',
                 borderColor: primaryColor,
               }"
-              aria-label=" قراءة الكتاب"
+              aria-label=" تصفح الكتاب"
               @click="handleRead(book)"
             >
               <svg
                 class="w-7 h-7"
-                viewBox="0 0 35 35"
+                viewBox="0 0 25 25"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                :style="{ color: textColor }"
               >
-                <path
-                  d="M20.9609 12.9556C22.9292 10.9872 22.9292 7.79597 20.9609 5.82765C18.9926 3.85933 15.8013 3.85933 13.833 5.82765C11.8647 7.79596 11.8647 10.9872 13.833 12.9556C15.8013 14.9239 18.9926 14.9239 20.9609 12.9556Z"
-                  :fill="textColor"
-                />
-                <path
-                  d="M17.108 25.2647V30.4496C16.6229 30.0398 15.7996 29.4005 14.7103 28.7614C13.6646 28.1476 12.5907 27.6626 11.5186 27.3198C10.242 26.9118 8.9645 26.7055 7.71761 26.7055H7.71622L5.35156 21.0153C6.01972 21.0066 7.44287 21.0398 9.17921 21.3798C11.3765 21.8101 14.5243 22.8334 17.108 25.2647Z"
-                  :fill="textColor"
-                />
-                <path
-                  d="M29.4482 21.0158L27.0837 26.7056H27.0823C25.8354 26.7056 24.5579 26.912 23.2813 27.32C22.2093 27.6626 21.1354 28.1477 20.0896 28.7616C19.0004 29.4009 18.177 30.04 17.6919 30.4498V25.2649C20.2706 22.8385 23.4113 21.8148 25.6035 21.3835C27.344 21.0409 28.7766 21.0069 29.4482 21.0158Z"
-                  :fill="textColor"
-                />
-                <path
-                  d="M25.6356 20.7825C25.5935 20.7903 25.551 20.7985 25.5084 20.807C24.047 21.0934 22.663 21.5317 21.3942 22.1106C19.8931 22.795 18.5505 23.6789 17.3998 24.7393C16.2494 23.6789 14.9066 22.795 13.4055 22.1106C12.1367 21.5319 10.7527 21.0934 9.29127 20.807C9.24516 20.798 9.1994 20.7893 9.15381 20.7808C9.19122 17.9446 11.4816 15.8145 14.5109 15.8145H20.2787C23.3085 15.8145 25.5992 17.9454 25.6356 20.7825Z"
-                  :fill="textColor"
-                />
+                <g :clip-path="`url(#clip0_${book.id})`">
+                  <path
+                    d="M25 7.32422V23.5352H17.5503C15.5032 23.5352 14.4266 24.9232 14.3169 25H10.6831C10.5719 24.9222 9.51064 23.5352 7.44971 23.5352H0V5.85938H1.46484V22.0703H7.45605C9.74521 22.0703 11.0194 23.3619 11.3369 23.5352H13.6631C13.9804 23.3619 15.255 22.0703 17.5439 22.0703H23.5352V7.32422H25Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M10.2993 21.1899C9.40967 20.8052 8.44727 20.6055 7.45605 20.6055H2.92969V2.92969H4.39453V17.6758H6.5918C8.58789 17.6758 10.2207 19.2388 10.2993 21.1899Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M17.5441 4.39453C15.9927 4.39453 14.4984 4.80098 13.1812 5.57817C13.2152 5.91089 13.2326 6.24922 13.2326 6.5918V22.0396C13.3307 21.9685 13.4429 21.8896 13.5707 21.8057C15.8322 20.2974 17.3904 20.6055 22.0705 20.6055V4.39453H17.5441Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M11.7676 21.3379C11.7676 18.5109 9.44575 16.2109 6.5918 16.2109H5.85938V0C9.52104 0 11.7676 2.95708 11.7676 6.5918V21.3379Z"
+                    fill="currentColor"
+                  />
+                </g>
+                <defs>
+                  <clipPath :id="`clip0_${book.id}`">
+                    <rect width="25" height="25" fill="white"/>
+                  </clipPath>
+                </defs>
               </svg>
             </button>
             <span
               class="text-sm font-medium"
               :style="{ color: textColor }"
             >
-              قراءة الكتاب
+              تصفح الكتاب
             </span>
           </div>
         </div>

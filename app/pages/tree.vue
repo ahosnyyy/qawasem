@@ -2,7 +2,7 @@
 const { isDark } = useTheme();
 
 const treeImage = computed(() => {
-  return isDark.value ? '/images/tree-dark.png' : '/images/tree.png'
+  return isDark.value ? '/images/tree-dark.jpg' : '/images/tree.png'
 })
 </script>
 

@@ -189,7 +189,7 @@ function selectUser(user: User) {
             placeholder="أبحث عن شخص..."
             style="font-family: 'IBM Plex Sans Arabic'; direction: rtl;"
             class="w-full px-4 py-2 rounded-2xl border border-[rgba(241,198,135,0.17)] focus:outline-none focus:ring-0 text-[#BE9E77] placeholder:text-[#BE9E77] placeholder:opacity-70"
-            :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
+            :class="isDark ? 'bg-linear-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
           >
           <div class="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
             <svg
@@ -209,7 +209,7 @@ function selectUser(user: User) {
       <div v-if="showResults" class="w-full mt-12 mb-8 px-4">
         <div
           class="w-full max-w-6xl mx-auto p-6 rounded-2xl border border-[rgba(241,198,135,0.17)]"
-          :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
+          :class="isDark ? 'bg-linear-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
         >
           <div v-if="status === 'pending'" class="text-center py-8">
             <p :style="{ color: textColor }">
@@ -229,8 +229,8 @@ function selectUser(user: User) {
                 class="flex flex-col items-center gap-3 p-4 my-4 mx-2 rounded-2xl w-[160px] border transition-all hover:scale-103 cursor-pointer"
                 :class="[
                   selectedUser?.value === user.value
-                    ? (isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.9)] to-[rgba(241,198,135,0.9)]' : 'bg-gradient-to-r from-[rgba(190,158,119,0.9)] to-[rgba(241,198,135,0.9)]')
-                    : (isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.15)] to-[rgba(241,198,135,0.15)]' : 'bg-gradient-to-r from-[rgba(190,158,119,0.15)] to-[rgba(241,198,135,0.15)]'),
+                    ? (isDark ? 'bg-linear-to-r from-[rgba(139,114,78,0.9)] to-[rgba(241,198,135,0.9)]' : 'bg-linear-to-r from-[rgba(190,158,119,0.9)] to-[rgba(241,198,135,0.9)]')
+                    : (isDark ? 'bg-linear-to-r from-[rgba(139,114,78,0.15)] to-[rgba(241,198,135,0.15)]' : 'bg-linear-to-r from-[rgba(190,158,119,0.15)] to-[rgba(241,198,135,0.15)]'),
                   selectedUser?.value === user.value ? 'border-[#F1C687] border-1' : 'border-[rgba(241,198,135,0.17)]',
                 ]"
                 @click="selectUser(user)"
@@ -262,7 +262,7 @@ function selectUser(user: User) {
         <div
           v-if="selectedUser"
           class="w-full max-w-6xl mx-auto mt-6 p-6 rounded-2xl border border-[rgba(241,198,135,0.17)]"
-          :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
+          :class="isDark ? 'bg-linear-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
         >
           <!-- Loading state for details -->
           <div v-if="detailsStatus === 'pending'" class="text-center py-8">
