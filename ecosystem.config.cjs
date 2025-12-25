@@ -1,11 +1,12 @@
 module.exports = {
   apps: [
     {
-      name: 'QAWASEM',
-      port: '3050',
-      exec_mode: 'cluster',
-      instances: 'max',
-      script: './.output/server/index.mjs',
-    },
-  ],
-}
+      name: "qawasem",
+      script: ".output/server/index.mjs",
+      env: {
+        NODE_ENV: "production",
+        FAMILY_MEMBERS_API_BASE: process.env.FAMILY_MEMBERS_API_BASE
+      }
+    }
+  ]
+};
