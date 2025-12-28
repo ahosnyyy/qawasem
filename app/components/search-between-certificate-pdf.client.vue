@@ -23,7 +23,7 @@ const isGenerating = ref(false);
 const certificateRef = ref<HTMLElement | null>(null);
 const bgImageRef = ref<HTMLImageElement | null>(null);
 const toast = useToast();
-const colorMode = useColorMode();
+const { isDark } = useTheme();
 
 const currentDate = computed(() => {
   const date = new Date();
@@ -483,14 +483,14 @@ async function generatePDF(_mode: "print" | "download" = "print") {
     textCtx.fillText(commonAncestorName.value || "", centerX, commonNameY);
 
     // Add "رحمه الله" / "رحمها الله" below common ancestor name if not still alive
-    if (props.commonAncestor && !props.commonAncestor.isStillLive) {
+    /* if (props.commonAncestor && !props.commonAncestor.isStillLive) {
       const rahmaText = props.commonAncestor.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
       textCtx.font = "16px \"Mohammad Bold Art\", sans-serif";
       textCtx.fillStyle = "#B48E65";
       textCtx.globalAlpha = 0.7;
       textCtx.fillText(rahmaText, centerX, commonNameY + 24);
       textCtx.globalAlpha = 1.0;
-    }
+    } */
 
     // Check if we have a stratified layout (one branch is empty)
     const member1Array = [...(props.member1 || [])].reverse();
@@ -557,14 +557,14 @@ async function generatePDF(_mode: "print" | "download" = "print") {
         lastExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
 
         // Add "رحمه الله" / "رحمها الله" below name if not still alive
-        if (!member.isStillLive) {
+        /*f (!member.isStillLive) {
           const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
           textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
           textCtx.fillStyle = "#B48E65";
           textCtx.globalAlpha = 0.7;
           textCtx.fillText(rahmaText, centerX, nameY + nameHeight + 4);
           textCtx.globalAlpha = 1.0;
-        }
+        }*/
 
         // Draw connector (dot + dashed line) except for last item
         if (i < singleBranchArray.length - 1) {
@@ -613,14 +613,14 @@ async function generatePDF(_mode: "print" | "download" = "print") {
         lastMember1NameY = nameY;
         lastMember1ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
 
-        if (!member.isStillLive) {
+        /*if (!member.isStillLive) {
           const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
           textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
           textCtx.fillStyle = "#B48E65";
           textCtx.globalAlpha = 0.7;
           textCtx.fillText(rahmaText, rightBranchX, nameY + nameHeight + 4);
           textCtx.globalAlpha = 1.0;
-        }
+        }*/
 
         if (i < member1Array.length - 1) {
           const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
@@ -663,14 +663,14 @@ async function generatePDF(_mode: "print" | "download" = "print") {
         lastMember2NameY = nameY;
         lastMember2ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
 
-        if (!member.isStillLive) {
+        /*if (!member.isStillLive) {
           const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
           textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
           textCtx.fillStyle = "#B48E65";
           textCtx.globalAlpha = 0.7;
           textCtx.fillText(rahmaText, leftBranchX, nameY + nameHeight + 4);
           textCtx.globalAlpha = 1.0;
-        }
+        }*/
 
         if (i < member2Array.length - 1) {
           const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
@@ -719,7 +719,7 @@ async function generatePDF(_mode: "print" | "download" = "print") {
       icon: "i-lucide-alert-circle",
       color: "error",
       ui: {
-        root: colorMode.value === "dark" ? "bg-gray-900 ring-gray-800" : "",
+        root: isDark.value ? "bg-gray-900 ring-gray-800" : "",
       },
     });
   }

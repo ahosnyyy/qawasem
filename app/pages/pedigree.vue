@@ -312,13 +312,13 @@ defineShortcuts({
             >
               {{ displayName }}
             </h2>
-            <p
+            <!--<p
               v-if="!memberDetails?.data?.isStillLive"
               class="text-lg md:text-xl mb-16 text-center"
               :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif', opacity: 0.7 }"
             >
               {{ memberDetails?.data?.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
-            </p>
+            </p> -->
 
             <!-- Lineage Paragraph -->
             <p
@@ -356,13 +356,13 @@ defineShortcuts({
               >
                 {{ person.name }}
               </p>
-              <p
+              <!--<p
                 v-if="!person.isStillLive"
                 class="mt-1 text-center text-xs"
                 :style="{ color: textColor, opacity: 0.7 }"
               >
                 {{ person.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
-              </p>
+              </p>-->
 
               <!-- Connecting Line (except for last item) -->
               <div

@@ -368,13 +368,13 @@ defineShortcuts({
                 >
                   {{ searchResults.commonAncestor.name }}
                 </p>
-                <p
+                <!--<p
                   v-if="!searchResults.commonAncestor.isStillLive"
                   class="mt-1 text-center text-sm"
                   :style="{ color: textColor, opacity: 0.7 }"
                 >
                   {{ (searchResults.commonAncestor.gender || searchData?.data?.commonAncestor?.gender) === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
-                </p>
+                </p>-->
               </div>
 
               <!-- Connecting Lines from Parent to Branches (only show if both branches have members) -->
@@ -423,13 +423,13 @@ defineShortcuts({
                     >
                       {{ person.name }}
                     </p>
-                    <p
+                    <!--<p
                       v-if="!person.isStillLive"
                       class="mt-1 text-center text-xs"
                       :style="{ color: textColor, opacity: 0.7 }"
                     >
                       {{ (person.gender || searchData?.data?.member1?.[searchResults.leftBranch.length - 1 - index]?.gender) === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
-                    </p>
+                    </p>-->
 
                     <!-- Connecting Line (except for last item) -->
                     <div
@@ -483,13 +483,13 @@ defineShortcuts({
                     >
                       {{ person.name }}
                     </p>
-                    <p
+                    <!--<p
                       v-if="!person.isStillLive"
                       class="mt-1 text-center text-xs"
                       :style="{ color: textColor, opacity: 0.7 }"
                     >
                       {{ (person.gender || searchData?.data?.member2?.[searchResults.rightBranch.length - 1 - index]?.gender) === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
-                    </p>
+                    </p>-->
 
                     <!-- Connecting Line (except for last item) -->
                     <div
@@ -562,13 +562,13 @@ defineShortcuts({
                   >
                     {{ person.name }}
                   </p>
-                  <p
+                  <!--<p
                     v-if="!person.isStillLive"
                     class="mt-1 text-center text-xs"
                     :style="{ color: textColor, opacity: 0.7 }"
                   >
                     {{ person.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
-                  </p>
+                  </p>-->
 
                   <!-- Connecting Line (after each item except last) -->
                   <div
