@@ -1,25 +1,27 @@
 /**
- * SSR-friendly theme composable using useCookie
- * This solves hydration issues by using cookies instead of localStorage
- * Based on: https://nuxt.com/docs/4.x/guide/best-practices/hydration
+ * Theme composable using localStorage
+ * Client-side only theme management with localStorage persistence
  */
+
+// Global state to share theme across all instances
+const theme = ref<"light" | "dark">("light");
+
 export function useTheme() {
-  // Use cookie instead of localStorage for SSR compatibility
-  // This works on both server and client
-  const theme = useCookie<"light" | "dark">("theme", {
-    default: () => "light",
-    sameSite: "lax",
-    secure: import.meta.env.MODE === "production",
-    httpOnly: false,
-    path: "/",
-  });
+  // Initialize theme from localStorage on client side (only once)
+  if (import.meta.client && theme.value === "light") {
+    const storedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (storedTheme && (storedTheme === "light" || storedTheme === "dark")) {
+      theme.value = storedTheme;
+    }
+  }
 
   const isDark = computed(() => theme.value === "dark");
 
   const setTheme = (newTheme: "light" | "dark") => {
     theme.value = newTheme;
-    // Also update the DOM class for immediate visual feedback
+    // Save to localStorage and update DOM for immediate visual feedback
     if (import.meta.client) {
+      localStorage.setItem("theme", newTheme);
       const html = document.documentElement;
       html.classList.remove("light", "dark");
       html.classList.add(newTheme);
