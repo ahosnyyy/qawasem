@@ -37,6 +37,9 @@ export default defineNuxtConfig({
         headers: {
           "X-Frame-Options": "DENY",
           "Content-Security-Policy": "frame-ancestors 'none';",
+          "X-Content-Type-Options": "nosniff",
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+          "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
         },
       },
     },
