@@ -141,7 +141,7 @@ async function copyToClipboard() {
         class="text-base lg:text-lg"
         :style="{ color: textColor, opacity: 0.8 }"
       >
-        الخاصة  بنسب وتاريخ القواسم
+        والخاصة  بنسب وتاريخ القواسم
       </p>
     </div>
 

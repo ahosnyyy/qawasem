@@ -4,6 +4,16 @@ const { isDark } = useTheme();
 const treeImage = computed(() => {
   return isDark.value ? '/images/tree-dark.jpg' : '/images/tree.png'
 })
+
+// Function to download the family tree PDF
+const downloadFamilyTree = () => {
+  const link = document.createElement('a')
+  link.href = '/books/family-tree.pdf'
+  link.download = 'family-tree.pdf'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
 </script>
 
 <template>
@@ -12,6 +22,7 @@ const treeImage = computed(() => {
       <!-- Download Button - Centered with tree on md, fixed on lg -->
       <ClientOnly>
         <button
+          @click="downloadFamilyTree"
           class="self-center md:self-end md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-smooth z-[130]"
         >
           <span>تحميل الشجرة الحائطية PDF</span>

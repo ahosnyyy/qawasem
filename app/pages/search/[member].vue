@@ -139,6 +139,27 @@ onUnmounted(() => {
   }
 })
 
+// Helper function to determine gender from relationType
+const getGenderFromRelationType = (relationType: string): string => {
+  const normalizedType = relationType.trim();
+  
+  // Check female terms first (since "ابنة" contains "ابن")
+  // Arabic terms for female children  
+  const femaleTerms = ['ابنة', 'أبنة', 'بنات'];
+  if (femaleTerms.some(term => normalizedType === term || normalizedType.includes(term))) {
+    return 'أنثى';
+  }
+  
+  // Arabic terms for male children
+  const maleTerms = ['ابن', 'أبن', 'أبناء', 'ابناء'];
+  if (maleTerms.some(term => normalizedType === term || normalizedType.includes(term))) {
+    return 'ذكر';
+  }
+  
+  // Default to male if uncertain
+  return 'ذكر';
+}
+
 // Function to handle child card click and navigate to details
 const handleChildClick = async (child: Relation) => {
   // If child has an ID, navigate directly
@@ -310,7 +331,7 @@ const handleChildClick = async (child: Relation) => {
                   :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.15)] to-[rgba(241,198,135,0.15)]' : 'bg-gradient-to-r from-[rgba(190,158,119,0.15)] to-[rgba(241,198,135,0.15)]'"
                 >
                   <img 
-                    :src="memberDetails.data.gender === 'ذكر' ? `${apiHost}/images/male.png` : `${apiHost}/images/female.png`"
+                    :src="getGenderFromRelationType(child.relationType) === 'ذكر' ? `${apiHost}/images/male.png` : `${apiHost}/images/female.png`"
                     :alt="child.relatedFullName"
                     class="w-30 h-30 rounded-lg object-cover"
                   />
