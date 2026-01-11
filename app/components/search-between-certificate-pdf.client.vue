@@ -294,7 +294,7 @@ async function generatePDF(_mode: "print" | "download" = "print") {
         badgeImage.crossOrigin = "anonymous";
         badgeImage.onload = () => resolve();
         badgeImage.onerror = () => reject(new Error("Failed to load badge image"));
-        badgeImage.src = "/images/cer-badge.svg";
+        badgeImage.src = "/logo.svg";
       }),
     ]);
 
@@ -306,8 +306,10 @@ async function generatePDF(_mode: "print" | "download" = "print") {
     textCtx.drawImage(topImage, topX, topY, topImageWidth, topImageHeight);
 
     // Draw badge image on bottom left (respecting left margin)
-    const badgeImageWidth = 150;
-    const badgeImageHeight = (252 / 250) * badgeImageWidth;
+    // Badge is a circle, so width must equal height
+    const badgeSize = 150; // size for both width and height (circle)
+    const badgeImageWidth = badgeSize;
+    const badgeImageHeight = badgeSize;
     const badgeX = LEFT_MARGIN - 40;
     const badgeY = CERTIFICATE_HEIGHT - badgeImageHeight - 40;
 
@@ -692,13 +694,13 @@ async function generatePDF(_mode: "print" | "download" = "print") {
     const dateStartY = Math.max(maxTreeY + 30, 650);
 
     // Date at bottom
-    textCtx.fillStyle = "#B48E65";
-    textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
-    textCtx.direction = "rtl";
-    textCtx.textAlign = "right";
-    textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY);
-    const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
-    textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY + 30);
+    //textCtx.fillStyle = "#B48E65";
+    //textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
+    //textCtx.direction = "rtl";
+    //textCtx.textAlign = "right";
+    //textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY);
+    //const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
+    //textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY + 30);
 
     // Convert text canvas to image and add to PDF
     const textImageData = textCanvas.toDataURL("image/png");

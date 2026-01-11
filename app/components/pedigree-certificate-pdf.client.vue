@@ -186,7 +186,7 @@ async function generatePDF() {
         badgeImage.crossOrigin = "anonymous";
         badgeImage.onload = () => resolve();
         badgeImage.onerror = () => reject(new Error("Failed to load badge image"));
-        badgeImage.src = "/images/cer-badge.svg";
+        badgeImage.src = "/logo.svg";
       }),
     ]);
 
@@ -199,9 +199,10 @@ async function generatePDF() {
     textCtx.drawImage(topImage, topX, topY, topImageWidth, topImageHeight);
 
     // Draw badge image on bottom left (respecting left margin)
-    // cer-badge.svg is 269x227, scale it appropriately
-    const badgeImageWidth = 150; // scaled width
-    const badgeImageHeight = (252 / 250) * badgeImageWidth; // maintain aspect ratio
+    // Badge is a circle, so width must equal height
+    const badgeSize = 150; // size for both width and height (circle)
+    const badgeImageWidth = badgeSize;
+    const badgeImageHeight = badgeSize;
     const badgeX = LEFT_MARGIN - 40; // Respect left margin
     const badgeY = CERTIFICATE_HEIGHT - badgeImageHeight - 40;
 
@@ -256,14 +257,14 @@ async function generatePDF() {
     textCtx.fillText("وثيقة نسب القواسم", CERTIFICATE_WIDTH / 2, 180);
 
     // Intro text
-    textCtx.font = "30px \"Mohammad Bold Art\", sans-serif";
-    textCtx.fillText("الحاكم من القول الحاسم", CERTIFICATE_WIDTH / 2, 240);
+    //textCtx.font = "30px \"Mohammad Bold Art\", sans-serif";
+    //textCtx.fillText("الحاكم من القول الحاسم", CERTIFICATE_WIDTH / 2, 240);
 
     // Name (bold) - first 5 words only, always on one line
     textCtx.font = "bold 38px \"Mohammad Bold Art\", sans-serif";
     const nameWords = (props.name || " ").split(" ").filter(w => w.length > 0);
     const nameText = nameWords.slice(0, 5).join(" ");
-    textCtx.fillText(nameText, CERTIFICATE_WIDTH / 2, 330);
+    textCtx.fillText(nameText, CERTIFICATE_WIDTH / 2, 300);
 
     // Lineage text with word wrapping and RTL justification within margins
     textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
@@ -276,7 +277,7 @@ async function generatePDF() {
     const leftEdge = LEFT_MARGIN; // Left edge of text area
     const words = (hardcodedLineage || "").split(" ");
     let currentLine = "";
-    let yPos = 435;
+    let yPos = 390;
     const lineHeight = 30;
 
     // Helper function to justify RTL text within margins
@@ -401,13 +402,13 @@ async function generatePDF() {
     }
 
     // Date at bottom
-    textCtx.fillStyle = "#B48E65"; // Ensure date color
-    textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
-    textCtx.direction = "rtl"; // RTL direction
-    textCtx.textAlign = "right"; // Right align for RTL (starts from right margin)
-    textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, 670);
-    const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
-    textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, 700);
+    //textCtx.fillStyle = "#B48E65"; // Ensure date color
+    //textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
+    //textCtx.direction = "rtl"; // RTL direction
+    //textCtx.textAlign = "right"; // Right align for RTL (starts from right margin)
+    //textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, 670);
+    //const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
+    //textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, 700);
 
     // Convert text canvas to image and add to PDF
     const textImageData = textCanvas.toDataURL("image/png");
