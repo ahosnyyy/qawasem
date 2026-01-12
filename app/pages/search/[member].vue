@@ -70,12 +70,14 @@ const wives = computed(() => {
 
 const brothers = computed(() => {
   if (!memberDetails.value?.data?.relations) return []
-  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'اخ' || r.relationType === 'أخ')
+  return memberDetails.value.data.relations.filter((r: Relation) =>
+    (r.relationType.startsWith('اخ') || r.relationType.startsWith('أخ'))
+    && !r.relationType.startsWith('اخت') && !r.relationType.startsWith('أخت'))
 })
 
 const sisters = computed(() => {
   if (!memberDetails.value?.data?.relations) return []
-  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === 'اخت' || r.relationType === 'أخت')
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType.startsWith('اخت') || r.relationType.startsWith('أخت'))
 })
 
 // Children (for scrollable cards)
@@ -89,55 +91,204 @@ const scrollContainer = ref<HTMLElement | null>(null)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 
+type RtlScrollType = 'negative' | 'positive-descending' | 'positive-ascending'
+
+const detectRtlScrollType = (): RtlScrollType => {
+  // Client-only; based on known cross-browser RTL scroll behaviors.
+  const el = document.createElement('div')
+  el.dir = 'rtl'
+  el.style.width = '4px'
+  el.style.height = '1px'
+  el.style.overflow = 'scroll'
+  el.style.position = 'absolute'
+  el.style.top = '-9999px'
+  el.style.visibility = 'hidden'
+
+  const inner = document.createElement('div')
+  inner.style.width = '8px'
+  inner.style.height = '1px'
+  el.appendChild(inner)
+  document.body.appendChild(el)
+
+  // If scrollLeft is positive at "start", it's the descending (reverse) type.
+  el.scrollLeft = 0
+  if (el.scrollLeft > 0) {
+    document.body.removeChild(el)
+    return 'positive-descending'
+  }
+
+  // If scrollLeft can go negative, it's the negative type.
+  el.scrollLeft = -1
+  if (el.scrollLeft < 0) {
+    document.body.removeChild(el)
+    return 'negative'
+  }
+
+  document.body.removeChild(el)
+  return 'positive-ascending'
+}
+
+const rtlScrollType = ref<RtlScrollType>('positive-ascending')
+
+const getScrollBounds = (el: HTMLElement) => {
+  const max = Math.max(0, el.scrollWidth - el.clientWidth)
+  const isRtl = getComputedStyle(el).direction === 'rtl'
+  if (!isRtl) return { min: 0, max }
+
+  // In 'negative' mode, scrollLeft is 0 (rightmost) down to -max (leftmost).
+  if (rtlScrollType.value === 'negative') return { min: -max, max: 0 }
+
+  // In both positive modes, scrollLeft ranges from 0..max (order differs visually, but bounds are the same).
+  return { min: 0, max }
+}
+
+const getViewportLeft = (el: HTMLElement) => {
+  const max = Math.max(0, el.scrollWidth - el.clientWidth)
+  const isRtl = getComputedStyle(el).direction === 'rtl'
+  if (!isRtl) return el.scrollLeft
+
+  if (rtlScrollType.value === 'negative') {
+    // -max .. 0  =>  0 .. max
+    return el.scrollLeft + max
+  }
+  if (rtlScrollType.value === 'positive-descending') {
+    // max .. 0  =>  0 .. max
+    return max - el.scrollLeft
+  }
+  // positive-ascending
+  return el.scrollLeft
+}
+
+const scrollToViewportLeft = (el: HTMLElement, viewportLeft: number) => {
+  const max = Math.max(0, el.scrollWidth - el.clientWidth)
+  const isRtl = getComputedStyle(el).direction === 'rtl'
+  const clamped = Math.max(0, Math.min(max, viewportLeft))
+
+  let left = clamped
+  if (isRtl) {
+    if (rtlScrollType.value === 'negative') left = clamped - max
+    else if (rtlScrollType.value === 'positive-descending') left = max - clamped
+    else left = clamped
+  }
+
+  el.scrollTo({ left, behavior: 'smooth' })
+}
+
 const checkScrollability = () => {
   if (!scrollContainer.value) return
   
-  const { scrollLeft, scrollWidth, clientWidth } = scrollContainer.value
-  canScrollLeft.value = scrollLeft > 0
-  canScrollRight.value = scrollLeft < scrollWidth - clientWidth - 1 // -1 for rounding errors
+  const el = scrollContainer.value
+  const max = Math.max(0, el.scrollWidth - el.clientWidth)
+  const eps = 10 // larger tolerance for scroll snap settling
+  const hasOverflow = max > eps
+
+  // Use normalized viewport position so RTL works consistently across browsers.
+  const viewportLeft = getViewportLeft(el) // 0..max
+  canScrollLeft.value = hasOverflow && viewportLeft > eps
+  canScrollRight.value = hasOverflow && viewportLeft < max - eps
 }
 
+// Scroll by fixed amount (card width 160px + gap 16px = 176px)
+const SCROLL_STEP = 176
+
 const scrollLeft = () => {
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollBy({
-      left: -400,
-      behavior: 'smooth'
-    })
-  }
+  const el = scrollContainer.value
+  if (!el) return
+  
+  const viewportLeft = getViewportLeft(el)
+  const newPos = Math.max(0, viewportLeft - SCROLL_STEP)
+  scrollToViewportLeft(el, newPos)
 }
 
 const scrollRight = () => {
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollBy({
-      left: 400,
-      behavior: 'smooth'
-    })
+  const el = scrollContainer.value
+  if (!el) return
+  
+  const max = Math.max(0, el.scrollWidth - el.clientWidth)
+  const viewportLeft = getViewportLeft(el)
+  const newPos = Math.min(max, viewportLeft + SCROLL_STEP)
+  scrollToViewportLeft(el, newPos)
+}
+
+const scrollToCard = (direction: 'prev' | 'next') => {
+  const el = scrollContainer.value
+  if (!el) return
+
+  const cards = Array.from(el.querySelectorAll<HTMLElement>('[data-child-card]'))
+  if (!cards.length) return
+
+  const viewportLeft = getViewportLeft(el)
+  const eps = 1
+
+  let target: HTMLElement | undefined
+  if (direction === 'next') {
+    target = cards.find(c => c.offsetLeft > viewportLeft + eps)
+    if (!target) {
+      scrollToViewportLeft(el, el.scrollWidth - el.clientWidth)
+      return
+    }
+  } else {
+    for (let i = cards.length - 1; i >= 0; i--) {
+      if (cards[i]!.offsetLeft < viewportLeft - eps) {
+        target = cards[i]!
+        break
+      }
+    }
+    if (!target) {
+      scrollToViewportLeft(el, 0)
+      return
+    }
+  }
+
+  scrollToViewportLeft(el, target.offsetLeft)
+}
+
+// Keep scroll arrows in sync (scroll + resize) without accumulating listeners
+let cleanupScrollListeners: (() => void) | null = null
+
+const setupScrollListeners = (el: HTMLElement) => {
+  const onScroll = () => checkScrollability()
+  const onScrollEnd = () => checkScrollability()
+  const onResize = () => checkScrollability()
+
+  checkScrollability()
+  el.addEventListener('scroll', onScroll, { passive: true })
+  el.addEventListener('scrollend', onScrollEnd, { passive: true })
+  window.addEventListener('resize', onResize, { passive: true })
+
+  return () => {
+    el.removeEventListener('scroll', onScroll)
+    el.removeEventListener('scrollend', onScrollEnd)
+    window.removeEventListener('resize', onResize)
   }
 }
 
-// Watch for scroll events and children changes
-watch([scrollContainer, () => children.value], () => {
-  if (scrollContainer.value) {
+if (import.meta.client) {
+  onMounted(async () => {
+    rtlScrollType.value = detectRtlScrollType()
+    await nextTick()
     checkScrollability()
-    scrollContainer.value.addEventListener('scroll', checkScrollability)
-  }
-}, { immediate: true })
-
-// Check on mount and when children change
-onMounted(() => {
-  nextTick(() => {
-    checkScrollability()
-    if (scrollContainer.value) {
-      scrollContainer.value.addEventListener('scroll', checkScrollability)
-    }
   })
-})
 
-onUnmounted(() => {
-  if (scrollContainer.value) {
-    scrollContainer.value.removeEventListener('scroll', checkScrollability)
-  }
-})
+  watch(scrollContainer, async (el) => {
+    cleanupScrollListeners?.()
+    cleanupScrollListeners = null
+    if (!el) return
+
+    await nextTick()
+    cleanupScrollListeners = setupScrollListeners(el)
+  }, { immediate: true })
+
+  watch(() => children.value.length, async () => {
+    await nextTick()
+    checkScrollability()
+  }, { immediate: true })
+
+  onUnmounted(() => {
+    cleanupScrollListeners?.()
+    cleanupScrollListeners = null
+  })
+}
 
 // Helper function to determine gender from relationType
 const getGenderFromRelationType = (relationType: string): string => {
@@ -304,23 +455,24 @@ const handleChildClick = async (child: Relation) => {
         <div v-if="children.length > 0" class="w-full max-w-5xl mx-auto pt-12 relative px-12">
           <!-- Left Arrow (flipped) -->
           <button
-            @click="scrollRight"
-            :disabled="!canScrollRight"
+            @click="scrollLeft"
+            :disabled="!canScrollLeft"
             class="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-            aria-label="Scroll right"
+            aria-label="السابق"
           >
             <svg class="w-10 h-10 transform scale-x-[-1]" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15.1351 0C6.81081 0 0 6.81081 0 15.1351C0 23.4595 6.81081 30.2703 15.1351 30.2703C23.4595 30.2703 30.2703 23.4595 30.2703 15.1351C30.2703 6.81081 23.4595 0 15.1351 0ZM24.4527 15.7973L17.9257 22.3716C17.5473 22.75 16.9797 22.75 16.6014 22.3716C16.223 21.9932 16.223 21.4257 16.6014 21.0473L21.5203 16.0811H6.47973C5.95946 16.0811 5.53378 15.6554 5.53378 15.1351C5.53378 14.6149 5.95946 14.1892 6.47973 14.1892H21.5203L16.5541 9.27027C16.1757 8.89189 16.1757 8.32432 16.5541 7.94595C16.9324 7.56757 17.5 7.56757 17.8784 7.94595L24.4054 14.473C24.8311 14.8513 24.8311 15.4189 24.4527 15.7973Z" :fill="textColor" fill-opacity="0.6"/>
             </svg>
           </button>
 
-          <div ref="scrollContainer" class="overflow-x-auto pb-4 scroll-smooth no-scrollbar">
-            <div class="flex gap-4 justify-center">
+          <div ref="scrollContainer" class="overflow-x-auto pb-4 scroll-smooth no-scrollbar snap-x snap-mandatory">
+            <div class="flex gap-4 justify-start">
               <!-- Children Cards Loop -->
               <div 
                 v-for="(child, index) in children" 
                 :key="index"
-                class="flex-shrink-0"
+                class="flex-shrink-0 snap-start"
+                data-child-card
               >
                 <p class="text-center text-sm opacity-70" :style="{ color: textColor }">
                   {{ child.relationType }}
@@ -345,10 +497,10 @@ const handleChildClick = async (child: Relation) => {
 
           <!-- Right Arrow -->
           <button
-            @click="scrollLeft"
-            :disabled="!canScrollLeft"
+            @click="scrollRight"
+            :disabled="!canScrollRight"
             class="absolute right-0 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-            aria-label="Scroll left"
+            aria-label="التالي"
           >
             <svg class="w-10 h-10" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15.1351 0C6.81081 0 0 6.81081 0 15.1351C0 23.4595 6.81081 30.2703 15.1351 30.2703C23.4595 30.2703 30.2703 23.4595 30.2703 15.1351C30.2703 6.81081 23.4595 0 15.1351 0ZM24.4527 15.7973L17.9257 22.3716C17.5473 22.75 16.9797 22.75 16.6014 22.3716C16.223 21.9932 16.223 21.4257 16.6014 21.0473L21.5203 16.0811H6.47973C5.95946 16.0811 5.53378 15.6554 5.53378 15.1351C5.53378 14.6149 5.95946 14.1892 6.47973 14.1892H21.5203L16.5541 9.27027C16.1757 8.89189 16.1757 8.32432 16.5541 7.94595C16.9324 7.56757 17.5 7.56757 17.8784 7.94595L24.4054 14.473C24.8311 14.8513 24.8311 15.4189 24.4527 15.7973Z" :fill="textColor" fill-opacity="0.6"/>

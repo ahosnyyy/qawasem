@@ -140,13 +140,15 @@ const wives = computed<Relation[]>(() => {
 const brothers = computed<Relation[]>(() => {
   if (!memberDetails.value?.data?.relations)
     return [];
-  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === "اخ" || r.relationType === "أخ");
+  return memberDetails.value.data.relations.filter((r: Relation) =>
+    (r.relationType.startsWith("اخ") || r.relationType.startsWith("أخ"))
+    && !r.relationType.startsWith("اخت") && !r.relationType.startsWith("أخت"));
 });
 
 const sisters = computed<Relation[]>(() => {
   if (!memberDetails.value?.data?.relations)
     return [];
-  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType === "اخت" || r.relationType === "أخت");
+  return memberDetails.value.data.relations.filter((r: Relation) => r.relationType.startsWith("اخت") || r.relationType.startsWith("أخت"));
 });
 
 function selectUser(user: User) {
