@@ -2,15 +2,7 @@ export default defineEventHandler(async (event) => {
   // Get query parameters from the request
   const query = getQuery(event);
 
-  const config = useRuntimeConfig(event);
-  const baseUrl = config.familyMembersApiBase?.replace(/\/$/, "");
-
-  if (!baseUrl) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Family members API base URL is not configured",
-    });
-  }
+  const baseUrl = getFamilyMembersApiBaseUrl(event);
 
   // Build the external API URL with query parameters
   const apiUrl = `${baseUrl}/api/FamilyMembers`;

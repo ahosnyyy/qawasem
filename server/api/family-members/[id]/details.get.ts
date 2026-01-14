@@ -9,15 +9,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const config = useRuntimeConfig(event);
-  const baseUrl = config.familyMembersApiBase?.replace(/\/$/, "");
-
-  if (!baseUrl) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Family members API base URL is not configured",
-    });
-  }
+  const baseUrl = getFamilyMembersApiBaseUrl(event);
 
   // Build the external API URL
   const apiUrl = `${baseUrl}/api/FamilyMembers/${id}/details`;

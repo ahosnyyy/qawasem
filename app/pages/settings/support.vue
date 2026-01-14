@@ -16,7 +16,7 @@ const mutedColor = computed(() => (isDark.value ? "#b09775" : "#7A5B3F"));
         الدعم الفني
       </h1>
       <p class="text-base md:text-lg leading-relaxed text-center mx-auto" :style="{ color: mutedColor }">
-        يسعدنا خدمتكم علي مدار الساعه وتلقي اسئلتكم واستفساراتكم علي البريد الالكتروني التالي :
+        يسعدنا خدمتكم على مدار الساعه وتلقي اسئلتكم واستفساراتكم على البريد الالكتروني التالي :
         <span class="block my-4 font-family-['Inter']" :style="{ color: textColor }">info@alqawasim.ae</span>
       </p>
     </div>
