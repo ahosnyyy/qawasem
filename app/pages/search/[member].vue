@@ -2,9 +2,7 @@
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
 const route = useRoute();
-const runtimeConfig = useRuntimeConfig();
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || "#D9B27A") : (appConfig.theme?.colors?.text?.light || "#4A2E1E"));
-const apiHost = runtimeConfig.public.familyMembersApiBase?.replace(/\/$/, "") || "";
 
 // Get member ID from route params
 const memberId = route.params.member;
@@ -483,7 +481,7 @@ const handleChildClick = async (child: Relation) => {
                   :class="isDark ? 'bg-gradient-to-r from-[rgba(139,114,78,0.15)] to-[rgba(241,198,135,0.15)]' : 'bg-gradient-to-r from-[rgba(190,158,119,0.15)] to-[rgba(241,198,135,0.15)]'"
                 >
                   <img 
-                    :src="getGenderFromRelationType(child.relationType) === 'ذكر' ? `${apiHost}/images/male.png` : `${apiHost}/images/female.png`"
+                    :src="getGenderFromRelationType(child.relationType) === 'ذكر' ? 'https://alqawasim.ae/backend/images/male.png' : 'https://alqawasim.ae/backend/images/female.png'"
                     :alt="child.relatedFullName"
                     class="w-30 h-30 rounded-lg object-cover"
                   />
