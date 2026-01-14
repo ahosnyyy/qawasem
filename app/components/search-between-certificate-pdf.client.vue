@@ -207,81 +207,80 @@ async function generatePDF(_mode: "print" | "download" = "print") {
     const topImage = new Image();
     const badgeImage = new Image();
 
-    // Load all member images from API
-    // Use server proxy to bypass CORS restrictions for canvas
-    const loadImage = async (url: string): Promise<HTMLImageElement> => {
+    // Load image with timeout helper
+    const loadImageWithTimeout = (src: string, crossOrigin: boolean, timeoutMs: number): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        if (crossOrigin) {
+          img.crossOrigin = "anonymous";
+        }
+
+        const timeout = setTimeout(() => {
+          img.src = "";
+          reject(new Error(`Image load timeout: ${src}`));
+        }, timeoutMs);
+
+        img.onload = () => {
+          clearTimeout(timeout);
+          resolve(img);
+        };
+        img.onerror = () => {
+          clearTimeout(timeout);
+          reject(new Error(`Failed to load image: ${src}`));
+        };
+        img.src = src;
+      });
+    };
+
+    // Load image: try direct first, then proxy if CORS fails
+    const loadImage = async (url: string, timeoutMs: number = 6000): Promise<HTMLImageElement> => {
       if (!url) {
         throw new Error("No image URL provided");
       }
 
+      // First try loading directly (faster if no CORS issues)
       try {
-        // Use server proxy route to fetch image (bypasses CORS)
-        const proxyUrl = `/api/images/proxy?url=${encodeURIComponent(url)}`;
+        const img = await loadImageWithTimeout(url, true, timeoutMs);
+        console.log("✅ Direct load succeeded:", url);
+        return img;
+      }
+      catch (directError) {
+        console.warn("❌ Direct load failed, trying proxy:", url);
+      }
 
-        // Create image from proxy URL
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.crossOrigin = "anonymous"; // Not needed for same-origin, but safe to include
-          img.onload = () => resolve(img);
-          img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
-          img.src = proxyUrl;
-        });
+      // Fallback to proxy if direct load fails (CORS issues)
+      const proxyUrl = `/api/images/proxy?url=${encodeURIComponent(url)}`;
+      const img = await loadImageWithTimeout(proxyUrl, true, timeoutMs);
+      console.log("✅ Proxy load succeeded:", url);
+      return img;
+    };
+
+    // Helper to load image safely (returns null on failure)
+    const loadImageSafe = async (url: string | undefined): Promise<HTMLImageElement | null> => {
+      if (!url) return null;
+      try {
+        return await loadImage(url);
       }
       catch (error) {
-        throw new Error(`Failed to load image: ${url} - ${error instanceof Error ? error.message : "Unknown error"}`);
+        console.warn("Failed to load image:", error);
+        return null;
       }
     };
 
-    // Load common ancestor image
-    let commonAncestorImage: HTMLImageElement | null = null;
-    if (props.commonAncestor?.photo) {
-      try {
-        commonAncestorImage = await loadImage(props.commonAncestor.photo);
-      }
-      catch (error) {
-        console.warn("Failed to load common ancestor image:", error);
-      }
-    }
+    // Load all images in parallel for better performance
+    const [commonAncestorImage, ...allMemberImages] = await Promise.all([
+      // Common ancestor
+      loadImageSafe(props.commonAncestor?.photo),
+      // Member1 images
+      ...(props.member1 || []).map(member => loadImageSafe(member?.photo)),
+      // Member2 images
+      ...(props.member2 || []).map(member => loadImageSafe(member?.photo)),
+    ]);
 
-    // Load member1 images
-    const member1Images: (HTMLImageElement | null)[] = [];
-    if (props.member1 && props.member1.length > 0) {
-      for (const member of props.member1) {
-        if (member?.photo) {
-          try {
-            const img = await loadImage(member.photo);
-            member1Images.push(img);
-          }
-          catch (error) {
-            console.warn("Failed to load member1 image:", error);
-            member1Images.push(null);
-          }
-        }
-        else {
-          member1Images.push(null);
-        }
-      }
-    }
-
-    // Load member2 images
-    const member2Images: (HTMLImageElement | null)[] = [];
-    if (props.member2 && props.member2.length > 0) {
-      for (const member of props.member2) {
-        if (member?.photo) {
-          try {
-            const img = await loadImage(member.photo);
-            member2Images.push(img);
-          }
-          catch (error) {
-            console.warn("Failed to load member2 image:", error);
-            member2Images.push(null);
-          }
-        }
-        else {
-          member2Images.push(null);
-        }
-      }
-    }
+    // Split the results back into member1 and member2 arrays
+    const member1Length = props.member1?.length || 0;
+    const member1Images = allMemberImages.slice(0, member1Length);
+    const member2Images = allMemberImages.slice(member1Length);
 
     await Promise.all([
       new Promise<void>((resolve, reject) => {
