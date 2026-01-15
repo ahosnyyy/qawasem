@@ -268,7 +268,7 @@ defineShortcuts({
               :items="users1"
               :loading="status1 === 'pending'"
               :show-loading-indicator="false"
-              placeholder="أدخل اسم الشخصية الأولي"
+              placeholder="أدخل اسم الشخصية الأولى"
               class="w-full"
               @search="searchQuery1 = $event"
             />
@@ -454,7 +454,7 @@ defineShortcuts({
                     class="mt-6 text-center text-base md:text-lg font-semibold"
                     :style="{ color: textColor }"
                   >
-                    الشخصية الأولي
+                    الشخصية الأولى
                   </p>
                 </div>
 
