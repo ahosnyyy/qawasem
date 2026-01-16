@@ -13,8 +13,7 @@ const displayNameLines = computed(() => {
   const words = nameWordsList.value;
   const primaryLine = words.slice(0, 5).join(" ").trim();
   const remainingWithoutLast = words.length > 5 ? words.slice(5, -1) : [];
-  const restText = remainingWithoutLast.join(" ").trim();
-  const secondLineBase = restText ? `${restText} بن كايد` : "بن كايد";
+  const secondLineBase = remainingWithoutLast.slice(0, 4).join(" ").trim();
 
   return {
     firstLine: primaryLine || (props.name || ""),
@@ -23,8 +22,7 @@ const displayNameLines = computed(() => {
 });
 
 // Hardcoded lineage from pedigree.vue
-const hardcodedLineage = " بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر القواس بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص  عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط) بن علي بن أبي طالب";
-const isGenerating = ref(false);
+const hardcodedLineage = " بن سلطان بن صقر بن راشد بن مطر بن كايد بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر القواس بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص  عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط) بن علي بن أبي طالب"; const isGenerating = ref(false);
 const certificateRef = ref<HTMLElement | null>(null);
 const bgImageRef = ref<HTMLImageElement | null>(null);
 const toast = useToast();
@@ -298,7 +296,7 @@ async function generatePDF() {
     // textCtx.fillText("الحاكم من القول الحاسم", CERTIFICATE_WIDTH / 2, 240);
 
     // Name (bold) - first 5 words only, always on one line
-    textCtx.font = "bold 38px \"Mohammad Bold Art\", sans-serif";
+    textCtx.font = "bold 36px \"Mohammad Bold Art\", sans-serif";
     const { firstLine: firstNameLine, secondLine } = displayNameLines.value;
     const nameText = firstNameLine || " ";
     textCtx.fillText(nameText, CERTIFICATE_WIDTH / 2, 300);
@@ -313,12 +311,12 @@ async function generatePDF() {
     textCtx.direction = "rtl"; // Ensure RTL direction
 
     // Use global margins - text justified between margins
-    const maxWidth = CERTIFICATE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN; // width within margins
+    const maxWidth = CERTIFICATE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN - 20; // width within margins
     const rightEdge = CERTIFICATE_WIDTH - RIGHT_MARGIN; // Right edge of text area
     const leftEdge = LEFT_MARGIN; // Left edge of text area
     const words = (hardcodedLineage || "").split(" ");
     let currentLine = "";
-    let yPos = 420;
+    let yPos = 440;
     const lineHeight = 30;
 
     // Helper function to justify RTL text within margins
