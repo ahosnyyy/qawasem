@@ -8,14 +8,51 @@ type Props = {
 
 const props = defineProps<Props>();
 
-// Hardcoded lineage from pedigree.vue
-const hardcodedLineage = " بن كايد بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر (القواس) بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص \ عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط)بن الحسين بن علي بن أبي طالب";
+const nameWordsList = computed(() => (props.name || "").split(" ").filter(word => word.length > 0));
+const displayNameLines = computed(() => {
+  const words = nameWordsList.value;
+  const primaryLine = words.slice(0, 5).join(" ").trim();
+  const remainingWithoutLast = words.length > 5 ? words.slice(5, -1) : [];
+  const restText = remainingWithoutLast.join(" ").trim();
+  const secondLineBase = restText ? `${restText} بن كايد` : "بن كايد";
 
+  return {
+    firstLine: primaryLine || (props.name || ""),
+    secondLine: secondLineBase.trim(),
+  };
+});
+
+// Hardcoded lineage from pedigree.vue
+const hardcodedLineage = " بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر القواس بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص  عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط) بن علي بن أبي طالب";
 const isGenerating = ref(false);
 const certificateRef = ref<HTMLElement | null>(null);
 const bgImageRef = ref<HTMLImageElement | null>(null);
 const toast = useToast();
 const { isDark } = useTheme();
+
+const requiredFonts = [
+  "bold 48px \"Mohammad Bold Art\"",
+  "bold 38px \"Mohammad Bold Art\"",
+  "bold 32px \"Mohammad Bold Art\"",
+  "18px \"Mohammad Bold Art\"",
+  "14px \"Mohammad Bold Art\"",
+];
+let fontsPreloaded = false;
+
+async function ensureFontsLoaded() {
+  if (fontsPreloaded || typeof document === "undefined" || !document.fonts)
+    return;
+
+  try {
+    await Promise.all(requiredFonts.map(font => document.fonts.load(font)));
+    await document.fonts.ready;
+    fontsPreloaded = true;
+  }
+  catch (error) {
+    console.warn("Failed to preload fonts", error);
+    // fallback: allow rendering to continue with available fonts
+  }
+}
 
 const currentDate = computed(() => {
   const date = new Date();
@@ -169,7 +206,7 @@ async function generatePDF() {
     textCtx.direction = "rtl";
 
     // Wait for font to load
-    await document.fonts.ready;
+    await ensureFontsLoaded();
 
     // Load decorative images
     const topImage = new Image();
@@ -226,10 +263,10 @@ async function generatePDF() {
     const verseEnd = "صدق الله العظيم";
 
     // First line: first part of verse
-    const firstLine = firstPart;
+    const verseFirstLine = firstPart;
 
     // Draw second line: verseEnd on left, then second part
-    textCtx.fillText(firstLine, CERTIFICATE_WIDTH / 2, 80);
+    textCtx.fillText(verseFirstLine, CERTIFICATE_WIDTH / 2, 80);
 
     // Calculate positions for RTL layout
     // First measure second part with 24px font
@@ -257,14 +294,18 @@ async function generatePDF() {
     textCtx.fillText("وثيقة نسب القواسم", CERTIFICATE_WIDTH / 2, 180);
 
     // Intro text
-    //textCtx.font = "30px \"Mohammad Bold Art\", sans-serif";
-    //textCtx.fillText("الحاكم من القول الحاسم", CERTIFICATE_WIDTH / 2, 240);
+    // textCtx.font = "30px \"Mohammad Bold Art\", sans-serif";
+    // textCtx.fillText("الحاكم من القول الحاسم", CERTIFICATE_WIDTH / 2, 240);
 
     // Name (bold) - first 5 words only, always on one line
     textCtx.font = "bold 38px \"Mohammad Bold Art\", sans-serif";
-    const nameWords = (props.name || " ").split(" ").filter(w => w.length > 0);
-    const nameText = nameWords.slice(0, 5).join(" ");
+    const { firstLine: firstNameLine, secondLine } = displayNameLines.value;
+    const nameText = firstNameLine || " ";
     textCtx.fillText(nameText, CERTIFICATE_WIDTH / 2, 300);
+
+    // Second line: remaining name without last word + "بن كايد" (smaller size)
+    textCtx.font = "bold 32px \"Mohammad Bold Art\", sans-serif";
+    textCtx.fillText(secondLine, CERTIFICATE_WIDTH / 2, 355);
 
     // Lineage text with word wrapping and RTL justification within margins
     textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
@@ -277,7 +318,7 @@ async function generatePDF() {
     const leftEdge = LEFT_MARGIN; // Left edge of text area
     const words = (hardcodedLineage || "").split(" ");
     let currentLine = "";
-    let yPos = 390;
+    let yPos = 420;
     const lineHeight = 30;
 
     // Helper function to justify RTL text within margins
@@ -402,13 +443,13 @@ async function generatePDF() {
     }
 
     // Date at bottom
-    //textCtx.fillStyle = "#B48E65"; // Ensure date color
-    //textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
-    //textCtx.direction = "rtl"; // RTL direction
-    //textCtx.textAlign = "right"; // Right align for RTL (starts from right margin)
-    //textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, 670);
-    //const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
-    //textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, 700);
+    // textCtx.fillStyle = "#B48E65"; // Ensure date color
+    // textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
+    // textCtx.direction = "rtl"; // RTL direction
+    // textCtx.textAlign = "right"; // Right align for RTL (starts from right margin)
+    // textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, 670);
+    // const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
+    // textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, 700);
 
     // Convert text canvas to image and add to PDF
     const textImageData = textCanvas.toDataURL("image/png");

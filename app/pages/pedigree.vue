@@ -3,6 +3,9 @@ import type { SelectMenuItem } from "@nuxt/ui";
 
 import PedigreeCertificatePdf from "~/components/pedigree-certificate-pdf.client.vue";
 
+const DEFAULT_LINEAGE = " بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر القواس بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص  عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط) بن علي بن أبي طالب";
+const TEST_CERTIFICATE_NAME = "سلطان بن أحمد بن سلطان بن صقر بن خالد بن سلطان بن صقر بن راشد بن مطر القاسمي";
+
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
 const textColor = computed(() => isDark.value ? (appConfig.theme?.colors?.text?.dark || "#D9B27A") : (appConfig.theme?.colors?.text?.light || "#4A2E1E"));
@@ -92,6 +95,7 @@ watch(value, () => {
 });
 const showPrintModal = ref(false);
 const certificateRef = ref<InstanceType<typeof PedigreeCertificatePdf> | null>(null);
+const testCertificateRef = ref<InstanceType<typeof PedigreeCertificatePdf> | null>(null);
 
 function openPrintModal() {
   showPrintModal.value = true;
@@ -105,6 +109,10 @@ async function handlePrint() {
 async function handleDownload() {
   showPrintModal.value = false;
   await certificateRef.value?.downloadPDF();
+}
+
+async function handleTestCertificateDownload() {
+  await testCertificateRef.value?.downloadPDF();
 }
 
 type ParentMember = {
@@ -198,7 +206,7 @@ const searchResults = computed(() => {
 
   return {
     mainTitle: data.fullName,
-    lineage: " بن كايد بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر (القواس) بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص \ عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط)بن الحسين بن علي بن أبي طالب",
+    lineage: DEFAULT_LINEAGE,
     hierarchy,
   };
 });
@@ -265,6 +273,17 @@ defineShortcuts({
             {{ detailsStatus === 'pending' ? 'جاري البحث...' : 'أظهر نتيجة البحث' }}
           </button>
 
+          <!-- Offline/Test Certificate Button -->
+          <!--
+          <button
+            class="bg-[#7B5B3E] min-w-2xs text-[#F9E3C7] py-2 rounded-2xl transition-all duration-300 hover:scale-105"
+            title="استخدم الاسم التجريبي عند تعطل الواجهة البرمجية"
+            @click="handleTestCertificateDownload"
+          >
+            تحميل شهادة تجريبية
+          </button>
+          -->
+
           <!-- PDF Certificate Button - shown only when results exist -->
           <button
             v-if="showResults && searchResults"
@@ -280,6 +299,14 @@ defineShortcuts({
             ref="certificateRef"
             :name="searchResults.mainTitle"
             :lineage="searchResults.lineage"
+            class="hidden"
+          />
+
+          <!-- Hidden test certificate component -->
+          <PedigreeCertificatePdf
+            ref="testCertificateRef"
+            :name="TEST_CERTIFICATE_NAME"
+            :lineage="DEFAULT_LINEAGE"
             class="hidden"
           />
         </div>
@@ -312,7 +339,7 @@ defineShortcuts({
             >
               {{ displayName }}
             </h2>
-            <!--<p
+            <!-- <p
               v-if="!memberDetails?.data?.isStillLive"
               class="text-lg md:text-xl mb-16 text-center"
               :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif', opacity: 0.7 }"
@@ -356,13 +383,13 @@ defineShortcuts({
               >
                 {{ person.name }}
               </p>
-              <!--<p
+              <!-- <p
                 v-if="!person.isStillLive"
                 class="mt-1 text-center text-xs"
                 :style="{ color: textColor, opacity: 0.7 }"
               >
                 {{ person.gender === 'أنثى' ? 'رحمها الله' : 'رحمه الله' }}
-              </p>-->
+              </p> -->
 
               <!-- Connecting Line (except for last item) -->
               <div

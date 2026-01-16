@@ -25,6 +25,31 @@ const bgImageRef = ref<HTMLImageElement | null>(null);
 const toast = useToast();
 const { isDark } = useTheme();
 
+const requiredFonts = [
+  "bold 48px \"Mohammad Bold Art\"",
+  "bold 38px \"Mohammad Bold Art\"",
+  "bold 32px \"Mohammad Bold Art\"",
+  "bold 20px \"Mohammad Bold Art\"",
+  "18px \"Mohammad Bold Art\"",
+  "14px \"Mohammad Bold Art\"",
+];
+let fontsPreloaded = false;
+
+async function ensureFontsLoaded() {
+  if (fontsPreloaded || typeof document === "undefined" || !document.fonts)
+    return;
+
+  try {
+    await Promise.all(requiredFonts.map(font => document.fonts.load(font)));
+    await document.fonts.ready;
+    fontsPreloaded = true;
+  }
+  catch (error) {
+    console.warn("Failed to preload fonts", error);
+    // fallback: continue with defaults
+  }
+}
+
 const currentDate = computed(() => {
   const date = new Date();
   const options: Intl.DateTimeFormatOptions = {
@@ -201,7 +226,7 @@ async function generatePDF(_mode: "print" | "download" = "print") {
     textCtx.direction = "rtl";
 
     // Wait for font to load
-    await document.fonts.ready;
+    await ensureFontsLoaded();
 
     // Load decorative images
     const topImage = new Image();
@@ -257,7 +282,8 @@ async function generatePDF(_mode: "print" | "download" = "print") {
 
     // Helper to load image safely (returns null on failure)
     const loadImageSafe = async (url: string | undefined): Promise<HTMLImageElement | null> => {
-      if (!url) return null;
+      if (!url)
+        return null;
       try {
         return await loadImage(url);
       }
@@ -558,14 +584,14 @@ async function generatePDF(_mode: "print" | "download" = "print") {
         lastExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
 
         // Add "رحمه الله" / "رحمها الله" below name if not still alive
-        /*f (!member.isStillLive) {
+        /* f (!member.isStillLive) {
           const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
           textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
           textCtx.fillStyle = "#B48E65";
           textCtx.globalAlpha = 0.7;
           textCtx.fillText(rahmaText, centerX, nameY + nameHeight + 4);
           textCtx.globalAlpha = 1.0;
-        }*/
+        } */
 
         // Draw connector (dot + dashed line) except for last item
         if (i < singleBranchArray.length - 1) {
@@ -614,14 +640,14 @@ async function generatePDF(_mode: "print" | "download" = "print") {
         lastMember1NameY = nameY;
         lastMember1ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
 
-        /*if (!member.isStillLive) {
+        /* if (!member.isStillLive) {
           const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
           textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
           textCtx.fillStyle = "#B48E65";
           textCtx.globalAlpha = 0.7;
           textCtx.fillText(rahmaText, rightBranchX, nameY + nameHeight + 4);
           textCtx.globalAlpha = 1.0;
-        }*/
+        } */
 
         if (i < member1Array.length - 1) {
           const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
@@ -664,14 +690,14 @@ async function generatePDF(_mode: "print" | "download" = "print") {
         lastMember2NameY = nameY;
         lastMember2ExtraHeight = extraNameHeight + (!member.isStillLive ? 18 : 0);
 
-        /*if (!member.isStillLive) {
+        /* if (!member.isStillLive) {
           const rahmaText = member.gender === "أنثى" ? "رحمها الله" : "رحمه الله";
           textCtx.font = "14px \"Mohammad Bold Art\", sans-serif";
           textCtx.fillStyle = "#B48E65";
           textCtx.globalAlpha = 0.7;
           textCtx.fillText(rahmaText, leftBranchX, nameY + nameHeight + 4);
           textCtx.globalAlpha = 1.0;
-        }*/
+        } */
 
         if (i < member2Array.length - 1) {
           const dotY = nameY + layout.dotBelowNameOffset + extraNameHeight + (!member.isStillLive ? 18 : 0);
@@ -693,13 +719,13 @@ async function generatePDF(_mode: "print" | "download" = "print") {
     const dateStartY = Math.max(maxTreeY + 30, 650);
 
     // Date at bottom
-    //textCtx.fillStyle = "#B48E65";
-    //textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
-    //textCtx.direction = "rtl";
-    //textCtx.textAlign = "right";
-    //textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY);
-    //const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
-    //textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY + 30);
+    // textCtx.fillStyle = "#B48E65";
+    // textCtx.font = "20px \"Mohammad Bold Art\", sans-serif";
+    // textCtx.direction = "rtl";
+    // textCtx.textAlign = "right";
+    // textCtx.fillText("وقد طبعت هذه الشهادة استناداََ الي الوارد في كتاب القول الحاسم في نسب القواسم", CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY);
+    // const dateText = `طُبعت بتاريخ: ${currentDate.value} م`;
+    // textCtx.fillText(dateText, CERTIFICATE_WIDTH - RIGHT_MARGIN, dateStartY + 30);
 
     // Convert text canvas to image and add to PDF
     const textImageData = textCanvas.toDataURL("image/png");
