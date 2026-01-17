@@ -19,7 +19,7 @@ type SearchResults = {
   hierarchy: HierarchyPerson[];
 };
 
-const PLACEHOLDER_IMAGE = "/logo.svg";
+// const PLACEHOLDER_IMAGE = "/logo.svg";
 
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
@@ -128,26 +128,26 @@ async function handleDownload() {
   await certificateRef.value?.downloadPDF();
 }
 
-function showTestCertificateResults() {
-  manualResults.value = {
-    mainTitle: TEST_CERTIFICATE_NAME,
-    lineage: DEFAULT_LINEAGE,
-    hierarchy: [
-      {
-        name: TEST_CERTIFICATE_NAME,
-        image: PLACEHOLDER_IMAGE,
-        isStillLive: true,
-        gender: "ذكر",
-      },
-    ],
-  };
-  showResults.value = true;
-}
+// function showTestCertificateResults() {
+//   manualResults.value = {
+//     mainTitle: TEST_CERTIFICATE_NAME,
+//     lineage: DEFAULT_LINEAGE,
+//     hierarchy: [
+//       {
+//         name: TEST_CERTIFICATE_NAME,
+//         image: PLACEHOLDER_IMAGE,
+//         isStillLive: true,
+//         gender: "ذكر",
+//       },
+//     ],
+//   };
+//   showResults.value = true;
+// }
 
-async function handleTestCertificateDownload() {
-  showTestCertificateResults();
-  await testCertificateRef.value?.downloadPDF();
-}
+// async function handleTestCertificateDownload() {
+//   showTestCertificateResults();
+//   await testCertificateRef.value?.downloadPDF();
+// }
 
 type ParentMember = {
   id: number;
@@ -308,7 +308,7 @@ defineShortcuts({
           </button>
 
           <!-- Offline/Test Certificate Button -->
-
+          <!--
           <button
             class="bg-[#7B5B3E] min-w-2xs text-[#F9E3C7] py-2 rounded-2xl transition-all duration-300 hover:scale-105"
             title="استخدم الاسم التجريبي عند تعطل الواجهة البرمجية"
@@ -316,6 +316,7 @@ defineShortcuts({
           >
             تحميل شهادة تجريبية
           </button>
+          -->
 
           <!-- PDF Certificate Button - shown only when results exist -->
           <button
