@@ -2,9 +2,24 @@
 import type { SelectMenuItem } from "@nuxt/ui";
 
 import PedigreeCertificatePdf from "~/components/pedigree-certificate-pdf.client.vue";
+import { DEFAULT_LINEAGE, getDisplayNameLines } from "~/utils/pedigree";
 
-const DEFAULT_LINEAGE = " بن سلطان بن صقر بن راشد بن مطر بن كايد بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر القواس بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص  عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط) بن علي بن أبي طالب";
 const TEST_CERTIFICATE_NAME = "سلطان بن أحمد بن سلطان بن صقر بن خالد بن سلطان بن صقر بن راشد بن مطر القاسمي";
+
+type HierarchyPerson = {
+  name: string;
+  image: string;
+  isStillLive: boolean;
+  gender: string;
+};
+
+type SearchResults = {
+  mainTitle: string;
+  lineage: string;
+  hierarchy: HierarchyPerson[];
+};
+
+const PLACEHOLDER_IMAGE = "/logo.svg";
 
 const { isDark } = useTheme();
 const appConfig = useAppConfig();
@@ -88,10 +103,12 @@ const users = computed<SelectMenuItem[]>(() => {
 
 const value = ref<SelectMenuItem | undefined>(undefined);
 const showResults = ref(false);
+const manualResults = ref<SearchResults | null>(null);
 
 // Clear results when user selects a different person
 watch(value, () => {
   showResults.value = false;
+  manualResults.value = null;
 });
 const showPrintModal = ref(false);
 const certificateRef = ref<InstanceType<typeof PedigreeCertificatePdf> | null>(null);
@@ -111,7 +128,24 @@ async function handleDownload() {
   await certificateRef.value?.downloadPDF();
 }
 
+function showTestCertificateResults() {
+  manualResults.value = {
+    mainTitle: TEST_CERTIFICATE_NAME,
+    lineage: DEFAULT_LINEAGE,
+    hierarchy: [
+      {
+        name: TEST_CERTIFICATE_NAME,
+        image: PLACEHOLDER_IMAGE,
+        isStillLive: true,
+        gender: "ذكر",
+      },
+    ],
+  };
+  showResults.value = true;
+}
+
 async function handleTestCertificateDownload() {
+  showTestCertificateResults();
   await testCertificateRef.value?.downloadPDF();
 }
 
@@ -168,8 +202,8 @@ const { data: memberDetails, status: detailsStatus, error: detailsError, refresh
 );
 
 // Build hierarchy from parent chain
-function buildHierarchy(member: ParentMember | null, currentMember: MemberDetailsResponse["data"] | null): Array<{ name: string; image: string; isStillLive: boolean; gender: string }> {
-  const hierarchy: Array<{ name: string; image: string; isStillLive: boolean; gender: string }> = [];
+function buildHierarchy(member: ParentMember | null, currentMember: MemberDetailsResponse["data"] | null): HierarchyPerson[] {
+  const hierarchy: HierarchyPerson[] = [];
 
   // Add current member first
   if (currentMember) {
@@ -197,7 +231,10 @@ function buildHierarchy(member: ParentMember | null, currentMember: MemberDetail
 }
 
 // Computed search results
-const searchResults = computed(() => {
+const searchResults = computed<SearchResults | null>(() => {
+  if (manualResults.value)
+    return manualResults.value;
+
   if (!memberDetails.value?.data)
     return null;
 
@@ -211,13 +248,9 @@ const searchResults = computed(() => {
   };
 });
 
-// Computed display name - first 5 words only, always on one line
-const displayName = computed(() => {
-  if (!searchResults.value?.mainTitle)
-    return "";
-  const nameWords = searchResults.value.mainTitle.split(" ").filter(w => w.length > 0);
-  return nameWords.slice(0, 5).join(" ");
-});
+const displayNameLines = computed(() => getDisplayNameLines(searchResults.value?.mainTitle || ""));
+
+const lineageDisplayText = computed(() => searchResults.value?.lineage || DEFAULT_LINEAGE);
 
 async function handleSearch() {
   if (!value.value) {
@@ -225,6 +258,7 @@ async function handleSearch() {
     return;
   }
 
+  manualResults.value = null;
   // Trigger the API call
   await refreshDetails();
   showResults.value = true;
@@ -274,7 +308,7 @@ defineShortcuts({
           </button>
 
           <!-- Offline/Test Certificate Button -->
-          <!--
+
           <button
             class="bg-[#7B5B3E] min-w-2xs text-[#F9E3C7] py-2 rounded-2xl transition-all duration-300 hover:scale-105"
             title="استخدم الاسم التجريبي عند تعطل الواجهة البرمجية"
@@ -282,7 +316,6 @@ defineShortcuts({
           >
             تحميل شهادة تجريبية
           </button>
-          -->
 
           <!-- PDF Certificate Button - shown only when results exist -->
           <button
@@ -329,16 +362,25 @@ defineShortcuts({
         </div>
 
         <!-- Results -->
-        <div v-else-if="searchResults" class="flex flex-col lg:flex-row gap-12 lg:gap-40 px-6 md:px-12">
+        <div v-else-if="searchResults" class="flex flex-col lg:flex-row gap-12 lg:gap-52 px-4 md:px-8">
           <!-- Left Side: Main Lineage Text -->
           <div class="flex-1 text-justify">
             <!-- Main Title -->
-            <h2
-              class="text-4xl md:text-5xl font-bold mb-16 text-center text-justift whitespace-nowrap"
-              :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
-            >
-              {{ displayName }}
-            </h2>
+            <div class="mb-16 text-center">
+              <h2
+                class="text-4xl md:text-5xl font-bold text-justift"
+                :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
+              >
+                {{ displayNameLines.firstLine }}
+              </h2>
+              <p
+                v-if="displayNameLines.secondLine"
+                class="text-2xl md:text-3xl mt-4 text-justift"
+                :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
+              >
+                {{ displayNameLines.secondLine }}
+              </p>
+            </div>
             <!-- <p
               v-if="!memberDetails?.data?.isStillLive"
               class="text-lg md:text-xl mb-16 text-center"
@@ -352,12 +394,12 @@ defineShortcuts({
               class="text-lg md:text-2xl leading-relaxed text-justift"
               :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
             >
-              {{ searchResults.lineage }}
+              {{ lineageDisplayText }}
             </p>
           </div>
 
           <!-- Right Side: Hierarchy of Portraits -->
-          <div class="flex-shrink-0 flex flex-col items-center">
+          <div class="flex-shrink-0 flex flex-col items-center w-full lg:w-[280px]">
             <div
               v-for="(person, index) in searchResults.hierarchy"
               :key="index"

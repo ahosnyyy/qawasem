@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
+import { DEFAULT_LINEAGE, getDisplayNameLines } from "~/utils/pedigree";
+
 type Props = {
   name: string;
   lineage: string;
@@ -8,21 +10,11 @@ type Props = {
 
 const props = defineProps<Props>();
 
-const nameWordsList = computed(() => (props.name || "").split(" ").filter(word => word.length > 0));
-const displayNameLines = computed(() => {
-  const words = nameWordsList.value;
-  const primaryLine = words.slice(0, 5).join(" ").trim();
-  const remainingWithoutLast = words.length > 5 ? words.slice(5, -1) : [];
-  const secondLineBase = remainingWithoutLast.slice(0, 4).join(" ").trim();
+const displayNameLines = computed(() => getDisplayNameLines(props.name));
 
-  return {
-    firstLine: primaryLine || (props.name || ""),
-    secondLine: secondLineBase.trim(),
-  };
-});
+const lineageText = computed(() => props.lineage || DEFAULT_LINEAGE);
 
-// Hardcoded lineage from pedigree.vue
-const hardcodedLineage = " بن سلطان بن صقر بن راشد بن مطر بن كايد بن قضيب بن رحمة (كايد) بن حمود عدوان بن محمد بن أحمد (الشيخ الصالح) بن صقر (القواس) بن علي بن صقر القواس بن قائد رحمة بن إدريس (شرف) بن زيد (مزيد) بن قائد رحمة بن القاسم بن علي (أبو القاسم) بن القاسم بن علي بن الحسين بن راشد (عفيص  عفيصان) بن فضل (المفضل) بن إدريس (شرف الدين) بن رحمة (قائد) بن محمد (جياش) بن الحسن (أبو دريد) بن إدريس (فارس العرب) بن القاسم (الحرابي) بن الأمير محمد (الثائر) بن موسى (الثاني) بن عبدالله (الشيخ الصالح) بن موسى (الجون) بن عبدالله (المحض) بن الحسن (المثنى) بن الحسن (السبط) بن علي بن أبي طالب"; const isGenerating = ref(false);
+const isGenerating = ref(false);
 const certificateRef = ref<HTMLElement | null>(null);
 const bgImageRef = ref<HTMLImageElement | null>(null);
 const toast = useToast();
@@ -314,7 +306,7 @@ async function generatePDF() {
     const maxWidth = CERTIFICATE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN - 20; // width within margins
     const rightEdge = CERTIFICATE_WIDTH - RIGHT_MARGIN; // Right edge of text area
     const leftEdge = LEFT_MARGIN; // Left edge of text area
-    const words = (hardcodedLineage || "").split(" ");
+    const words = (lineageText.value || "").split(" ");
     let currentLine = "";
     let yPos = 440;
     const lineHeight = 30;
@@ -569,10 +561,13 @@ defineExpose({
               هذا نص شهادة النسب الرسمية التي تؤكد نسب
             </p>
             <p class="certificate-name">
-              <strong>{{ name }}</strong>
+              <strong>{{ displayNameLines.firstLine }}</strong>
+              <span v-if="displayNameLines.secondLine" class="certificate-name-second">
+                {{ displayNameLines.secondLine }}
+              </span>
             </p>
             <p class="certificate-lineage">
-              {{ hardcodedLineage }}
+              {{ lineageText }}
             </p>
           </div>
 
