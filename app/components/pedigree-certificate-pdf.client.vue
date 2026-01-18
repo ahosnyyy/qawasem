@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
-import { DEFAULT_LINEAGE, getDisplayNameLines } from "~/utils/pedigree";
+import { DEFAULT_LINEAGE, getDisplayNameSegments } from "~/utils/pedigree";
 
 type Props = {
   name: string;
   lineage: string;
+  memberId?: number;
 };
 
 const props = defineProps<Props>();
 
-const displayNameLines = computed(() => getDisplayNameLines(props.name));
+const displayNameSegments = computed(() => getDisplayNameSegments(props.name, { memberId: props.memberId }));
 
-const lineageText = computed(() => props.lineage || DEFAULT_LINEAGE);
+const lineageText = computed(() => {
+  const baseLineage = props.lineage || DEFAULT_LINEAGE;
+  const staticPart = displayNameSegments.value.staticPart;
+  return staticPart ? `${staticPart} ${baseLineage}`.trim() : baseLineage;
+});
 
 const isGenerating = ref(false);
 const certificateRef = ref<HTMLElement | null>(null);
@@ -287,15 +292,18 @@ async function generatePDF() {
     // textCtx.font = "30px \"Mohammad Bold Art\", sans-serif";
     // textCtx.fillText("الحاكم من القول الحاسم", CERTIFICATE_WIDTH / 2, 240);
 
-    // Name (bold) - first 5 words only, always on one line
+    // Name segments following Flutter logic
+    const { firstLine: firstNameLine, secondLine } = displayNameSegments.value;
     textCtx.font = "bold 36px \"Mohammad Bold Art\", sans-serif";
-    const { firstLine: firstNameLine, secondLine } = displayNameLines.value;
     const nameText = firstNameLine || " ";
     textCtx.fillText(nameText, CERTIFICATE_WIDTH / 2, 300);
 
-    // Second line: remaining name without last word + "بن كايد" (smaller size)
-    textCtx.font = "bold 32px \"Mohammad Bold Art\", sans-serif";
-    textCtx.fillText(secondLine, CERTIFICATE_WIDTH / 2, 355);
+    if (secondLine) {
+      textCtx.font = "bold 32px \"Mohammad Bold Art\", sans-serif";
+      textCtx.fillText(secondLine, CERTIFICATE_WIDTH / 2, 355);
+    }
+
+    // staticPart is now merged into the lineage text for consistency with Flutter implementation
 
     // Lineage text with word wrapping and RTL justification within margins
     textCtx.font = "18px \"Mohammad Bold Art\", sans-serif";
@@ -561,9 +569,9 @@ defineExpose({
               هذا نص شهادة النسب الرسمية التي تؤكد نسب
             </p>
             <p class="certificate-name">
-              <strong>{{ displayNameLines.firstLine }}</strong>
-              <span v-if="displayNameLines.secondLine" class="certificate-name-second">
-                {{ displayNameLines.secondLine }}
+              <strong>{{ displayNameSegments.firstLine }}</strong>
+              <span v-if="displayNameSegments.secondLine" class="certificate-name-second">
+                {{ displayNameSegments.secondLine }}
               </span>
             </p>
             <p class="certificate-lineage">

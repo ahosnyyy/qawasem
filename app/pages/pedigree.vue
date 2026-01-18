@@ -2,9 +2,9 @@
 import type { SelectMenuItem } from "@nuxt/ui";
 
 import PedigreeCertificatePdf from "~/components/pedigree-certificate-pdf.client.vue";
-import { DEFAULT_LINEAGE, getDisplayNameLines } from "~/utils/pedigree";
+import { DEFAULT_LINEAGE, getDisplayNameSegments } from "~/utils/pedigree";
 
-const TEST_CERTIFICATE_NAME = "سلطان بن أحمد بن سلطان بن صقر بن خالد بن سلطان بن صقر بن راشد بن مطر القاسمي";
+const TEST_CERTIFICATE_NAME = "عبدالعزيز بن جمال بن عبدالعزيز بن حميد بن صقر بن خالد بن سلطان بن صقر بن راشد بن مطر بن كايد القاسمي";
 
 type HierarchyPerson = {
   name: string;
@@ -14,6 +14,7 @@ type HierarchyPerson = {
 };
 
 type SearchResults = {
+  memberId: number | null;
   mainTitle: string;
   lineage: string;
   hierarchy: HierarchyPerson[];
@@ -130,6 +131,7 @@ async function handleDownload() {
 
 // function showTestCertificateResults() {
 //   manualResults.value = {
+//     memberId: null,
 //     mainTitle: TEST_CERTIFICATE_NAME,
 //     lineage: DEFAULT_LINEAGE,
 //     hierarchy: [
@@ -242,15 +244,25 @@ const searchResults = computed<SearchResults | null>(() => {
   const hierarchy = buildHierarchy(data.parent, data);
 
   return {
+    memberId: data.id,
     mainTitle: data.fullName,
     lineage: DEFAULT_LINEAGE,
     hierarchy,
   };
 });
 
-const displayNameLines = computed(() => getDisplayNameLines(searchResults.value?.mainTitle || ""));
+const displayNameSegments = computed(() => getDisplayNameSegments(
+  searchResults.value?.mainTitle || "",
+  {
+    memberId: searchResults.value?.memberId ?? undefined,
+  },
+));
 
-const lineageDisplayText = computed(() => searchResults.value?.lineage || DEFAULT_LINEAGE);
+const lineageDisplayText = computed(() => {
+  const baseLineage = searchResults.value?.lineage || DEFAULT_LINEAGE;
+  const staticPart = displayNameSegments.value.staticPart;
+  return staticPart ? `${staticPart} ${baseLineage}`.trim() : baseLineage;
+});
 
 async function handleSearch() {
   if (!value.value) {
@@ -333,6 +345,7 @@ defineShortcuts({
             ref="certificateRef"
             :name="searchResults.mainTitle"
             :lineage="searchResults.lineage"
+            :member-id="searchResults.memberId ?? undefined"
             class="hidden"
           />
 
@@ -341,6 +354,7 @@ defineShortcuts({
             ref="testCertificateRef"
             :name="TEST_CERTIFICATE_NAME"
             :lineage="DEFAULT_LINEAGE"
+            :member-id="undefined"
             class="hidden"
           />
         </div>
@@ -372,14 +386,14 @@ defineShortcuts({
                 class="text-4xl md:text-5xl font-bold text-justift"
                 :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
               >
-                {{ displayNameLines.firstLine }}
+                {{ displayNameSegments.firstLine }}
               </h2>
               <p
-                v-if="displayNameLines.secondLine"
+                v-if="displayNameSegments.secondLine"
                 class="text-2xl md:text-3xl mt-4 text-justift"
                 :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
               >
-                {{ displayNameLines.secondLine }}
+                {{ displayNameSegments.secondLine }}
               </p>
             </div>
             <!-- <p
