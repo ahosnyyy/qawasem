@@ -316,7 +316,8 @@ async function generatePDF() {
     const leftEdge = LEFT_MARGIN; // Left edge of text area
     const words = (lineageText.value || "").split(" ");
     let currentLine = "";
-    let yPos = 440;
+    const lineageStartY = secondLine ? 440 : 400;
+    let yPos = lineageStartY;
     const lineHeight = 30;
 
     // Helper function to justify RTL text within margins

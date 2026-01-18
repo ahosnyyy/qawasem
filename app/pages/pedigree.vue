@@ -4,7 +4,7 @@ import type { SelectMenuItem } from "@nuxt/ui";
 import PedigreeCertificatePdf from "~/components/pedigree-certificate-pdf.client.vue";
 import { DEFAULT_LINEAGE, getDisplayNameSegments } from "~/utils/pedigree";
 
-const TEST_CERTIFICATE_NAME = "عبدالعزيز بن جمال بن عبدالعزيز بن حميد بن صقر بن خالد بن سلطان بن صقر بن راشد بن مطر بن كايد القاسمي";
+const TEST_CERTIFICATE_NAME = "ناصر الأول بن ماجد بن ناصر بن سلطان بن صقر بن راشد بن مطر بن كايد القاسمي";
 
 type HierarchyPerson = {
   name: string;
@@ -258,6 +258,8 @@ const displayNameSegments = computed(() => getDisplayNameSegments(
   },
 ));
 
+const hasSecondLine = computed(() => Boolean(displayNameSegments.value.secondLine));
+
 const lineageDisplayText = computed(() => {
   const baseLineage = searchResults.value?.lineage || DEFAULT_LINEAGE;
   const staticPart = displayNameSegments.value.staticPart;
@@ -381,7 +383,7 @@ defineShortcuts({
           <!-- Left Side: Main Lineage Text -->
           <div class="flex-1 text-justify">
             <!-- Main Title -->
-            <div class="mb-16 text-center">
+            <div class="text-center" :class="[hasSecondLine ? 'mb-16' : 'mb-10']">
               <h2
                 class="text-4xl md:text-5xl font-bold text-justift"
                 :style="{ color: textColor, fontFamily: 'Mohammad Bold Art, sans-serif' }"
