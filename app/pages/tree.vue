@@ -25,11 +25,11 @@ const downloadFamilyTree = () => {
           @click="downloadFamilyTree"
           class="self-center md:self-end md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-smooth z-[130]"
         >
-          <span>تحميل الشجرة الحائطية PDF</span>
+          <span>تحميل الشجرة الحائطية</span>
         </button>
         <template #fallback>
           <div class="self-center md:self-end md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] text-[#F1C687] px-6 py-2 rounded-full z-[130]">
-            <span>تحميل الشجرة الحائطية PDF</span>
+            <span>تحميل الشجرة الحائطية</span>
           </div>
         </template>
       </ClientOnly>

@@ -257,7 +257,7 @@ defineShortcuts({
           class="text-2xl md:text-3xl text-center mb-4 animate-fade-in-down"
           :style="{ color: textColor }"
         >
-          البحث بين شخصين
+          بحث في شخصيتين
         </h1>
 
         <!-- Select Menu -->
@@ -300,7 +300,7 @@ defineShortcuts({
             class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-smooth btn-hover-glow disabled:opacity-50 disabled:cursor-not-allowed animate-fade-in-up animate-delay-300"
             @click="handleSearch"
           >
-            {{ searchStatus === 'pending' ? 'جاري البحث...' : 'أظهر نتيجة البحث' }}
+            {{ searchStatus === 'pending' ? 'جارِ البحث...' : 'أظهر نتيجة البحث' }}
           </button>
 
           <!-- PDF Certificate Button - shown only when results exist -->
@@ -330,14 +330,14 @@ defineShortcuts({
           <!-- Loading State -->
           <div v-if="searchStatus === 'pending'" class="text-center py-8">
             <p :style="{ color: textColor }">
-              جاري البحث عن السلف المشترك...
+              جارِ البحث عن السلف المشترك...
             </p>
           </div>
 
           <!-- Error State -->
           <div v-else-if="searchError" class="text-center py-8">
             <p :style="{ color: textColor }" class="text-red-500">
-              حدث خطأ في البحث. يرجى المحاولة مرة أخرى.
+              حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.
             </p>
           </div>
 

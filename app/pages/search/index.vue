@@ -165,11 +165,11 @@ function selectUser(user: User) {
           to="/search/ancestor"
           class="self-center md:self-end -mt-16 md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] hover:scale-105 text-[#F1C687] px-6 py-2 rounded-full transition-all duration-300 z-[130]"
         >
-          <span>البحث بين شخصين</span>
+          <span>بحث في شخصيتين</span>
         </NuxtLink>
         <template #fallback>
           <div class="self-center md:self-end -mt-16 md:-mt-32 mb-12 md:mb-24 bg-[#4A2E1E] text-[#F1C687] px-6 py-2 rounded-full z-[130]">
-            <span>البحث بين شخصين</span>
+            <span>بحث في شخصيتين</span>
           </div>
         </template>
       </ClientOnly>
