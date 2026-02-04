@@ -268,7 +268,7 @@ defineShortcuts({
               :items="users1"
               :loading="status1 === 'pending'"
               :show-loading-indicator="false"
-              placeholder="أدخل اسم الشخصية الأولى"
+              placeholder="أدخل اسم الشخصية الأولي"
               class="w-full"
               @search="searchQuery1 = $event"
             />
@@ -309,7 +309,7 @@ defineShortcuts({
             class="bg-[#4A2E1E] hover:scale-105 text-[#F1C687] py-2 min-w-2xs rounded-2xl transition-all duration-300"
             @click="openPrintModal"
           >
-            <span>حفظ شهادة البحث PDF</span>
+            <span>حفظ شهادة البحث</span>
           </button>
 
           <!-- Hidden Certificate Component -->
@@ -454,7 +454,7 @@ defineShortcuts({
                     class="mt-6 text-center text-base md:text-lg font-semibold"
                     :style="{ color: textColor }"
                   >
-                    الشخصية الأولى
+                    الشخصية الأولي
                   </p>
                 </div>
 

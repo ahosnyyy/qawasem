@@ -297,7 +297,7 @@ defineShortcuts({
           class="text-2xl md:text-3xl text-center mb-4"
           :style="{ color: textColor }"
         >
-          وثاق عائــلــي
+          توثيق النسب
         </h1>
 
         <!-- Select Menu -->
@@ -338,7 +338,7 @@ defineShortcuts({
             class="bg-[#4A2E1E] hover:scale-105 text-[#F1C687] py-2 min-w-2xs rounded-2xl transition-all duration-300"
             @click="openPrintModal"
           >
-            <span>حفظ شهادة النسب PDF</span>
+            <span>طباعة وثيقة النسب</span>
           </button>
 
           <!-- Hidden Certificate Component -->
