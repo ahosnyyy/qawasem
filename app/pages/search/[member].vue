@@ -395,7 +395,7 @@ const handleChildClick = async (child: Relation) => {
       </div>
       
       <div v-if="status === 'pending'" class="w-full mt-12 mb-8 px-4 text-center">
-        <p :style="{ color: textColor }">جاري التحميل...</p>
+        <p :style="{ color: textColor }">جارِ التحميل...</p>
       </div>
 
       <div v-else-if="error" class="w-full mt-12 mb-8 px-4 text-center">

@@ -15,9 +15,9 @@ interface Slide {
 const slides = computed<Slide[]>(() => [
   {
     id: 1,
-    text_1: "استكشف شجرة",
-    text_2: " عائـــلـــة القـــــواســم",
-    text_3: "وتــعرف عــــلى تــاريــــخها الحــــــافل بالإنجــــــازات",
+    text_1: "اعلم أيها المنتسب إلى هذا البيت أن أهل البيت كانوا يأنفون من الافتخار بنسبهم.\nقال الفضيل بن مرزوق: سمعت الحسن بن علي بن أبي طالب رضي الله عنهم يقول لرجلٍ ممن يغلو فيهم:\n«ويحكم! أحبّونا لله، فإن أطعنا الله فأحبّونا، وإن عصينا الله فأبغضونا».\nقال: فقال له الرجل: إنكم ذوو قرابة من رسول الله ﷺ وأهل بيته، فقال:\n«ويحكم! لو كان الله يُنْفِعُ بقرابةٍ من رسول الله ﷺ بغير عملٍ بطاعته، لنفع بذلك من هو أقرب إليه منا، والله إني لأخاف أن يُضاعَف للعاصي منا العذابُ ضعفين، والله إني لأرجو أن يُؤْتَى المحسنُ منا أجره مرتين».\nفيجب علينا الأخذ بكتاب الله وسنة رسوله ﷺ والعمل بهما، لأن أولى الناس بذلك أهل بيته.",
+    text_2: "",
+    text_3: "سلطان بن محمد بن صقر القاسمي",
     image: isDark.value ? "/images/image-1.jpg" : "/images/image-1.png"
   },
   {
@@ -120,7 +120,8 @@ const goToSlide = (index: number) => {
                 v-for="(slide, index) in slides"
                 v-show="index === currentSlide"
                 :key="`text-${slide.id}`"
-                class="absolute inset-0 text-center space-y-4"
+                class="absolute inset-0 space-y-4"
+                :class="slide.id === 1 ? 'text-justify' : 'text-center'"
               >
                 <!-- Title -->
                 <h2 
@@ -139,6 +140,7 @@ const goToSlide = (index: number) => {
                 </p>
                 <p 
                   class="text-lg leading-relaxed"
+                  :class="{ 'text-left pt-1': slide.id === 1 }"
                   :style="{ color: textColor, opacity: 0.9 }"
                 >
                   {{ slide.text_3 }}

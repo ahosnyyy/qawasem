@@ -129,6 +129,46 @@ async function handleDownload() {
   await certificateRef.value?.downloadPDF();
 }
 
+// Share PDF directly (WhatsApp, Mail, etc. via Web Share API or fallback to download)
+const sharePdfLoading = ref(false);
+const toast = useToast();
+
+async function sharePDF() {
+  if (!certificateRef.value || sharePdfLoading.value)
+    return;
+  sharePdfLoading.value = true;
+  try {
+    const blob = await certificateRef.value.getPDFBlob();
+    if (!blob) {
+      toast.add({ title: "تعذر إنشاء الملف", color: "error" });
+      return;
+    }
+    const fileName = certificateRef.value.getSuggestedFileName?.() || "شهادة_النسب.pdf";
+    const file = new File([blob], fileName, { type: "application/pdf" });
+
+    if (typeof navigator !== "undefined" && navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        title: "وثيقة النسب",
+        files: [file],
+      });
+      toast.add({ title: "تم فتح خيارات المشاركة", color: "success" });
+    }
+    else {
+      await certificateRef.value.downloadPDF();
+      toast.add({ title: "تم التحميل. يمكنك مشاركة الملف من جهازك (واتساب، بريد، إلخ).", color: "primary" });
+    }
+  }
+  catch (err: any) {
+    if (err?.name === "AbortError")
+      return;
+    await certificateRef.value?.downloadPDF();
+    toast.add({ title: "تم التحميل. يمكنك مشاركة الملف من جهازك.", color: "primary" });
+  }
+  finally {
+    sharePdfLoading.value = false;
+  }
+}
+
 // function showTestCertificateResults() {
 //   manualResults.value = {
 //     memberId: null,
@@ -312,13 +352,14 @@ defineShortcuts({
 
         <!-- Buttons Container -->
         <div class="flex flex-col sm:flex-row items-center gap-4">
-          <!-- Search Button -->
+          <!-- Search Button - hidden when results are shown, shown again when selection changes -->
           <button
+            v-if="!showResults"
             :disabled="!value || detailsStatus === 'pending'"
             class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             @click="handleSearch"
           >
-            {{ detailsStatus === 'pending' ? 'جاري البحث...' : 'أظهر نتيجة البحث' }}
+            {{ detailsStatus === 'pending' ? 'جارِ البحث...' : 'أظهر نتيجة البحث' }}
           </button>
 
           <!-- Offline/Test Certificate Button -->
@@ -331,6 +372,26 @@ defineShortcuts({
             تحميل شهادة تجريبية
           </button>
           -->
+
+          <!-- Share Button - opens share directly (PDF via Web Share or download) -->
+          <button
+            v-if="showResults && searchResults"
+            :disabled="sharePdfLoading"
+            class="bg-[#BE9E77] hover:scale-105 text-[#5E402D] py-2 min-w-2xs rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            @click="sharePDF"
+          >
+            <UIcon
+              v-if="sharePdfLoading"
+              name="i-lucide-loader-2"
+              class="w-5 h-5 animate-spin"
+            />
+            <UIcon
+              v-else
+              name="i-lucide-share-2"
+              class="w-5 h-5"
+            />
+            <span>{{ sharePdfLoading ? "جارِ التحضير..." : "مشاركة" }}</span>
+          </button>
 
           <!-- PDF Certificate Button - shown only when results exist -->
           <button
@@ -367,7 +428,7 @@ defineShortcuts({
         <!-- Loading State -->
         <div v-if="detailsStatus === 'pending'" class="text-center py-8">
           <p :style="{ color: textColor }">
-            جاري تحميل النسب...
+            جارِ تحميل النسب...
           </p>
         </div>
 

@@ -802,22 +802,33 @@ async function printPDF() {
   }
 }
 
+function getSuggestedFileName() {
+  const person1Name = props.member1?.[0]?.fullName?.split(" ").slice(0, 3).join("_") || "";
+  const person2Name = props.member2?.[0]?.fullName?.split(" ").slice(0, 3).join("_") || "";
+  return `شهادة_البحث_${person1Name}_و_${person2Name}.pdf`;
+}
+
 async function downloadPDF() {
   const pdf = await generatePDF("download");
   if (!pdf)
     return;
+  pdf.save(getSuggestedFileName());
+}
 
-  // Get first two names from each searched person
-  const person1Name = props.member1?.[0]?.fullName?.split(" ").slice(0, 3).join("_") || "";
-  const person2Name = props.member2?.[0]?.fullName?.split(" ").slice(0, 3).join("_") || "";
-  const fileName = `شهادة_البحث_${person1Name}_و_${person2Name}.pdf`;
-  pdf.save(fileName);
+/** Returns PDF as Blob for sharing (e.g. Web Share API). */
+async function getPDFBlob(): Promise<Blob | null> {
+  const pdf = await generatePDF("download");
+  if (!pdf)
+    return null;
+  return pdf.output("blob") as Blob;
 }
 
 defineExpose({
   generatePDF,
   printPDF,
   downloadPDF,
+  getPDFBlob,
+  getSuggestedFileName,
 });
 </script>
 

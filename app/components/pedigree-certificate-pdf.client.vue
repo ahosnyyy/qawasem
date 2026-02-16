@@ -525,21 +525,32 @@ async function printPDF() {
   }
 }
 
+function getSuggestedFileName() {
+  const personName = props.name?.split(" ").slice(0, 3).join("_") || "certificate";
+  return `شهادة_النسب_${personName}.pdf`;
+}
+
 async function downloadPDF() {
   const pdf = await generatePDF();
   if (!pdf)
     return;
+  pdf.save(getSuggestedFileName());
+}
 
-  // Get first three names from searched person
-  const personName = props.name?.split(" ").slice(0, 3).join("_") || "certificate";
-  const fileName = `شهادة_النسب_${personName}.pdf`;
-  pdf.save(fileName);
+/** Returns PDF as Blob for sharing (e.g. Web Share API). */
+async function getPDFBlob(): Promise<Blob | null> {
+  const pdf = await generatePDF();
+  if (!pdf)
+    return null;
+  return pdf.output("blob") as Blob;
 }
 
 defineExpose({
   generatePDF,
   printPDF,
   downloadPDF,
+  getPDFBlob,
+  getSuggestedFileName,
 });
 </script>
 

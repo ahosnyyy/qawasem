@@ -10,6 +10,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     familyMembersApiBase:
       env?.FAMILY_MEMBERS_API_BASE,
+    mockFamilyMembersApi: env?.MOCK_FAMILY_MEMBERS_API === "1" || env?.MOCK_FAMILY_MEMBERS_API === "true",
     public: {
       familyMembersApiBase:
         env?.FAMILY_MEMBERS_API_BASE,

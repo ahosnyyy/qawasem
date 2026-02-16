@@ -215,7 +215,7 @@ function selectUser(user: User) {
         >
           <div v-if="status === 'pending'" class="text-center py-8">
             <p :style="{ color: textColor }">
-              جاري التحميل...
+              جارِ التحميل...
             </p>
           </div>
           <div v-else-if="users.length === 0" class="text-center py-8">
@@ -269,7 +269,7 @@ function selectUser(user: User) {
           <!-- Loading state for details -->
           <div v-if="detailsStatus === 'pending'" class="text-center py-8">
             <p :style="{ color: textColor }">
-              جاري تحميل التفاصيل...
+              جارِ تحميل التفاصيل...
             </p>
           </div>
 

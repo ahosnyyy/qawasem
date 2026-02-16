@@ -158,6 +158,46 @@ async function handleDownload() {
   await certificateRef.value?.downloadPDF();
 }
 
+// Share PDF directly (WhatsApp, Mail, etc. via Web Share API or fallback to download)
+const sharePdfLoading = ref(false);
+const toast = useToast();
+
+async function sharePDF() {
+  if (!certificateRef.value || sharePdfLoading.value)
+    return;
+  sharePdfLoading.value = true;
+  try {
+    const blob = await certificateRef.value.getPDFBlob();
+    if (!blob) {
+      toast.add({ title: "تعذر إنشاء الملف", color: "error" });
+      return;
+    }
+    const fileName = certificateRef.value.getSuggestedFileName?.() || "شهادة_البحث.pdf";
+    const file = new File([blob], fileName, { type: "application/pdf" });
+
+    if (typeof navigator !== "undefined" && navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        title: "شهادة البحث بين شخصيتين",
+        files: [file],
+      });
+      toast.add({ title: "تم فتح خيارات المشاركة", color: "success" });
+    }
+    else {
+      await certificateRef.value.downloadPDF();
+      toast.add({ title: "تم التحميل. يمكنك مشاركة الملف من جهازك (واتساب، بريد، إلخ).", color: "primary" });
+    }
+  }
+  catch (err: any) {
+    if (err?.name === "AbortError")
+      return;
+    await certificateRef.value?.downloadPDF();
+    toast.add({ title: "تم التحميل. يمكنك مشاركة الملف من جهازك.", color: "primary" });
+  }
+  finally {
+    sharePdfLoading.value = false;
+  }
+}
+
 type AncestorMember = {
   id: number;
   title: string;
@@ -294,13 +334,34 @@ defineShortcuts({
         </div>
         <!-- Buttons Container -->
         <div class="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-16">
-          <!-- Search Button -->
+          <!-- Search Button - hidden when results are shown, shown again when selection changes -->
           <button
+            v-if="!showResults"
             :disabled="!person1 || !person2 || searchStatus === 'pending'"
             class="bg-[#BE9E77] min-w-2xs hover:scale-105 text-[#5E402D] py-2 rounded-2xl transition-smooth btn-hover-glow disabled:opacity-50 disabled:cursor-not-allowed animate-fade-in-up animate-delay-300"
             @click="handleSearch"
           >
             {{ searchStatus === 'pending' ? 'جارِ البحث...' : 'أظهر نتيجة البحث' }}
+          </button>
+
+          <!-- Share Button - opens share directly (PDF via Web Share or download) -->
+          <button
+            v-if="showResults && searchResults && searchData?.data"
+            :disabled="sharePdfLoading"
+            class="bg-[#BE9E77] hover:scale-105 text-[#5E402D] py-2 min-w-2xs rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            @click="sharePDF"
+          >
+            <UIcon
+              v-if="sharePdfLoading"
+              name="i-lucide-loader-2"
+              class="w-5 h-5 animate-spin"
+            />
+            <UIcon
+              v-else
+              name="i-lucide-share-2"
+              class="w-5 h-5"
+            />
+            <span>{{ sharePdfLoading ? "جارِ التحضير..." : "مشاركة" }}</span>
           </button>
 
           <!-- PDF Certificate Button - shown only when results exist -->

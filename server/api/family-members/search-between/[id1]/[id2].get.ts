@@ -1,5 +1,7 @@
+import { isMockFamilyMembersApi } from "../../../../utils/api";
+import { getMockSearchBetween } from "../../../../utils/mockFamilyMembers";
+
 export default defineEventHandler(async (event) => {
-  // Get the IDs from route parameters
   const id1 = getRouterParam(event, "id1");
   const id2 = getRouterParam(event, "id2");
 
@@ -10,13 +12,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const baseUrl = getFamilyMembersApiBaseUrl(event);
+  if (isMockFamilyMembersApi(event)) {
+    return getMockSearchBetween(id1, id2);
+  }
 
-  // Build the external API URL
+  const baseUrl = getFamilyMembersApiBaseUrl(event);
   const apiUrl = `${baseUrl}/api/FamilyMembers/search-between/${id1}/${id2}`;
 
   try {
-    // Make the request from server-side (no CORS issues)
     const response = await $fetch<{
       success: boolean;
       status: number;
@@ -50,19 +53,16 @@ export default defineEventHandler(async (event) => {
       errors: any;
     }>(apiUrl, {
       method: "GET",
-      headers: {
-        accept: "*/*",
-      },
+      headers: { accept: "*/*" },
     });
 
     return response;
   }
   catch (error: any) {
-    // Handle errors properly
-    console.error("Error fetching common ancestor:", error);
+    console.error("Error fetching common ancestor:", error?.message || error);
     throw createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.message || "Failed to fetch common ancestor",
+      statusCode: error?.statusCode || 502,
+      statusMessage: error?.message || "Failed to fetch common ancestor",
     });
   }
 });

@@ -1,10 +1,16 @@
+import { isMockFamilyMembersApi } from "../../utils/api";
+import { mockFamilyMembersSearch } from "../../utils/mockFamilyMembers";
+
 export default defineEventHandler(async (event) => {
-  // Get query parameters from the request
   const query = getQuery(event);
 
-  const baseUrl = getFamilyMembersApiBaseUrl(event);
+  if (isMockFamilyMembersApi(event)) {
+    const pageSize = Number(query.PageSize) || 10;
+    const data = { ...mockFamilyMembersSearch.data, pageSize, totalRecords: mockFamilyMembersSearch.data.data.length };
+    return { ...mockFamilyMembersSearch, data };
+  }
 
-  // Build the external API URL with query parameters
+  const baseUrl = getFamilyMembersApiBaseUrl(event);
   const apiUrl = `${baseUrl}/api/FamilyMembers`;
   const params = new URLSearchParams({
     PageNumber: String(query.PageNumber || 1),
@@ -12,22 +18,17 @@ export default defineEventHandler(async (event) => {
   });
 
   try {
-    // Make the request from server-side (no CORS issues)
     const response = await $fetch(`${apiUrl}?${params}`, {
       method: "GET",
-      headers: {
-        accept: "*/*",
-      },
+      headers: { accept: "*/*" },
     });
-
     return response;
   }
   catch (error: any) {
-    // Handle errors properly
-    console.error("Error fetching family members:", error);
+    console.error("Error fetching family members:", error?.message || error);
     throw createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.message || "Failed to fetch family members",
+      statusCode: error?.statusCode || 502,
+      statusMessage: error?.message || "Failed to fetch family members",
     });
   }
 });
