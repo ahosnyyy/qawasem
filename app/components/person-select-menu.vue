@@ -122,9 +122,10 @@ onUnmounted(() => {
       trailingIcon: '!text-[#F1C687]',
       value: 'truncate',
       placeholder: '!text-[#BE9E77] opacity-70',
-      content: `!rounded-2xl ${contentBackground} !border !border-[rgba(241,198,135,0.17)] w-full max-w-[90vw] sm:max-w-none sm:min-w-fit`,
+      content: `!rounded-2xl ${contentBackground} !border !border-[rgba(241,198,135,0.17)] w-[var(--reka-popper-anchor-width)] max-w-[90vw]`,
       separator: '!bg-[rgba(241,198,135,0.17)]',
       item: '!text-[#BE9E77] data-highlighted:not-data-disabled:before:bg-[rgba(241,198,135,0.1)]',
+      itemLabel: 'truncate',
       input: '!border-[rgba(241,198,135,0.17)] !text-[#BE9E77] placeholder:!text-[#F1C687]'
     }"
     :search-input="{
