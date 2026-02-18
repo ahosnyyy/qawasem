@@ -184,13 +184,13 @@ function selectUser(user: User) {
         </h1>
 
         <!-- Search Input -->
-        <div class="relative w-full max-w-sm">
+        <div class="relative w-full max-w-sm min-w-0">
           <input
             v-model="searchQuery"
             type="text"
             placeholder="أبحث عن شخص..."
             style="font-family: 'IBM Plex Sans Arabic'; direction: rtl;"
-            class="w-full px-4 py-2 rounded-2xl border border-[rgba(241,198,135,0.17)] focus:outline-none focus:ring-0 text-[#BE9E77] placeholder:text-[#BE9E77] placeholder:opacity-70"
+            class="w-full pr-4 pl-12 py-2 rounded-2xl border border-[rgba(241,198,135,0.17)] focus:outline-none focus:ring-0 text-[#BE9E77] placeholder:text-[#BE9E77] placeholder:opacity-70 truncate"
             :class="isDark ? 'bg-linear-to-r from-[rgba(139,114,78,0.23)] to-[rgba(241,198,135,0.23)]' : 'bg-white'"
           >
           <div class="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">

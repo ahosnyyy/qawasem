@@ -17,7 +17,7 @@ export const mockFamilyMembersSearch = {
       {
         id: 1,
         title: "صاحب السمو",
-        fullName: "سلطان بن محمد بن صقر القاسمي",
+        fullName: "سلطان بن محمد بن صقر القاسمي سلطان بن محمد بن صقر القاسمي سلطان بن محمد بن صقر القاسمي",
         mobile: null,
         bod: null,
         gender: "ذكر",

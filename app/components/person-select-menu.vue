@@ -118,8 +118,9 @@ onUnmounted(() => {
     :class="class"
     size="xl"
     :ui="{
-      base: `!rounded-2xl ${baseBackground} !border !border-[rgba(241,198,135,0.17)] !ring-0 focus-visible:!ring-0 focus-visible:!outline-none !text-[#BE9E77]`,
+      base: `!rounded-2xl ${baseBackground} !border !border-[rgba(241,198,135,0.17)] !ring-0 focus-visible:!ring-0 focus-visible:!outline-none !text-[#BE9E77] overflow-hidden`,
       trailingIcon: '!text-[#F1C687]',
+      value: 'truncate',
       placeholder: '!text-[#BE9E77] opacity-70',
       content: `!rounded-2xl ${contentBackground} !border !border-[rgba(241,198,135,0.17)] w-full max-w-[90vw] sm:max-w-none sm:min-w-fit`,
       separator: '!bg-[rgba(241,198,135,0.17)]',

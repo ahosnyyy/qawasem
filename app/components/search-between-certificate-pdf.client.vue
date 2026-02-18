@@ -660,7 +660,7 @@ async function generatePDF(_mode: "print" | "download" = "print") {
       }
 
       textCtx.font = "bold 20px \"Mohammad Bold Art\", sans-serif";
-      textCtx.fillText("الشخصية الأولي", rightBranchX, lastMember1NameY + layout.dotBelowNameOffset + lastMember1ExtraHeight + 10);
+      textCtx.fillText("الشخصية الأولى", rightBranchX, lastMember1NameY + layout.dotBelowNameOffset + lastMember1ExtraHeight + 10);
       member1BottomY = lastMember1NameY + layout.dotBelowNameOffset + lastMember1ExtraHeight + 40;
 
       // Draw Member 2 Branch (Left side)
@@ -864,7 +864,7 @@ defineExpose({
             <div class="certificate-branches">
               <div class="branch-section">
                 <p class="branch-label">
-                  الشخصية الأولي
+                  الشخصية الأولى
                 </p>
                 <p class="branch-lineage">
                   {{ member1Lineage }}

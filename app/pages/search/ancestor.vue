@@ -301,14 +301,14 @@ defineShortcuts({
         </h1>
 
         <!-- Select Menu -->
-        <div class="flex flex-col sm:flex-row gap-4 md:gap-12 w-full items-center justify-center">
-          <div class="flex-1 animate-fade-in-left animate-delay-200">
+        <div class="flex flex-col sm:flex-row gap-4 md:gap-12 w-full items-center justify-center overflow-hidden">
+          <div class="w-full sm:flex-1 min-w-0 animate-fade-in-left animate-delay-200">
             <PersonSelectMenu
               v-model="person1"
               :items="users1"
               :loading="status1 === 'pending'"
               :show-loading-indicator="false"
-              placeholder="أدخل اسم الشخصية الأولي"
+              placeholder="أدخل اسم الشخصية الأولى"
               class="w-full"
               @search="searchQuery1 = $event"
             />
@@ -317,10 +317,10 @@ defineShortcuts({
           <img
             src="/icons/exchange.svg"
             alt="exchange"
-            class="w-8 h-8 sm:w-6 sm:h-6 animate-scale-in animate-delay-300"
+            class="w-8 h-8 sm:w-6 sm:h-6 shrink-0 animate-scale-in animate-delay-300"
           >
 
-          <div class="flex-1 animate-fade-in-right animate-delay-200">
+          <div class="w-full sm:flex-1 min-w-0 animate-fade-in-right animate-delay-200">
             <PersonSelectMenu
               v-model="person2"
               :items="users2"
@@ -515,7 +515,7 @@ defineShortcuts({
                     class="mt-6 text-center text-base md:text-lg font-semibold"
                     :style="{ color: textColor }"
                   >
-                    الشخصية الأولي
+                    الشخصية الأولى
                   </p>
                 </div>
 
