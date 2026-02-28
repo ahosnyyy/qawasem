@@ -44,8 +44,9 @@ watch(() => route.path, () => {
 });
 
 const containerClass = computed(() => {
-  if (!isOpen.value) return '';
-  return isDark.value ? 'bg-black border-gray-800' : 'bg-white border-gray-200';
+  if (!isOpen.value)
+    return "";
+  return isDark.value ? "bg-black border-gray-800" : "bg-white border-gray-200";
 });
 </script>
 
@@ -70,8 +71,9 @@ const containerClass = computed(() => {
     <div
       class="mt-20 z-[90] relative"
     >
-      <UContainer class="py-4"
-      :class="containerClass"
+      <UContainer
+        class="py-4"
+        :class="containerClass"
       >
         <div class="flex items-center justify-between gap-4">
           <!-- Logo and Desktop Navigation -->
@@ -112,17 +114,18 @@ const containerClass = computed(() => {
           <UButton
             color="neutral"
             variant="ghost"
-            icon="i-heroicons-bars-2"
-            class="md:hidden !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent"
+            trailing-icon="i-heroicons-bars-3"
+            class="!bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent"
             aria-label="Toggle menu"
             :style="{ color: textColor }"
             @click="isOpen = !isOpen"
-          />
+          >
+            <span class="text-xs">القائمة</span>
+          </UButton>
         </div>
-
       </UContainer>
     </div>
-      
+
     <!-- Mobile Navigation Menu - Outside parent container for proper z-index -->
     <Transition
       enter-active-class="transition-all duration-200 ease-out"
@@ -136,7 +139,7 @@ const containerClass = computed(() => {
         v-if="isOpen"
         class="md:hidden fixed left-0 right-0 backdrop-blur border-t shadow-lg z-[120]"
         :class="[
-          isDark ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200'
+          isDark ? 'bg-black/95 border-gray-800' : 'bg-white/95 border-gray-200',
         ]"
         :style="{ top: 'calc(5rem + 5rem + 3rem)' }"
         :dir="isRTL ? 'rtl' : 'ltr'"
