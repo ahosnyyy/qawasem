@@ -115,7 +115,7 @@ const containerClass = computed(() => {
             color="neutral"
             variant="ghost"
             trailing-icon="i-heroicons-bars-3"
-            class="!bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent"
+            class="md:hidden !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent"
             aria-label="Toggle menu"
             :style="{ color: textColor }"
             @click="isOpen = !isOpen"
